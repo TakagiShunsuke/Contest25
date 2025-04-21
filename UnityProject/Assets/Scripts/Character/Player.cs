@@ -10,6 +10,7 @@ __Y25
 _M04
 D
 18:プレイヤーの移動と攻撃完成。:kato
+21:表記ゆれの修正:takagi
 =====*/
 
 // 名前空間宣言
@@ -44,8 +45,8 @@ public class CPlayer : MonoBehaviour
 	private float m_fAttackRange = 0.02f; // 攻撃の半径
 	[SerializeField]
 	[Tooltip("攻撃の角度")]
-	private float m_fAttackAngle = 45f; // 45度の範囲
-	private float m_fLastAttackTime = 0f; // 最後に攻撃した時間
+	private float m_fAttackAngle = 45.0f; // 45度の範囲
+	private float m_fLastAttackTime = 0.0f; // 最後に攻撃した時間
 	private float m_fAttackCooldown; // 攻撃のクールダウン時間
 	private bool m_bIsDead = false; // プレイヤーが死んでいるかどうか
 
@@ -145,7 +146,7 @@ public class CPlayer : MonoBehaviour
     // 戻値：なし
     // ｘ
     // 概要：プレイヤーが死んでいるかと死んだときの処理
-    void Update()
+    private void Update()
 	{
 		if(m_bIsDead) return; // プレイヤーが死んでいる場合は操作を無効にする
 
@@ -164,8 +165,8 @@ public class CPlayer : MonoBehaviour
     // 概要：プレイヤーの移動処理と攻撃処理
     private void FixedUpdate()
     {
-
-        PlayerMove(); // 移動処理
+		// 移動処理
+		PlayerMove();
 
         // プレイヤーの攻撃(Enter)
         if (Input.GetKeyDown(KeyCode.Return))
@@ -181,7 +182,7 @@ public class CPlayer : MonoBehaviour
     // 戻値：なし
     // ｘ
     // 概要：プレイヤーが死んだときに呼び出す処理
-    private void Die() // プレイヤーが死んだときに呼び出す処理
+    private void Die()
 	{
 		m_bIsDead = true;
 	}
