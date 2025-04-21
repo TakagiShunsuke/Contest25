@@ -265,7 +265,7 @@ MonoBehaviour:
   m_fSpeed: 0.2
   m_fAtkSpeed: 100
   m_nDef: 5
-  m_fAttackRange: 0.02
+  m_fAttackRange: 20
   m_fAttackAngle: 45
 --- !u!54 &650963065
 Rigidbody:
