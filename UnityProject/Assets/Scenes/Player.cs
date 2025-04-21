@@ -1,140 +1,188 @@
-/*  滑らかに動くけど加速するパターンの移動
-        //if (Input.GetKey(KeyCode.S))
-        //{
-        //    rb.AddForce(Vector3.back * speed);
-        //}
-        //if (Input.GetKey(KeyCode.A))
-        //{
-        //    rb.AddForce(Vector3.left * speed);
-        //}
-        //if (Input.GetKey(KeyCode.D))
-        //{
-        //    rb.AddForce(Vector3.right * speed);
-        //}
+/*=====
+<Player.cs>
+└作成者：kato
 
-*/
+＞内容
+プレイヤーの移動と攻撃を制御するスクリプト
 
+＞更新履歴
+__Y25
+_M04
+D
+18:プレイヤーの移動と攻撃完成。:kato
+=====*/
+
+// 名前空間宣言
 using UnityEngine;
 
-public class Player : MonoBehaviour
+// クラス定義
+public class CPlayer : MonoBehaviour
 {
-    Rigidbody rb;
+    // 変数宣言
+    private Rigidbody m_Rb; // リジットボディ
 
-    [SerializeField]
-    [Tooltip("HP")]
-    private int Hp = 100;
-    [SerializeField]
-    [Tooltip("攻撃力")]
-    private int Atk = 100;
-    [SerializeField]
-    [Tooltip("移動速度")]
-    private float speed = 200.0f;
-    [SerializeField]
-    [Tooltip("攻撃速度")]
-    private float AtkSpeed = 100.0f; // 攻撃速度
-    [SerializeField]
-    [Tooltip("防御力")]
-    private int Def = 5;
+    [Header("プレイヤーステータス")]
+	[SerializeField]
+	[Tooltip("HP")]
+	private int m_nHp = 100;
+	[SerializeField]
+	[Tooltip("攻撃力")]
+	private int m_nAtk = 100;
+	[SerializeField]
+	[Tooltip("移動速度")]
+	private float m_fSpeed = 2.0f;
+	[SerializeField]
+	[Tooltip("攻撃速度")]
+	private float m_fAtkSpeed = 100.0f; // 攻撃速度
+	[SerializeField]
+	[Tooltip("防御力")]
+	private int m_nDef = 5;
 
+	[Header("攻撃ステータス")]
     [SerializeField]
-    [Tooltip("攻撃の半径")]
-    private float attackRange = 0.02f; // 攻撃の半径
+	[Tooltip("攻撃の半径")]
+	private float m_fAttackRange = 0.02f; // 攻撃の半径
+	[SerializeField]
+	[Tooltip("攻撃の角度")]
+	private float m_fAttackAngle = 45f; // 45度の範囲
+	private float m_fLastAttackTime = 0f; // 最後に攻撃した時間
+	private float m_fAttackCooldown; // 攻撃のクールダウン時間
+	private bool m_bIsDead = false; // プレイヤーが死んでいるかどうか
 
-    [SerializeField]
-    [Tooltip("攻撃の角度")]
-    private float attackAngle = 45f; // 45度の範囲
 
-    private float lastAttackTime = 0f; // 最後に攻撃した時間
-    private float attackCooldown; // 攻撃のクールダウン時間
-
-    private bool isDead = false; // プレイヤーが死んでいるかどうか
-
-    
-
+    // 初期化関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：初期化処理
     private void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        attackCooldown = 1f / AtkSpeed; // 攻撃速度に応じて攻撃間隔を設定
+	{
+        // プレイヤーの初期化
+        m_Rb = GetComponent<Rigidbody>();
+		m_fAttackCooldown = 1.0f / m_fAtkSpeed; // 攻撃速度に応じて攻撃間隔を設定
     }
 
+    // 移動処理関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの移動処理
     private void PlayerMove()
-    {
+	{
         // プレイヤーの移動
         if (Input.GetKey(KeyCode.W))
-        {
-            rb.transform.position += Vector3.forward * speed / 150;
+		{
+			m_Rb.transform.position += Vector3.forward * m_fSpeed; // 前
         }
-        if (Input.GetKey(KeyCode.S))
-        {
-            rb.transform.position += Vector3.back * speed / 150;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            rb.transform.position += Vector3.left * speed / 150;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            rb.transform.position += Vector3.right * speed / 150;
-        }
+		if (Input.GetKey(KeyCode.S))
+		{
+			m_Rb.transform.position += Vector3.back * m_fSpeed; // 後ろ
+		}
+		if (Input.GetKey(KeyCode.A))
+		{
+			m_Rb.transform.position += Vector3.left * m_fSpeed; // 左
+		}
+		if (Input.GetKey(KeyCode.D))
+		{
+			m_Rb.transform.position += Vector3.right * m_fSpeed;// 右
+		}
+
+        /*  滑らかに動くけど加速するパターンの移動
+		//if (Input.GetKey(KeyCode.S))
+		//{
+		//    rb.AddForce(Vector3.back * speed);
+		//}
+		//if (Input.GetKey(KeyCode.A))
+		//{
+		//    rb.AddForce(Vector3.left * speed);
+		//}
+		//if (Input.GetKey(KeyCode.D))
+		//{
+		//    rb.AddForce(Vector3.right * speed);
+		//}
+
+		*/
     }
 
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃
     private void Attack()
-    {
-        // 攻撃するためのクールダウン時間チェック
-        if (Time.time - lastAttackTime >= attackCooldown)
-        {
-            lastAttackTime = Time.time;
+	{
+		// 攻撃するためのクールダウン時間チェック
+		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+		{
+            // 攻撃のクールダウン時間を更新
+            m_fLastAttackTime = Time.time;
 
-            // 攻撃の向き
-            Vector3 forward = transform.forward;
+			// 攻撃の向き
+			Vector3 _Forward = transform.forward;
 
-            // 攻撃範囲の計算
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position + forward * attackRange, attackRange);
-            foreach (var hitCollider in hitColliders)
-            {
-                if (hitCollider.gameObject == this.gameObject) continue;
+			// 攻撃範囲の計算
+			Collider[] _HitColliders = Physics.OverlapSphere(transform.position + _Forward * m_fAttackRange, m_fAttackRange);
+			foreach (var _HitCollider in _HitColliders)
+			{
+				if (_HitCollider.gameObject == this.gameObject) continue;
 
-                Vector3 directionToTarget = hitCollider.transform.position - transform.position;
-                float angle = Vector3.Angle(forward, directionToTarget);
-                if (angle <= attackAngle / 2)
-               {
-                    // 範囲内に入った敵に攻撃処理
-                    Debug.Log("攻撃ヒット！");
-                    
+				Vector3 _DirectionToTarget = _HitCollider.transform.position - transform.position;
+				float fAngle = Vector3.Angle(_Forward, _DirectionToTarget);
+				if (fAngle <= m_fAttackAngle / 2)
+				{	
+					// 敵に攻撃が当たったときの処理を追加したい場合ここに書く
+				}
+			}
+		}
+	}
 
-                }
-            }
-
-            Debug.Log("攻撃！"); // 攻撃のログ
-        }
-    }
-
-    // Update is called once per frame
+    // 更新関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーが死んでいるかと死んだときの処理
     void Update()
-    {
-        if(isDead) return; // プレイヤーが死んでいる場合は操作を無効にする
+	{
+		if(m_bIsDead) return; // プレイヤーが死んでいる場合は操作を無効にする
 
-        PlayerMove();
+		// プレイヤーのHPが0以下になったとき
+		if(m_nHp <= 0 && !m_bIsDead)
+		{
+			Die(); // 死ぬ
+		}
+	}
+
+    // 物理更新関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの移動処理と攻撃処理
+    private void FixedUpdate()
+    {
+
+        PlayerMove(); // 移動処理
 
         // プレイヤーの攻撃(Enter)
         if (Input.GetKeyDown(KeyCode.Return))
         {
             Attack(); // 攻撃処理を呼び出す
-            
-        }
 
-        if(Hp <= 0 && !isDead)
-        {
-            Die();
         }
     }
 
+    // 死ぬ関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーが死んだときに呼び出す処理
     private void Die() // プレイヤーが死んだときに呼び出す処理
-    {
-        isDead = true;
-        Debug.Log("プレイヤーは死にました！");
-    }
-
-    
-    
+	{
+		m_bIsDead = true;
+	}
 }

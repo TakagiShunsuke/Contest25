@@ -260,13 +260,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb5a558c5065c094b9850d0fafe05f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hp: 100
-  Atk: 100
-  speed: 2
-  AtkSpeed: 50
-  Def: 5
-  attackRange: 10
-  attackAngle: 45
+  m_nHp: 100
+  m_nAtk: 100
+  m_fSpeed: 0.2
+  m_fAtkSpeed: 100
+  m_nDef: 5
+  m_fAttackRange: 0.02
+  m_fAttackAngle: 45
 --- !u!54 &650963065
 Rigidbody:
   m_ObjectHideFlags: 0
