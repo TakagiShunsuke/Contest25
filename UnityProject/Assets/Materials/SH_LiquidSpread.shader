@@ -13,6 +13,7 @@
 D
 18：プログラム作成：tei
 19：処理微調整、コメント追加：tei
+21：拡散範囲と拡散速度を別々で計算に変更：tei
 
 =====*/
 Shader "Custom/SH_LiquidSpread_Unlit"
@@ -21,15 +22,16 @@ Shader "Custom/SH_LiquidSpread_Unlit"
       Properties
     {
         _BaseColor ("Base Color", Color) = (0, 1, 0, 1)                     // 色
-        _SpreadSpeed ("Spread Speed", Float) = 1.0                          // 拡散速度
+         _MaxSpread ("Max Spread Distance", Float) = 1.0                    // 拡散最大距離
+        _SpreadDuration ("Spread Duration", Float) = 1.5                    // 拡散にかかる時間
         _Cutoff ("Cutoff Threshold", Range(0,1)) = 0.05                     // 閾値設定(α値用)
         _FadeDuration ("Fade Duration", Float) = 1.5                        // フェイド時間
         _FadeStartTime ("Fade Start Time", Float) = -1.0                    // フェイド開始時間
         _StartTime ("Start Time", Float) = 0.0                              // 拡散開始時間
         _LiquidTex ("Liquid Noise Texture", 2D) = "white" {}                // テクスチャ
-        _SpreadDuration ("Spread Duration", Float) = 1.5                    // 拡散にかかる時間
         _RandomSpreadPlus ("Random Spread Plus", Vector) = (1,1,1,1)        // ランダム拡散幅プラス
         _RandomSpreadMinus ("Random Spread Minus", Vector) = (1,1,1,1)      // ランダム拡散幅マイナス
+
     }
 
     SubShader
@@ -64,14 +66,14 @@ Shader "Custom/SH_LiquidSpread_Unlit"
             // 変数宣言
 
             float4 _BaseColor;
-            float _SpreadSpeed;
+            float _MaxSpread;
+            float _SpreadDuration;
             float _Cutoff;
             float _StartTime;
             float _FadeStartTime;
             float _FadeDuration;
             TEXTURE2D(_LiquidTex);          
             SAMPLER(sampler_LiquidTex);
-            float _SpreadDuration;
             float4 _RandomSpreadPlus;
             float4 _RandomSpreadMinus;
 
@@ -86,7 +88,7 @@ Shader "Custom/SH_LiquidSpread_Unlit"
             half4 frag (Varyings i) : SV_Target
             {
                 // UVを中心基準に変換
-                float2 centeredUV = (i.uv - 0.5f) * 1.2f;
+                float2 centeredUV = (i.uv - 0.5f);
 
                 // 中心からの方向
                 float2 dir = normalize(centeredUV);
@@ -94,15 +96,15 @@ Shader "Custom/SH_LiquidSpread_Unlit"
                 // 元の距離
                 float dist = length(centeredUV);
 
-                // 時間経過による拡散範囲
-                float spreadTime = _Time.y - _StartTime;
-                float t = saturate(spreadTime / _SpreadDuration);    // 0~1正規化
+                // 時間経過による拡散速度調整
+                 float elapsed = _Time.y - _StartTime;
+                 float t = saturate(elapsed / _SpreadDuration);    // 0~1正規化
 
                 // なめらかな拡散：easeInOut
                 float spreadCurve = t * t * (3.0f - 2.0f * t);
 
-                // 最終的な拡散距離
-                float spread = spreadCurve * _SpreadSpeed;
+                // 最終的な拡散範囲
+                float spread = spreadCurve * _MaxSpread;
 
                 // Ver.① Directionで制御
                 {

@@ -17,6 +17,8 @@
 D
 18：プログラム作成：tei
 19：処理微調整、コメント追加：tei
+21：拡散サイズと拡散速度の変数が別々で渡す、
+　　SpreadSpeedとSpreadDurationの誤用修正（一つの変数に変更）：tei
 
 =====*/
 
@@ -29,9 +31,11 @@ public class CLiquidSpread : MonoBehaviour
     // 変数宣言
 
     [Header("拡散・表示・フェード設定")]
-    [SerializeField] private float spreadDuration = 1.0f; // 拡散にかかる時間
-    [SerializeField] private float stayDuration = 5.0f;   // 拡散後そのまま表示される時間
-    [SerializeField] private float fadeDuration = 1.5f;   // フェードアウト時間
+    [SerializeField] private float spreadDuration = 1.0f;   // 拡散にかかる時間
+    [SerializeField] private float stayDuration = 10.0f;    // 拡散後にそのまま表示される時間
+    [SerializeField] private float fadeDuration = 1.5f;     // フェードアウト時間
+    [SerializeField] private float maxSpread = 0.4f;        // 拡散サイズ
+
     private float startTime;
     private bool fadeStarted = false;
 
@@ -47,13 +51,22 @@ public class CLiquidSpread : MonoBehaviour
     private Material mat;
     private Collider hitbox;
 
-    // シェーダーから変数名を取得
+    // シェーダーのプロパティID取得
     private static readonly int RandomSpreadPlus_ID = Shader.PropertyToID("_RandomSpreadPlus");
     private static readonly int RandomSpreadMinus_ID = Shader.PropertyToID("_RandomSpreadMinus");
+    private static readonly int StartTime_ID = Shader.PropertyToID("_StartTime");
+    private static readonly int FadeStartTime_ID = Shader.PropertyToID("_FadeStartTime");
+    private static readonly int FadeDuration_ID = Shader.PropertyToID("_FadeDuration");
+    private static readonly int SpreadDuration_ID = Shader.PropertyToID("_SpreadDuration");
+    private static readonly int MaxSpread_ID = Shader.PropertyToID("_MaxSpread");
+    private static readonly int BaseColor_ID = Shader.PropertyToID("_BaseColor");
+    private static readonly int SpreadAspect_ID = Shader.PropertyToID("_SpreadAspect");
 
-    // 外部から設定を受け取るため
+    // Setupで受け取るよう
     private Color liquidColor = Color.green;
-    private float externalSpreadSpeed = 1.0f;
+    private float setupSpreadDuration = -1;
+
+    private float setupMaxSpread = -1;
 
 
     // ＞設置関数
@@ -68,7 +81,7 @@ public class CLiquidSpread : MonoBehaviour
     public void Setup(Color color, float spreadDuration, float stayDuration, float fadeDuration)
     {
         this.liquidColor = color;
-        this.externalSpreadSpeed = spreadDuration;
+        this.setupSpreadDuration = spreadDuration;
         this.stayDuration = stayDuration;
         this.fadeDuration = fadeDuration;
     }
@@ -85,9 +98,9 @@ public class CLiquidSpread : MonoBehaviour
         startTime = Time.time;
 
         // マテリアルパラメータ初期化
-        mat.SetFloat("_StartTime", startTime);
-        mat.SetFloat("_FadeStartTime", -1.0f);
-        mat.SetFloat("_FadeDuration", fadeDuration);
+        mat.SetFloat(StartTime_ID, startTime);
+        mat.SetFloat(FadeStartTime_ID, -1.0f);
+        mat.SetFloat(FadeDuration_ID, fadeDuration);
 
         // ここでランダムな拡がり幅を決める！
         randomSpreadPlus = new Vector4(
@@ -107,9 +120,11 @@ public class CLiquidSpread : MonoBehaviour
         mat.SetVector(RandomSpreadPlus_ID, randomSpreadPlus);
         mat.SetVector(RandomSpreadMinus_ID, randomSpreadMinus);
         // 追加：もし色やスピードが外部から設定されてたら反映する
-        mat.SetColor("_BaseColor", liquidColor);
-        mat.SetFloat("_SpreadSpeed", externalSpreadSpeed);
+        mat.SetColor(BaseColor_ID, liquidColor);
+        mat.SetFloat(SpreadDuration_ID, setupSpreadDuration > 0 ? setupSpreadDuration : spreadDuration);
+        mat.SetFloat(MaxSpread_ID, maxSpread);
 
+      
         // 当たり判定設定(仮)
         // hitbox = gameObject.AddComponent<CircleCollider2D>();
         // ((CircleCollider2D)hitbox).isTrigger = true;
@@ -129,7 +144,7 @@ public class CLiquidSpread : MonoBehaviour
         // フェード開始計算
         if (!fadeStarted && elapsed >= spreadDuration + stayDuration)
         {
-            mat.SetFloat("_FadeStartTime", Time.time);
+            mat.SetFloat(FadeStartTime_ID, Time.time);
             fadeStarted = true;
         }
         // 使用済み(一定時間)オブジェクト削除
