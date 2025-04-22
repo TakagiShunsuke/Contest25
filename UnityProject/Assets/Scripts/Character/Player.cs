@@ -11,6 +11,7 @@ _M04
 D
 18:プレイヤーの移動と攻撃完成。:kato
 21:表記ゆれの修正:takagi
+22:キーの変数化:kato
 =====*/
 
 // 名前空間宣言
@@ -50,6 +51,10 @@ public class CPlayer : MonoBehaviour
 	private float m_fAttackCooldown; // 攻撃のクールダウン時間
 	private bool m_bIsDead = false; // プレイヤーが死んでいるかどうか
 
+	// 攻撃キーの変数
+	[SerializeField]
+	[Tooltip("攻撃キー")]
+    private KeyCode currentKey = KeyCode.Return;
 
     // 初期化関数
     // 引数１：なし
@@ -169,7 +174,7 @@ public class CPlayer : MonoBehaviour
 		PlayerMove();
 
         // プレイヤーの攻撃(Enter)
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(currentKey))
         {
             Attack(); // 攻撃処理を呼び出す
 
