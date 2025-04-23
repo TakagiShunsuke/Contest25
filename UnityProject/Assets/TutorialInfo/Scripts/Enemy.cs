@@ -28,23 +28,24 @@ public class CEnemy : MonoBehaviour
     [Serializable]
     public struct Status //敵ステータス
     {
-        [SerializeField, Tooltip("HP")] public int Hp;                  // HP
+        [SerializeField, Tooltip("HP")] public int m_nHp;                  // HP
         [SerializeField, Tooltip("攻撃力")] public int m_nAttack;       // 攻撃力
-        [SerializeField, Tooltip("速度")] public int Speed;             // 速さ
-        [SerializeField, Tooltip("攻撃速度")] public int AttackSpeed;   // 攻撃速度
-        [SerializeField, Tooltip("防御力")] public int Defense;         // 防御
-        [SerializeField, Tooltip("成長")] public int Growth;            // 成長
+        [SerializeField, Tooltip("速度")] public int m_nSpeed;             // 速さ
+        [SerializeField, Tooltip("攻撃速度")] public int m_nAttackSpeed;   // 攻撃速度
+        [SerializeField, Tooltip("防御力")] public int m_nDefense;         // 防御
+        [SerializeField, Tooltip("成長")] public int m_nGrowth;            // 成長
     }
 
     // 変数宣言
+
     [Header("ステータス")]
     [SerializeField, Tooltip("ステータス")] private Status m_Status;
+
     [Header("追跡")]
     [SerializeField, Tooltip("追跡フラグ")] private bool m_bChase = true; // 追跡
+
     private Transform m_Target; // プレイヤーのTransform
     private bool m_bChasing = false; // 追跡中かどうか
-    [Header("ダメージ")]
-    [SerializeField, Tooltip("自分がくらうダメージ")] private int m_nDamage;
 
 
     // ＞更新関数
@@ -82,27 +83,13 @@ public class CEnemy : MonoBehaviour
     // 戻値：なし
     // ｘ
     // 概要：ダメージを与える
-    public void Damage()　
+    public void Damage(int _nDamage)　
     {
-        m_Status.Hp -= m_nDamage;　// ダメージ処理
+        m_Status.Hp -= _nDamage;　// ダメージ処理
 
         if (m_Status.Hp <= 0) // HPが0の時
         {
             Destroy(gameObject); // 敵を消す
-        }
-    }
-
-    // ＞ダメージ判定関数
-    // 引数：Collision _Collision : 当たった相手
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーに当たったときダメージ関数を実行
-    private void OnCollisionEnter(Collision _Collision) 
-    {
-        if (_Collision.gameObject.CompareTag("Player")) // Playerタグのオブジェクトに当たったとき
-        {
-            Damage();　// ダメージ関数実行
         }
     }
 
