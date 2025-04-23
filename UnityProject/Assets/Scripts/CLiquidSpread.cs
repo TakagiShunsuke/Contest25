@@ -21,6 +21,7 @@ D
 　　SpreadSpeedとSpreadDurationの誤用修正（一つの変数に変更）：tei
 22：ハンガリアン記法で命名修正、ランダム拡散用変数名修正、処理を仕様に近く書き方へ変更、各変数コメント追加、
 　　Start、Update関数プライベート化：tei
+23：コーディング規約に従う修正、SetUp関数が使わないためコメントアウト
 
 =====*/
 
@@ -33,26 +34,25 @@ public class CLiquidSpread : MonoBehaviour
     // 変数宣言
 
     [Header("拡散・表示・フェード設定")]
-    [SerializeField, Tooltip("メンバー変数")] private float m_fSpreadDuration = 1.0f;   // 拡散にかかる時間
-    [SerializeField, Tooltip("メンバー変数")] private float m_fStayDuration = 10.0f;    // 拡散後にそのまま表示される時間
-    [SerializeField, Tooltip("メンバー変数")] private float m_fFadeDuration = 1.5f;     // フェードアウト時間
-    [SerializeField, Tooltip("メンバー変数")] private float m_fMaxSpread = 0.4f;        // 拡散サイズ
+    [SerializeField, Tooltip("拡散にかかる時間")] private float m_fSpreadDuration = 1.0f;
+    [SerializeField, Tooltip("拡散後にそのまま表示される時間")] private float m_fStayDuration = 10.0f;
+    [SerializeField, Tooltip("フェードアウト時間")] private float m_fFadeDuration = 1.5f;
+    [SerializeField, Tooltip("拡散サイズ")] private float m_fMaxSpread = 0.4f;
 
     private float fStartTime;           // 拡散開始時間
     private bool bFadeStarted = false;  // 拡散開始フラグ
 
     [Header("ランダム拡散幅設定")]
-    private Vector4 vec4RandomSpreadBottomLeftToTopRight;  // 直線 x = y 方向
-    private Vector4 vec4RandomSpreadTopLeftToBottomRight;  // 直線 -x = y 方向
-    [SerializeField, Tooltip("メンバー変数")] private float m_fRandomSpreadBase = 1.0f;       // 拡散前のベースサイズ
-    [SerializeField, Tooltip("メンバー変数")] private float m_fRandomSpreadAdjust = 0.2f;     // 拡散大きさの調整値(20%)
+    private Vector4 RandomSpreadBottomLeftToTopRight;  // 直線 x = y 方向
+    private Vector4 RandomSpreadTopLeftToBottomRight;  // 直線 -x = y 方向
+    [SerializeField, Tooltip("拡散前のベースサイズ")] private float m_fRandomSpreadBase = 1.0f;
+    [SerializeField, Tooltip("拡散大きさの調整値(20%)")] private float m_fRandomSpreadAdjust = 0.2f;
 
-    [Header("他のマテリアル設定")]
     private Material matMaterial;   // マテリアル
     //private Collider cldHitbox;
 
     // シェーダーのプロパティID取得
-    private static readonly int nRandomSpreadBottomLeftToTopRight_ID = Shader.PropertyToID("_RandomSpreadBottomLeftToTopRight");    // 各変数コマンドをShaderファイルに参照
+    private static readonly int nRandomSpreadBottomLeftToTopRight_ID = Shader.PropertyToID("_RandomSpreadBottomLeftToTopRight");    // ここの各ID変数コマンドをSH_LiquidSpread.shaderに参照
     private static readonly int nRandomSpreadTopLeftToBottomRight_ID = Shader.PropertyToID("_RandomSpreadTopLeftToBottomRight");
     private static readonly int nStartTime_ID = Shader.PropertyToID("_StartTime");
     private static readonly int nFadeStartTime_ID = Shader.PropertyToID("_FadeStartTime");
@@ -64,27 +64,26 @@ public class CLiquidSpread : MonoBehaviour
     // Setupで受け取るよう
     private Color clrLiquidColor = Color.green;     // マテリアル色設定
     private float fSetUpSpreadDuration = -1;        // 拡散時間セット
-
     //private float fSetUpMaxSpread = -1;
 
 
-    // ＞設置関数
-    // 引数１：Color clrColor：色
-    // 引数２：float fSpreadDuration：数値  // 拡散にかかる時間
-    // 引数３：float fStayDuration：数値    // 液体消えるまで残る時間
-    // 引数４：float fFadeDuration：数値    // 液体消えるフェード時間
-    // ｘ
-    // 戻値：無
-    // ｘ
-    // 概要：拡散マテリアル設定する用
-    public void Setup(Color clrColor, float fSpreadDuration, float fStayDuration, float fFadeDuration)
-    {
-        // マテリアル各パラメータ設定
-        this.clrLiquidColor = clrColor;                 // 色
-        this.fSetUpSpreadDuration = fSpreadDuration;    // 拡散にかかる時間
-        this.m_fStayDuration = fStayDuration;           // 消えるまで残る時間
-        this.m_fFadeDuration = fFadeDuration;           // 消えるフェード時間
-    }
+    //// ＞設置関数
+    //// 引数１：Color clrColor：色
+    //// 引数２：float fSpreadDuration：数値  // 拡散にかかる時間
+    //// 引数３：float fStayDuration：数値    // 液体消えるまで残る時間
+    //// 引数４：float fFadeDuration：数値    // 液体消えるフェード時間
+    //// ｘ
+    //// 戻値：無
+    //// ｘ
+    //// 概要：拡散マテリアル設定する用
+    //public void Setup(Color clrColor, float fSpreadDuration, float fStayDuration, float fFadeDuration)
+    //{
+    //    // マテリアル各パラメータ設定
+    //    this.clrLiquidColor = clrColor;                 // 色
+    //    this.fSetUpSpreadDuration = fSpreadDuration;    // 拡散にかかる時間
+    //    this.m_fStayDuration = fStayDuration;           // 消えるまで残る時間
+    //    this.m_fFadeDuration = fFadeDuration;           // 消えるフェード時間
+    //}
 
     // ＞初期化関数
     // 引数：無
@@ -106,22 +105,23 @@ public class CLiquidSpread : MonoBehaviour
         matMaterial.SetFloat(nFadeDuration_ID, m_fFadeDuration);
 
         // ランダムな拡がり幅を決める
-        vec4RandomSpreadBottomLeftToTopRight = new Vector4(
+        RandomSpreadBottomLeftToTopRight = new Vector4(
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 右
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 上
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 左
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust)  // 下
         );
 
-        vec4RandomSpreadTopLeftToBottomRight = new Vector4(
+        // ランダムな拡がり幅を決める
+        RandomSpreadTopLeftToBottomRight = new Vector4(
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 右上
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 左上
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust), // 左下
             Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust)  // 右下
         );
 
-        matMaterial.SetVector(nRandomSpreadBottomLeftToTopRight_ID, vec4RandomSpreadBottomLeftToTopRight);
-        matMaterial.SetVector(nRandomSpreadTopLeftToBottomRight_ID, vec4RandomSpreadTopLeftToBottomRight);
+        matMaterial.SetVector(nRandomSpreadBottomLeftToTopRight_ID, RandomSpreadBottomLeftToTopRight);
+        matMaterial.SetVector(nRandomSpreadTopLeftToBottomRight_ID, RandomSpreadTopLeftToBottomRight);
         
         // もし色やスピードが外部から設定されてたら反映する
         matMaterial.SetColor(nBaseColor_ID, clrLiquidColor);
