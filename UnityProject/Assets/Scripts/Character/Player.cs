@@ -12,6 +12,7 @@ D
 18:プレイヤーの移動と攻撃完成。:kato
 21:表記ゆれの修正:takagi
 22:キーの変数化:kato
+23:攻撃キーの変数命名変更:kato
 =====*/
 
 // 名前空間宣言
@@ -54,7 +55,7 @@ public class CPlayer : MonoBehaviour
 	// 攻撃キーの変数
 	[SerializeField]
 	[Tooltip("攻撃キー")]
-    private KeyCode currentKey = KeyCode.Return;
+    private KeyCode m_AttackKey = KeyCode.Return;
 
     // 初期化関数
     // 引数１：なし
@@ -174,7 +175,7 @@ public class CPlayer : MonoBehaviour
 		PlayerMove();
 
         // プレイヤーの攻撃(Enter)
-        if (Input.GetKeyDown(currentKey))
+        if (Input.GetKeyDown(m_AttackKey))
         {
             Attack(); // 攻撃処理を呼び出す
 
