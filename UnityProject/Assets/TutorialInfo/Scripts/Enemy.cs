@@ -17,8 +17,8 @@ D		// 日
 
 // 名前空間宣言
 using System;
-using UnityEngine;	
-
+using UnityEngine;
+using UnityEngine.AI;
 
 // クラス定義
 public class CEnemy : MonoBehaviour
@@ -42,10 +42,8 @@ public class CEnemy : MonoBehaviour
     [SerializeField, Tooltip("ステータス")] private Status m_Status;
 
     [Header("追跡")]
-    [SerializeField, Tooltip("追跡フラグ")] private bool m_bChase = true; // 追跡
-
-    private Transform m_Target; // プレイヤーのTransform
-    private bool m_bChasing = false; // 追跡中かどうか
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private Transform target;
 
 
     // ＞更新関数
@@ -56,25 +54,7 @@ public class CEnemy : MonoBehaviour
     // 概要：更新処理
     private void Update()
     {
-        if (m_bChasing) // 追跡フラグがtrueの時
-        {
-            Chaser(); // 追跡関数実行
-        }
-    }
-
-    // ＞追跡関数
-    // 引数：なし  
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーの追跡をする
-    public void Chaser() 
-    {
-        if (m_bChase == true) // 追跡フラグがtrueの時、プレイヤーに向かって移動
-        {
-            Vector3 direction = (m_Target.position - transform.position).normalized;
-            transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Status.m_fSpeed * Time.deltaTime);
-        }
+        agent.SetDestination(target.position);
     }
 
     // ＞ダメージ関数
@@ -85,41 +65,20 @@ public class CEnemy : MonoBehaviour
     // 概要：ダメージを与える
     public void Damage(int _nDamage)　
     {
-        m_Status.m_nHp -= _nDamage;　// ダメージ処理
+        if(_nDamage <= m_Status.m_nDefense)// 防御が被ダメを上回ったら被ダメを1にする
+        {
+            _nDamage = 1;
+        }
+        else
+        {
+            _nDamage = _nDamage - m_Status.m_nDefense;
+        }
+
+        m_Status.m_nHp -= _nDamage;
 
         if (m_Status.m_nHp <= 0) // HPが0の時
         {
             Destroy(gameObject); // 敵を消す
-        }
-    }
-
-    // ＞追跡開始関数
-    // 引数：Collider _Collision
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーが範囲内に入ったら追跡を開始する
-    private void OnTriggerEnter(Collider _Collision) //接触判定(追跡範囲)
-    {
-        if (_Collision.CompareTag("Player")) // プレイヤーが範囲内に入ったら
-        {
-            m_Target = _Collision.transform; // プレイヤーのTransformを保存
-            m_bChasing = true; // 追いかけ開始
-        }
-    }
-
-    // ＞追跡終了関数
-    // 引数：Collider _Collision   
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーが範囲外に出たら追跡を終了する
-    private void OnTriggerExit(Collider _Collision) // 接触判定(追跡範囲)
-    {
-        if (_Collision.CompareTag("Player")) // プレイヤーが範囲外に出たら
-        {
-            m_bChasing = false;  // 追いかけ終了
-            m_Target = null;     // ターゲットを解除
         }
     }
 }
