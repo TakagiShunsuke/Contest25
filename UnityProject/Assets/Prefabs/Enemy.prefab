@@ -179,14 +179,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Status:
-    Hp: 100
+    m_nHp: 100
     m_nAttack: 100
-    Speed: 200
-    AttackSpeed: 50
-    Defense: 10
-    Growth: 100
+    m_fSpeed: 200
+    m_nAttackSpeed: 50
+    m_nDefense: 10
+    m_nGrowth: 100
   m_bChase: 1
-  m_nDamage: 10
 --- !u!54 &4641085303155893431
 Rigidbody:
   m_ObjectHideFlags: 0

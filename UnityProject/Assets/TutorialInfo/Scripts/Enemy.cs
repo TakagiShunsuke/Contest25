@@ -30,7 +30,7 @@ public class CEnemy : MonoBehaviour
     {
         [SerializeField, Tooltip("HP")] public int m_nHp;                  // HP
         [SerializeField, Tooltip("攻撃力")] public int m_nAttack;       // 攻撃力
-        [SerializeField, Tooltip("速度")] public int m_nSpeed;             // 速さ
+        [SerializeField, Tooltip("速度")] public float m_fSpeed;             // 速さ
         [SerializeField, Tooltip("攻撃速度")] public int m_nAttackSpeed;   // 攻撃速度
         [SerializeField, Tooltip("防御力")] public int m_nDefense;         // 防御
         [SerializeField, Tooltip("成長")] public int m_nGrowth;            // 成長
@@ -73,7 +73,7 @@ public class CEnemy : MonoBehaviour
         if (m_bChase == true) // 追跡フラグがtrueの時、プレイヤーに向かって移動
         {
             Vector3 direction = (m_Target.position - transform.position).normalized;
-            transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Status.Speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Status.m_fSpeed * Time.deltaTime);
         }
     }
 
@@ -85,9 +85,9 @@ public class CEnemy : MonoBehaviour
     // 概要：ダメージを与える
     public void Damage(int _nDamage)　
     {
-        m_Status.Hp -= _nDamage;　// ダメージ処理
+        m_Status.m_nHp -= _nDamage;　// ダメージ処理
 
-        if (m_Status.Hp <= 0) // HPが0の時
+        if (m_Status.m_nHp <= 0) // HPが0の時
         {
             Destroy(gameObject); // 敵を消す
         }
