@@ -38,15 +38,14 @@ public class CLiquidSpread : MonoBehaviour
     [SerializeField, Tooltip("拡散後にそのまま表示される時間")] private float m_fStayDuration = 10.0f;
     [SerializeField, Tooltip("フェードアウト時間")] private float m_fFadeDuration = 1.5f;
     [SerializeField, Tooltip("拡散サイズ")] private float m_fMaxSpread = 0.4f;
-
-    private float fStartTime;           // 拡散開始時間
-    private bool bFadeStarted = false;  // 拡散開始フラグ
+    [Tooltip("拡散開始時間")] private float fStartTime { get; set; }
+    [Tooltip("拡散開始フラグ")] private bool bFadeStarted { get; set; } = false;
 
     [Header("ランダム拡散幅設定")]
-    private Vector4 RandomSpreadBottomLeftToTopRight;  // 直線 x = y 方向
-    private Vector4 RandomSpreadTopLeftToBottomRight;  // 直線 -x = y 方向
-    [SerializeField, Tooltip("拡散前のベースサイズ")] private float m_fRandomSpreadBase = 1.0f;
-    [SerializeField, Tooltip("拡散大きさの調整値(20%)")] private float m_fRandomSpreadAdjust = 0.2f;
+    [Tooltip("直線 x = y 方向の拡散")] public Vector4 RandomSpreadBottomLeftToTopRight { private get; set; }
+    [Tooltip("直線 -x = y 方向")] public Vector4 RandomSpreadTopLeftToBottomRight { private get; set; }
+    [Tooltip("拡散前のベースサイズ")] private float m_fRandomSpreadBase { get; set; } = 1.0f;
+    [Tooltip("拡散大きさの調整値(20%)")] public float m_fRandomSpreadAdjust { private get; set; } = 0.2f;
 
     private Material matMaterial;   // マテリアル
     //private Collider cldHitbox;
@@ -61,29 +60,10 @@ public class CLiquidSpread : MonoBehaviour
     private static readonly int nMaxSpread_ID = Shader.PropertyToID("_MaxSpread");
     private static readonly int nBaseColor_ID = Shader.PropertyToID("_BaseColor");
 
-    // Setupで受け取るよう
-    private Color clrLiquidColor = Color.green;     // マテリアル色設定
-    private float fSetUpSpreadDuration = -1;        // 拡散時間セット
-    //private float fSetUpMaxSpread = -1;
+    // Setで受け取るよう
+    [Tooltip("マテリアル色設定")] public Color clrLiquidColor { private get; set; } = Color.green;
+    [Tooltip("拡散時間セット")] public float fSetUpSpreadDuration { private get; set; } = -1;
 
-
-    //// ＞設置関数
-    //// 引数１：Color clrColor：色
-    //// 引数２：float fSpreadDuration：数値  // 拡散にかかる時間
-    //// 引数３：float fStayDuration：数値    // 液体消えるまで残る時間
-    //// 引数４：float fFadeDuration：数値    // 液体消えるフェード時間
-    //// ｘ
-    //// 戻値：無
-    //// ｘ
-    //// 概要：拡散マテリアル設定する用
-    //public void Setup(Color clrColor, float fSpreadDuration, float fStayDuration, float fFadeDuration)
-    //{
-    //    // マテリアル各パラメータ設定
-    //    this.clrLiquidColor = clrColor;                 // 色
-    //    this.fSetUpSpreadDuration = fSpreadDuration;    // 拡散にかかる時間
-    //    this.m_fStayDuration = fStayDuration;           // 消えるまで残る時間
-    //    this.m_fFadeDuration = fFadeDuration;           // 消えるフェード時間
-    //}
 
     // ＞初期化関数
     // 引数：無
