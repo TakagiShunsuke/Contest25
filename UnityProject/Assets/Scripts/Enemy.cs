@@ -76,7 +76,7 @@ public class CEnemy : MonoBehaviour
 	// ｘ
 	// 戻値：なし
 	// ｘ
-	// 概要：ダメージを与える
+	// 概要：ダメージを受ける
 	public void Damage(int _nDamage)
 	{
 		if (_nDamage <= m_Status.m_nDefense)// 防御が被ダメを上回ったら被ダメを1にする
