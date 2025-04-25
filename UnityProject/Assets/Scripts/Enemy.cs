@@ -40,24 +40,34 @@ public class CEnemy : MonoBehaviour
 	// 変数宣言
 
 	[Header("ステータス")]
-	[SerializeField, Tooltip("ステータス")] private Status m_Status;
+	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
 
-	[Header("追跡")]
-	[SerializeField] private NavMeshAgent m_Agent;  //TODO:コメント
-													//TODO:「自身の持つエージェントを使う」なら初期化処理で自動取得するべきです。
-													//TODO:↑の場合、[SerializeField]で設定できるようにする必要はありません
-	[SerializeField] private Transform m_Target;	// プレイヤーのTransform
-													//TODO:Tooltipの設定が必要
+	private NavMeshAgent m_Agent;  // 追跡対象
 
-	// ＞更新関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：更新処理
-	private void Update()
+    [SerializeField, Tooltip("ターゲット")] private Transform m_Target;  // プレイヤーのTransform
+
+
+    // ＞初期化関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：初期化処理
+    private void Start()
+    {
+        // NavMeshAgentを取得
+        m_Agent = GetComponent<NavMeshAgent>();
+    }
+
+    // ＞更新関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：更新処理
+    private void Update()
 	{
-		//TODO:コメント
+		//追跡
 		m_Agent.SetDestination(m_Target.position);
 	}
 
@@ -73,7 +83,7 @@ public class CEnemy : MonoBehaviour
 		{
 			_nDamage = 1;
 		}
-		else
+		else// ダメージを与える
 		{
 			_nDamage = _nDamage - m_Status.m_nDefense;
 		}
