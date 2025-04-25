@@ -13,8 +13,7 @@ D
 23:変数名修正・
 	Damage()関数のダメージ値を引数化:sezaki
 23:ファイルモードをspc→タブに変更:takagi
-//TODO:navMeshを追加したことを記述
-25:
+25:navMesh追加
 =====*/
 
 // 名前空間宣言
@@ -71,13 +70,27 @@ public class CEnemy : MonoBehaviour
 		m_Agent.SetDestination(m_Target.position);
 	}
 
-	// ＞ダメージ関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ダメージを受ける
-	public void Damage(int _nDamage)
+    // ＞攻撃関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：Playerに近づいたら攻撃する
+    public void Attack()
+    {
+        if (!m_Agent.pathPending && m_Agent.remainingDistance <= m_Agent.stoppingDistance)
+        {
+            
+        }
+    }
+
+    // ＞ダメージ関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：ダメージを受ける
+    public void Damage(int _nDamage)
 	{
 		if (_nDamage <= m_Status.m_nDefense)// 防御が被ダメを上回ったら被ダメを1にする
 		{
