@@ -65,9 +65,9 @@ GameObject:
   - component: {fileID: 9127993385735349587}
   - component: {fileID: 3762120703277139754}
   - component: {fileID: 5723020108409589940}
-  - component: {fileID: 7305243859811498052}
   - component: {fileID: 4641085303155893431}
   - component: {fileID: 2770765045114626410}
+  - component: {fileID: 3438935294435519430}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -167,26 +167,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7305243859811498052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1852579308506021535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcb686cb51d331a4ba7739107aefa3f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Status:
-    m_nHp: 100
-    m_nAttack: 100
-    m_fSpeed: 200
-    m_nAttackSpeed: 50
-    m_nDefense: 10
-    m_nGrowth: 100
-  m_bChase: 1
 --- !u!54 &4641085303155893431
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -196,7 +176,7 @@ Rigidbody:
   m_GameObject: {fileID: 1852579308506021535}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 1
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -236,3 +216,24 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &3438935294435519430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852579308506021535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb686cb51d331a4ba7739107aefa3f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Status:
+    m_nHp: 100
+    m_nAttack: 100
+    m_fSpeed: 2
+    m_nAttackSpeed: 50
+    m_nDefense: 10
+    m_nGrowth: 100
+  agent: {fileID: 0}
+  target: {fileID: 0}
