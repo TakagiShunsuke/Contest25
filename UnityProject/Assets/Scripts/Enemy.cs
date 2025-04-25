@@ -41,8 +41,8 @@ public class CEnemy : MonoBehaviour
 	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
 
+	[Header("追跡")]
 	private NavMeshAgent m_Agent;  // 追跡対象
-
     [SerializeField, Tooltip("ターゲット")] private Transform m_Target;  // プレイヤーのTransform
 
 
