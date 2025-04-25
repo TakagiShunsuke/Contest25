@@ -57,6 +57,27 @@ public class CPlayer : MonoBehaviour
 	[Tooltip("攻撃キー")]
     private KeyCode m_AttackKey = KeyCode.Return;
 
+	// アニメーター関連の変数
+	public Animator m_Animator; // アニメーター変数維持用
+    private bool m_bWalkInput	= false;// 移動入力フラグ
+    private bool m_bAttack		= false;// 攻撃フラグ
+    public	bool m_bOnGround	= true; // 地面にいるかどうかのフラグ
+
+	[Header("プレイヤー移動制限")]
+	// プレイヤー移動制限用の変数
+
+	[SerializeField]
+	[Tooltip("プレイヤーの移動制限範囲の原点")]
+	public Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
+    [SerializeField]
+	[Tooltip("プレイヤーの移動制限範囲X")]
+	private float m_fMoveLimit_x = 10.0f; // プレイヤーの移動制限範囲
+	[SerializeField]
+	[Tooltip("プレイヤーの移動制限範囲Z")]
+	private float m_fMoveLimit_z = 10.0f; // プレイヤーの移動制限範囲
+
+	
+
     // 初期化関数
     // 引数１：なし
     // ｘ
@@ -161,7 +182,14 @@ public class CPlayer : MonoBehaviour
 		{
 			Die(); // 死ぬ
 		}
-	}
+
+		Vector3 NowPosition = transform.position; // 現在の位置を取得
+
+        NowPosition.x = Mathf.Clamp(NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
+        NowPosition.z = Mathf.Clamp(NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
+
+        transform.position = NowPosition; // プレイヤーの位置を制限範囲内に収める
+    }
 
     // 物理更新関数
     // 引数１：なし
@@ -180,6 +208,7 @@ public class CPlayer : MonoBehaviour
             Attack(); // 攻撃処理を呼び出す
 
         }
+
     }
 
     // 死ぬ関数
