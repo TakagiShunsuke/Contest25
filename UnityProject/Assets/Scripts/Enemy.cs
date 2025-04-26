@@ -14,6 +14,8 @@ D
 	Damage()関数のダメージ値を引数化:sezaki
 23:ファイルモードをspc→タブに変更:takagi
 25:navMesh追加
+25：死亡エフェクト用のオブジェクト宣言と敵死亡した後のエフェクト生成処理追加：tei
+
 =====*/
 
 // 名前空間宣言
@@ -45,6 +47,8 @@ public class CEnemy : MonoBehaviour
 	private NavMeshAgent m_Agent;  // 追跡対象
     [SerializeField, Tooltip("ターゲット")] private Transform m_Target;  // プレイヤーのTransform
 
+    [Header("エフェクト")]
+    [SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
     // ＞初期化関数
     // 引数：なし
@@ -105,7 +109,13 @@ public class CEnemy : MonoBehaviour
 
 		if (m_Status.m_nHp <= 0)	// HPが0の時
 		{
-			Destroy(gameObject);	// 敵を消す
+            // 死亡エフェクトを敵の位置に生成
+            if (deathEffectPrefab != null)
+            {
+                Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+            }
+
+            Destroy(gameObject);	// 敵を消す
 		}
 	}
 }
