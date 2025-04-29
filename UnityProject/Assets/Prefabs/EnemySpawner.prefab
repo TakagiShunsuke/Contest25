@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6300503970213221534}
-  - component: {fileID: 1738903822140668272}
+  - component: {fileID: -1648052297264456823}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1738903822140668272
+--- !u!114 &-1648052297264456823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,6 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca86fe2c4e3ff7b488e6a7b8b86843d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EnemyPrefab: {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-  m_fSpawn: 5
-  m_fSpawnInterval: 20
+  waveList:
+  - m_EnemyPrefabs:
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+  - m_EnemyPrefabs:
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+  - m_EnemyPrefabs:
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+  - m_EnemyPrefabs:
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+  - m_EnemyPrefabs:
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+  m_fLastWaveTime: 10
+  m_fSpawnTime: 1
+  m_fWave: 5
