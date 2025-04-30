@@ -15,6 +15,7 @@ D
 23:攻撃キーの変数命名変更:kato
 25:プレイヤーの移動制限追加:kato yuma
 26:スペースの修正:takagi
+27:プレイヤーの移動宣言をpublic～privateに変更:kato
 =====*/
 
 // 名前空間宣言
@@ -70,8 +71,8 @@ public class CPlayer : MonoBehaviour
 
 	[SerializeField]
 	[Tooltip("プレイヤーの移動制限範囲の原点")]
-	public Vector3 m_vMoveLimitOrigin = Vector3.zero;	// プレイヤーの移動制限範囲の原点
-	[SerializeField]
+	private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
+    [SerializeField]
 	[Tooltip("プレイヤーの移動制限範囲X")]
 	private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
 	[SerializeField]
