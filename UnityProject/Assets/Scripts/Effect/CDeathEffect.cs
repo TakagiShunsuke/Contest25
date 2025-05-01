@@ -13,6 +13,7 @@ _M04
 D
 25：プログラム作成：tei
 26：微調整、コメント追加：tei
+30：エフェクト再生問題修正：tei
 
 =====*/
 using UnityEngine;
@@ -39,6 +40,14 @@ public class CDeathEffect : MonoBehaviour
 
     void Start()
     {
+        // Materialをインスタンス化して独立させる
+        var renderer = GetComponentInChildren<Renderer>();
+        if (renderer != null)
+        {
+            mFadeMaterial = new Material(renderer.sharedMaterial); // ← sharedMaterialを複製！
+            renderer.material = mFadeMaterial;
+        }
+
         // α値設定
         if (mFadeMaterial != null)
         {
@@ -51,6 +60,10 @@ public class CDeathEffect : MonoBehaviour
             Debug.LogWarning("[CDeadEffect] mFadeMaterial が設定されていません！");
         }
 
+        // 各パラメータ初期化
+        fTimeCount = 0f;
+        fFadeDuration = 0f;
+        bIsFading = false;
         // レンダラー取得
         effectRenderer = GetComponent<CEffectRenderer>();
     }
