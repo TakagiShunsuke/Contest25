@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6300503970213221534}
-  - component: {fileID: -1648052297264456823}
+  - component: {fileID: 7844644335336111986}
+  - component: {fileID: 163532923638624385}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -32,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-1648052297264456823
+--- !u!114 &7844644335336111986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,21 +45,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca86fe2c4e3ff7b488e6a7b8b86843d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveList:
+  m_WaveList:
   - m_EnemyPrefabs:
+    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
     - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    m_nMaxEnemyCount: 3
   - m_EnemyPrefabs:
+    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
     - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    m_nMaxEnemyCount: 3
   - m_EnemyPrefabs:
+    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
     - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    m_nMaxEnemyCount: 3
   - m_EnemyPrefabs:
+    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
     - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    m_nMaxEnemyCount: 3
   - m_EnemyPrefabs:
+    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
     - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
-  m_fLastWaveTime: 10
-  m_fSpawnTime: 1
-  m_fWave: 5
+    m_nMaxEnemyCount: 5
+  m_fTotalGameTimeInMinutes: 10
+  m_bIsAllWaveEnd: 0
+--- !u!114 &163532923638624385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6547957250374306398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c391061cf3cc30141aa7f7ab961d808d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fSpawnDelay: 3

@@ -3,7 +3,7 @@
 └作成者：Nishibu
 
 ＞内容
-敵を生成
+ゲーム時間に応じてWaveを管理し、EnemyManagerに通知するクラス
 
 ＞更新履歴
 __Y25 
@@ -12,7 +12,12 @@ D
 18:スポナーを仮作成:nishibu
 25:スポナー作成(α版):nishibu
 29:コメント追加、修正:nishibu
-
+30:仕様作成、修正1:nishibu
+_M05
+D
+1:仕様作成、修正2:nishibu
+3:仕様作成、修正3:nishibu
+4:コメント追加:nishibu
 =====*/
 
 // 名前空間宣言
@@ -21,44 +26,42 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // クラス定義
-[System.Serializable]
-public class WaveData
+public class CEnemySpawner : MonoBehaviour
 {
-    [Header("敵設定(数、種類)")]
-    [Tooltip("このウェーブで出す敵prefab")]
-    public GameObject[] m_EnemyPrefabs;
-}
-
-// クラス定義
-public class EnemySpawner : MonoBehaviour
-{
-    // 変数宣言	
-    [Header("全ウェーブ敵設定(上からWave1,Wave2.....)")]
-    [SerializeField]
-    public List<WaveData> waveList = new List<WaveData>();
+    [Header("Wave全体の敵設定(上からWave1,Wave2...)")]
+    [Tooltip("Wave全体の敵設定")]
+    public List<CEnemyWaveData> m_WaveList = new List<CEnemyWaveData>(); // 全Waveの設定データ
 
     [Header("ゲーム時間(分)")]
-    [SerializeField, Tooltip("最終ウェーブまでの時間(分)")]
-    public float m_fLastWaveTime = 10.0f;
+    [Tooltip("ゲーム時間")]
+    public float m_fTotalGameTimeInMinutes = 10.0f;                         // 全Waveの進行時間（分）
 
-    [Header("敵スポーン間隔時間(秒)")]
-    [SerializeField, Tooltip("Wave開始時の敵を召喚するタイム間隔(秒)")]
-    public float m_fSpawnTime = 2.0f; 
+    private float m_fWaveDuration;    // 1Waveあたりの継続時間（秒）
+    private float m_fTimer;           // 現在のWave経過時間
+    private int m_nCurrentWaveIndex = 0; // 現在のWave番号（0始まり）
+    private CEnemyManager m_EnemyManager; // EnemyManagerへの参照
 
-    [Header("Wave数")]
-    [SerializeField, Tooltip("Wave数")]
-    public int m_fWave = 5; 
+    [HideInInspector]
+    public bool m_bIsAllWaveEnd = false; // 最終ウェーブが終了したか判定
 
-    private bool m_bSpawnflg = false;  // Waveが終了しているか判定
-    private float m_fTimer; //タイマー
-    private int m_fWaveCount = 0; // ウェーブカウント
-    private float m_fWaveTime = 0; // 1ウェーブの時間
+    public int m_nCurrentwaveIndex => m_nCurrentWaveIndex; // 現在のWave番号を公開
 
 
+    // ＞初期化関数
+    // 引数：なし   
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要: Waveの継続時間を設定し、EnemyManagerの初期スポーンを許可
     private void Start()
     {
-        m_fWave = waveList.Count; // Wave数カウント
-        m_fWaveTime = m_fLastWaveTime / m_fWave * 60f; // 1ウェーブの時間を求める
+        m_fWaveDuration = (m_fTotalGameTimeInMinutes / m_WaveList.Count) * 60f; // Wave時間を算出（秒換算）
+        m_EnemyManager = GetComponent<CEnemyManager>();
+
+        if (m_EnemyManager != null)
+        {
+            m_EnemyManager.ResetInitialSpawnFlag(); // ゲーム開始時に初期スポーン許可
+        }
     }
 
     // ＞更新関数
@@ -66,64 +69,27 @@ public class EnemySpawner : MonoBehaviour
     // ｘ
     // 戻値：なし
     // ｘ
-    // 概要: スポーン処理
+    // 概要: Waveの経過時間をチェックし、次のWaveへ切り替える処理を行う
     private void Update()
     {
-        // Wave5が終わったらタイマーを止める
-        if(!m_bSpawnflg)
-        {
-            m_fTimer += Time.deltaTime; // タイマースタート
-        }
+        m_fTimer += Time.deltaTime; // タイマースタート
 
-        // スポーン処理
-        if(m_fTimer >= m_fWaveTime)
+        // Waveの切り替え判定（現在のWave時間を超えたら次のWaveへ）
+        if (m_fTimer >= m_fWaveDuration && m_nCurrentWaveIndex < m_WaveList.Count - 1)
         {
-            SpawnEnemy(); // 敵をスポーン
-            m_fWaveCount += 1; // Waveカウント
-
-            // Wave5になったらm_bSpawnflgをtrue
-            if (m_fWaveCount >= 6)
-            {
-                m_bSpawnflg = true;
-            }
+            m_nCurrentWaveIndex++; // Waveを進める
             m_fTimer = 0.0f; // タイマーリセット
-        }
-    }
 
-    // ＞エネミースポーン関数
-    // 引数：なし   
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    //概要 : 敵を生成
-    void SpawnEnemy()
-    {
-        StartCoroutine(SpawnEnemiesWithDelay());
-    }
-
-    // ＞敵ウェーブ生成コルーチン関数
-    // 引数：なし
-    // ｘ
-    // 戻値：IEnumerator
-    // コルーチンを使ってWave内の敵を一定間隔で生成
-    IEnumerator SpawnEnemiesWithDelay()
-    {
-        // 現在のウェーブ番号
-        int m_iWaveIndex = m_fWaveCount;
-
-        // 有効なウェーブ番号かチェック
-        if (m_iWaveIndex >= 0 && m_iWaveIndex < waveList.Count)
-        {
-            // 現在のウェーブに対応する敵プレハブ配列を取得
-            GameObject[] currentWave = waveList[m_iWaveIndex].m_EnemyPrefabs;
-            for (int j = 0; j < currentWave.Length; j++)
+            if (m_EnemyManager != null)
             {
-                // 敵をスポーン
-                Instantiate(currentWave[j], transform.position, Quaternion.identity);
-
-                // 次のスポーンまで待機
-                yield return new WaitForSeconds(m_fSpawnTime);
+                m_EnemyManager.ResetInitialSpawnFlag(); // 新しいWave開始時に初回スポーンを許可
             }
+        }
+        else if (m_fTimer >= m_fWaveDuration && m_nCurrentWaveIndex >= m_WaveList.Count - 1)
+        {
+            // 最終Waveが終わたらTrue
+            m_bIsAllWaveEnd = true;
         }
     }
 }
+
