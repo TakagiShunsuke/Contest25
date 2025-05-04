@@ -1,5 +1,5 @@
 /*=====
-<CDeathEffect.cs>
+<DeathEffect.cs>
 └作成者：tei
 
 ＞内容
@@ -18,22 +18,29 @@ D
 _M05
 D
 01：スクリプト名、変数名修正：tei
+04：複数敵の場合エフェクトが共通される問題を修正、コーディングルールの沿ってコード修正：tei
 
 =====*/
+
+// 名前空間宣言
 using UnityEngine;
 
+// クラス定義
 public class CDeathEffect : MonoBehaviour
 {
+    // 変数宣言
     [Header("設定")]
     [SerializeField, Tooltip("表示される時間")] private float m_fLifeTime = 5f;
     [SerializeField, Tooltip("フェード時間")] private float m_fFadeDuration = 2f;
     [SerializeField, Tooltip("初期アルファ")] private float m_fStartAlpha = 0.9f;
-    [SerializeField, Tooltip("フェード対象のマテリアル")] private Material FadeMaterial;
+    [SerializeField, Tooltip("フェード対象のマテリアル配列")] private Material[] m_FadeMaterials;
 
-    private float m_fTimecount { get; set; } = 0f;    // エフェクト表示時間カウンター
-    private float m_fFadeCount { get; set; } = 0f;    // エフェクトフェイド時間カウンター
-    private bool m_bIsFading { get; set; } = false;   // フェイドフラグ
+    // プロパティ定義
+    private float TimeCount { get; set; } = 0f;    // エフェクト表示時間カウンター
+    private float FadeCount { get; set; } = 0f;    // エフェクトフェイド時間カウンター
+    private bool IsFading { get; set; } = false;   // フェイドフラグ
     private CEffectRenderer EffectRenderer { get; set; }    // エフェクトクラス参照      
+
 
     // ＞初期化関数
     // 引数：なし
@@ -42,35 +49,35 @@ public class CDeathEffect : MonoBehaviour
     // ｘ
     // 概要：初期化処理
 
-    void Start()
+    private void Start()
     {
-        // Materialをインスタンス化して独立させる
-        var renderer = GetComponentInChildren<Renderer>();
+        // オブジェクトとその子にあるすべてのRendererを取得
+        Renderer[] _Renderers = GetComponentsInChildren<Renderer>();
+        
+        // マテリアルの数に応じた配列を確保
+        m_FadeMaterials = new Material[_Renderers.Length];
 
-        if (renderer != null)
+        for (int i = 0; i < _Renderers.Length; i++)
         {
-            FadeMaterial = new Material(renderer.sharedMaterial); // ← sharedMaterialを複製！
-            renderer.material = FadeMaterial;
-        }
+            // 各RendererのsharedMaterialを複製して独立させる（他の敵と共有しないように）
+            Material _NewMaterial = new Material(_Renderers[i].sharedMaterial);
+            
+            // 複製したマテリアルをRendererに設定し格納しておく
+            _Renderers[i].material = _NewMaterial;
+            m_FadeMaterials[i] = _NewMaterial;
 
-        // α値設定
-        if (FadeMaterial != null)
-        {
-            Color color = FadeMaterial.color;
+            // α値を設定
+            Color color = _NewMaterial.GetColor("_BaseColor");
             color.a = m_fStartAlpha;
-            FadeMaterial.color = color;
-        }
-        else
-        {
-            Debug.LogWarning("[CDeadEffect] FadeMaterial が設定されていません！");
+            _NewMaterial.SetColor("_BaseColor", color);
         }
 
-        // 各パラメータ初期化
-        m_fTimecount = 0f;
-        m_fFadeDuration = 0f;
-        m_bIsFading = false;
         // レンダラー取得
         EffectRenderer = GetComponent<CEffectRenderer>();
+        if (EffectRenderer == null)
+        {
+            Debug.LogWarning("[DeathEffect] EffectRenderer がアタッチされていません。エフェクトの終了処理はスキップされます。");
+        }
     }
 
     // ＞更新関数
@@ -80,40 +87,61 @@ public class CDeathEffect : MonoBehaviour
     // ｘ
     // 概要：更新処理
 
-    void Update()
+    private void Update()
     {
         // フェイド計算
-        m_fTimecount += Time.deltaTime;
+        TimeCount += Time.deltaTime;
 
-        if (m_fTimecount >= m_fLifeTime && !m_bIsFading)
+        // 表示時間を過ぎたらフェード開始
+        if (TimeCount >= m_fLifeTime && !IsFading)
         {
-            m_bIsFading = true;
+            IsFading = true;
+            FadeCount = 0f;
         }
 
-        // α値を計算して、フェイド処理に反映
-        if (m_bIsFading)
+        // フェード中処理
+        if (IsFading)
         {
-            // α値を時間によって薄くなる
-            m_fFadeCount += Time.deltaTime;
-            float t = Mathf.Clamp01(m_fFadeCount / m_fFadeDuration);
-            float currentAlpha = Mathf.Lerp(m_fStartAlpha, 0f, t);
+            // フェード時間をカウント
+            FadeCount += Time.deltaTime;
 
-            if (FadeMaterial != null)
+            // 進行割合（0～1）を計算
+            float _T = Mathf.Clamp01(FadeCount / m_fFadeDuration);
+            float _CurrentAlpha = Mathf.Lerp(m_fStartAlpha, 0f, _T);
+
+            // 全マテリアルに対してアルファ値を適用
+            foreach (Material mat in m_FadeMaterials)
             {
-                Color color = FadeMaterial.color;
-                color.a = currentAlpha;
-                FadeMaterial.color = color;
-            }
-            // α値が0になったらエフェクトの描画とオブジェクト自体を削除
-            if (t >= 1f)
-            {
-                if (EffectRenderer != null)
+                if (mat != null)
                 {
-                    EffectRenderer.ClearEffect();
+                    Color color = mat.GetColor("_BaseColor");
+                    color.a = _CurrentAlpha;
+                    mat.SetColor("_BaseColor", color);
                 }
+            }
 
-                Destroy(gameObject);
+            // フェード完了後の処理
+            if (_T >= 1f)
+            {
+               StopEffect();
             }
         }
+    }
+
+    // ＞エフェクト停止関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：エフェクトを停止し、関連処理を実行して削除する
+
+    private void StopEffect()
+    {
+        if (EffectRenderer != null)
+        {
+            EffectRenderer.ClearEffect();
+        }
+
+        Destroy(gameObject);
     }
 }

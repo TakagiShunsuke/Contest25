@@ -1,5 +1,5 @@
 /*=====
-<CPanelBillboard.cs>
+<PanelBillboard.cs>
 └作成者：tei
 
 ＞内容
@@ -18,15 +18,19 @@ D
 _M05
 D
 01：スクリプト名、変数名修正：tei
+04：コーディングルールの沿ってコード修正：tei
 
 =====*/
 
+// 名前空間宣言
 using UnityEngine;
 
+// クラス定義
 public class CPanelBillboard : MonoBehaviour
 {
     // 変数宣言
     [SerializeField,Tooltip("カメラとの固定距離")] private float m_fDistanceFromCamera = 5f;
+
 
     // ＞更新関数
     // 引数：なし
@@ -39,14 +43,14 @@ public class CPanelBillboard : MonoBehaviour
         if (Camera.main == null) return;
 
         // カメラの位置と向きを取得
-        Vector3 CameraPosition = Camera.main.transform.position;
-        Vector3 CameraForward = Camera.main.transform.forward;
+        Vector3 _CameraPosition = Camera.main.transform.position;
+        Vector3 _CameraForward = Camera.main.transform.forward;
 
         // カメラの前方distanceだけ離れた場所にパネルを移動
-        transform.position = CameraPosition + CameraForward * m_fDistanceFromCamera;
+        transform.position = _CameraPosition + _CameraForward * m_fDistanceFromCamera;
 
         // カメラのY軸回転だけ取る
-        Vector3 Euler = Camera.main.transform.rotation.eulerAngles;
-        transform.rotation = Quaternion.Euler(-90f, Euler.y, 0f);
+        Vector3 _Euler = Camera.main.transform.rotation.eulerAngles;
+        transform.rotation = Quaternion.Euler(-90f, _Euler.y, 0f);
     }
 }

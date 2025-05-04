@@ -141,10 +141,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6df858c9cb0a81846a40e85ad1e7062b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fLifeTime: 3
-  fFadeDuration: 1
-  mFadeMaterial: {fileID: 2100000, guid: 8eb9634bbbf9aef488eb9b68f711bc51, type: 2}
-  fStartAlpha: 0.9
+  m_fLifeTime: 5
+  m_fFadeDuration: 2
+  m_fStartAlpha: 0.9
+  m_FadeMaterials: []
 --- !u!114 &1728529722285939630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff889029222666c4ea67fb99fa53234b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 8eb9634bbbf9aef488eb9b68f711bc51, type: 2}
+  m_RenderMaterial: {fileID: 2100000, guid: 8eb9634bbbf9aef488eb9b68f711bc51, type: 2}
 --- !u!1 &1924570066773379277
 GameObject:
   m_ObjectHideFlags: 0

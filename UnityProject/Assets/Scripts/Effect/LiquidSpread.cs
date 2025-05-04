@@ -39,18 +39,17 @@ public class CLiquidSpread : MonoBehaviour
 	[SerializeField, Tooltip("フェードアウト時間")] private float m_fFadeDuration = 1.5f;
 	[SerializeField, Tooltip("拡散サイズ")] private float m_fMaxSpread = 0.4f;
 
-	private Material matMaterial;   // マテリアル
-	//private Collider cldHitbox;
+	private Material m_Material;   // マテリアル
 
 	// シェーダーのプロパティID取得
-	private static readonly int m_nRandomSpreadBottomLeftToTopRight_ID = Shader.PropertyToID("_RandomSpreadBottomLeftToTopRight");    // ここの各ID変数コマンドをSH_LiquidSpread.shaderに参照
-	private static readonly int m_nRandomSpreadTopLeftToBottomRight_ID = Shader.PropertyToID("_RandomSpreadTopLeftToBottomRight");
-	private static readonly int m_nStartTime_ID = Shader.PropertyToID("_StartTime");
-	private static readonly int m_nFadeStartTime_ID = Shader.PropertyToID("_FadeStartTime");
-	private static readonly int m_nFadeDuration_ID = Shader.PropertyToID("_FadeDuration");
-	private static readonly int m_nSpreadDuration_ID = Shader.PropertyToID("_SpreadDuration");
-	private static readonly int m_nMaxSpread_ID = Shader.PropertyToID("_MaxSpread");
-	private static readonly int m_nBaseColor_ID = Shader.PropertyToID("_BaseColor");
+	private static readonly int RandomSpreadBottomLeftToTopRight_ID = Shader.PropertyToID("_RandomSpreadBottomLeftToTopRight");    // ここの各ID変数コマンドをSH_LiquidSpread.shaderに参照
+	private static readonly int RandomSpreadTopLeftToBottomRight_ID = Shader.PropertyToID("_RandomSpreadTopLeftToBottomRight");
+	private static readonly int StartTime_ID = Shader.PropertyToID("_StartTime");
+	private static readonly int FadeStartTime_ID = Shader.PropertyToID("_FadeStartTime");
+	private static readonly int FadeDuration_ID = Shader.PropertyToID("_FadeDuration");
+	private static readonly int SpreadDuration_ID = Shader.PropertyToID("_SpreadDuration");
+	private static readonly int MaxSpread_ID = Shader.PropertyToID("_MaxSpread");
+	private static readonly int BaseColor_ID = Shader.PropertyToID("_BaseColor");
 
 	// プロパティ定義
 	private float m_fStartTime { get; set; }	// 拡散開始時間
@@ -72,15 +71,15 @@ public class CLiquidSpread : MonoBehaviour
 	private void Start()
 	{
 		// マテリアルゲット
-		matMaterial = GetComponent<Renderer>().material;
+		m_Material = GetComponent<Renderer>().material;
 
 		// スタート時間設定
 		m_fStartTime = Time.time;
 
 		// マテリアルパラメータ初期化
-		matMaterial.SetFloat(m_nStartTime_ID, m_fStartTime);
-		matMaterial.SetFloat(m_nFadeStartTime_ID, -1.0f);
-		matMaterial.SetFloat(m_nFadeDuration_ID, m_fFadeDuration);
+		m_Material.SetFloat(StartTime_ID, m_fStartTime);
+		m_Material.SetFloat(FadeStartTime_ID, -1.0f);
+		m_Material.SetFloat(FadeDuration_ID, m_fFadeDuration);
 
 		// ランダムな拡がり幅を決める
 		m_RandomSpreadBottomLeftToTopRight = new Vector4(
@@ -98,13 +97,13 @@ public class CLiquidSpread : MonoBehaviour
 			Random.Range(m_fRandomSpreadBase - m_fRandomSpreadAdjust, m_fRandomSpreadBase + m_fRandomSpreadAdjust)	// 右下
 		);
 
-		matMaterial.SetVector(m_nRandomSpreadBottomLeftToTopRight_ID, m_RandomSpreadBottomLeftToTopRight);
-		matMaterial.SetVector(m_nRandomSpreadTopLeftToBottomRight_ID, m_RandomSpreadTopLeftToBottomRight);
+		m_Material.SetVector(RandomSpreadBottomLeftToTopRight_ID, m_RandomSpreadBottomLeftToTopRight);
+		m_Material.SetVector(RandomSpreadTopLeftToBottomRight_ID, m_RandomSpreadTopLeftToBottomRight);
 		
 		// もし色やスピードが外部から設定されてたら反映する
-		matMaterial.SetColor(m_nBaseColor_ID, m_ClrLiquidColor);
-		matMaterial.SetFloat(m_nSpreadDuration_ID, m_fSetUpSpreadDuration > 0 ? m_fSetUpSpreadDuration : m_fSpreadDuration);
-		matMaterial.SetFloat(m_nMaxSpread_ID, m_fMaxSpread);
+		m_Material.SetColor(BaseColor_ID, m_ClrLiquidColor);
+		m_Material.SetFloat(SpreadDuration_ID, m_fSetUpSpreadDuration > 0 ? m_fSetUpSpreadDuration : m_fSpreadDuration);
+		m_Material.SetFloat(MaxSpread_ID, m_fMaxSpread);
 
 	  
 		// 当たり判定設定(仮)
@@ -127,7 +126,7 @@ public class CLiquidSpread : MonoBehaviour
 		// フェード開始計算
 		if (!m_bFadeStarted && fElapsed >= m_fSpreadDuration + m_fStayDuration)
 		{
-			matMaterial.SetFloat(m_nFadeStartTime_ID, Time.time);
+			m_Material.SetFloat(FadeStartTime_ID, Time.time);
 			m_bFadeStarted = true;
 		}
 		// 使用済み(一定時間)オブジェクト削除

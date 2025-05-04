@@ -1,9 +1,9 @@
 /*=====
-<CEffectRenderer.cs>
+<EffectRenderer.cs>
 └作成者：tei
 
 ＞内容
-コーディング規約を記述
+エフェクトプレハブの各球体のプロパティを取得して、シェーダーに渡す
 
 ＞注意事項
 
@@ -17,33 +17,41 @@ D
 _M05
 D
 01：スクリプト名、変数名修正：tei
+04：コーディングルールの沿ってコード修正：tei
 
-=====*/using UnityEngine;
+=====*/
+
+// 名前空間宣言
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// クラス定義
 public class CEffectRenderer : MonoBehaviour
 {
-    [Header("マテリアル設定")]
-    [SerializeField, Tooltip("マテリアル")] private Material RenderMaterial;
+    // 定数定義
+    private const int MAX_SPHERE_COUNT = 256;	// 同時に扱える最大球数（シェーダーの配列制限に合わせて）
 
-    private const int m_nMaxSphereCount = 256; // 同時に扱える最大球数（シェーダーの配列制限に合わせて）
-    private Vector4[] m_Spheres = new Vector4[m_nMaxSphereCount]; // シェーダーに渡す「位置＋半径」の配列
+    // 変数宣言
+    [Header("マテリアル設定")]
+    [SerializeField, Tooltip("マテリアル")] private Material m_RenderMaterial;
+
+    private Vector4[] m_Spheres = new Vector4[MAX_SPHERE_COUNT]; // シェーダーに渡す「位置＋半径」の配列
     private SphereCollider[] m_Colliders; // 子オブジェクトにある SphereCollider を取得するための配列
 
-     // ＞初期化関数
+
+    // ＞初期化関数
     // 引数：なし
     // ｘ
     // 戻値：なし
     // ｘ
     // 概要：初期化処理
-    void Start()
+    private void Start()
     {
-
         // 初回だけコライダーを取得しておく
         m_Colliders = GetComponentsInChildren<SphereCollider>();
 
         // 球の数をマテリアルに渡す
-        RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
+        m_RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
     }
 
     // ＞更新関数
@@ -52,28 +60,27 @@ public class CEffectRenderer : MonoBehaviour
     // 戻値：なし
     // ｘ
     // 概要：更新処理
-    void Update()
+    private void Update()
     {
         // 毎フレーム、各球の情報を更新
         for (int i = 0; i < m_Colliders.Length; i++)
         {
-            var col = m_Colliders[i];
-            var t = col.transform;
+            var _Col = m_Colliders[i];
+            var _T = _Col.transform;
 
             // 中心位置（ワールド座標）
-            Vector3 center = t.position;
+            Vector3 _Center = _T.position;
 
             // 実際の半径（スケールが変わってたら考慮）
-            float radius = t.lossyScale.x * col.radius;
+            float _Radius = _T.lossyScale.x * _Col.radius;
 
             // Vector4 で格納（x,y,z = 中心位置、w = 半径）
-            m_Spheres[i] = new Vector4(center.x, center.y, center.z, radius);
+            m_Spheres[i] = new Vector4(_Center.x, _Center.y, _Center.z, _Radius);
         }
 
         // シェーダーに現在の球の数と配列を送信
-        RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
-        RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
-
+        m_RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
+        m_RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
     }
 
     // ＞エフェクト削除関数
@@ -91,7 +98,7 @@ public class CEffectRenderer : MonoBehaviour
         }
 
         // Shader へ反映（0個にする）
-        RenderMaterial.SetInt("_nSphereCount", 0);
-        RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
+        m_RenderMaterial.SetInt("_nSphereCount", 0);
+        m_RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
     }
 }
