@@ -145,6 +145,7 @@ MonoBehaviour:
   m_fFadeDuration: 2
   m_fStartAlpha: 0.9
   m_FadeMaterials: []
+  m_OriginalMaterial: {fileID: 2100000, guid: 8eb9634bbbf9aef488eb9b68f711bc51, type: 2}
 --- !u!114 &1728529722285939630
 MonoBehaviour:
   m_ObjectHideFlags: 0

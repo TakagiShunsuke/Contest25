@@ -34,6 +34,9 @@ public class CDeathEffect : MonoBehaviour
     [SerializeField, Tooltip("フェード時間")] private float m_fFadeDuration = 2f;
     [SerializeField, Tooltip("初期アルファ")] private float m_fStartAlpha = 0.9f;
     [SerializeField, Tooltip("フェード対象のマテリアル配列")] private Material[] m_FadeMaterials;
+    [SerializeField, Tooltip("フェード対象マテリアル")]
+    private Material m_OriginalMaterial;    // マテリアル本体
+    private Material m_InstanceMaterial;    // 複製のマテリアル
 
     // プロパティ定義
     private float TimeCount { get; set; } = 0f;    // エフェクト表示時間カウンター
@@ -51,25 +54,36 @@ public class CDeathEffect : MonoBehaviour
 
     private void Start()
     {
-        // オブジェクトとその子にあるすべてのRendererを取得
-        Renderer[] _Renderers = GetComponentsInChildren<Renderer>();
-        
-        // マテリアルの数に応じた配列を確保
-        m_FadeMaterials = new Material[_Renderers.Length];
-
-        for (int i = 0; i < _Renderers.Length; i++)
+        if (m_OriginalMaterial != null)
         {
-            // 各RendererのsharedMaterialを複製して独立させる（他の敵と共有しないように）
-            Material _NewMaterial = new Material(_Renderers[i].sharedMaterial);
-            
-            // 複製したマテリアルをRendererに設定し格納しておく
-            _Renderers[i].material = _NewMaterial;
-            m_FadeMaterials[i] = _NewMaterial;
+            // Renderer がない場合でもマテリアルを手動で複製・設定
+            m_InstanceMaterial = new Material(m_OriginalMaterial);
 
-            // α値を設定
-            Color color = _NewMaterial.GetColor("_BaseColor");
+            // 初期アルファ設定
+            Color color = m_InstanceMaterial.GetColor("_Color");
             color.a = m_fStartAlpha;
-            _NewMaterial.SetColor("_BaseColor", color);
+            m_InstanceMaterial.SetColor("_Color", color);
+
+            // 配列に入れてフェード処理対応
+            m_FadeMaterials = new Material[1];
+            m_FadeMaterials[0] = m_InstanceMaterial;
+        }
+        else
+        {
+            // 通常通り Renderer を探す処理
+            Renderer[] _Renderers = GetComponentsInChildren<Renderer>();
+            m_FadeMaterials = new Material[_Renderers.Length];
+
+            for (int i = 0; i < _Renderers.Length; i++)
+            {
+                Material _NewMaterial = new Material(_Renderers[i].sharedMaterial);
+                _Renderers[i].material = _NewMaterial;
+                m_FadeMaterials[i] = _NewMaterial;
+
+                Color color = _NewMaterial.GetColor("_Color");
+                color.a = m_fStartAlpha;
+                _NewMaterial.SetColor("_Color", color);
+            }
         }
 
         // レンダラー取得
@@ -114,16 +128,16 @@ public class CDeathEffect : MonoBehaviour
             {
                 if (mat != null)
                 {
-                    Color color = mat.GetColor("_BaseColor");
+                    Color color = mat.GetColor("_Color");
                     color.a = _CurrentAlpha;
-                    mat.SetColor("_BaseColor", color);
+                    mat.SetColor("_Color", color);
                 }
             }
 
             // フェード完了後の処理
             if (_T >= 1f)
             {
-               StopEffect();
+                StopEffect();
             }
         }
     }
@@ -140,6 +154,10 @@ public class CDeathEffect : MonoBehaviour
         if (EffectRenderer != null)
         {
             EffectRenderer.ClearEffect();
+        }
+        if (m_InstanceMaterial != null)
+        {
+            Destroy(m_InstanceMaterial);
         }
 
         Destroy(gameObject);
