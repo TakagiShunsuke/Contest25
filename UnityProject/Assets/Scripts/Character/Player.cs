@@ -16,6 +16,9 @@ D
 25:プレイヤーの移動制限追加:kato yuma
 26:スペースの修正:takagi
 27:プレイヤーの移動宣言をpublic～privateに変更:kato
+_MO5
+D
+07:攻撃の判定がおかしかったので修正:kato
 =====*/
 
 // 名前空間宣言
@@ -101,25 +104,46 @@ public class CPlayer : MonoBehaviour
 	// 概要：プレイヤーの移動処理
 	private void PlayerMove()
 	{
-		// プレイヤーの移動
+		Vector3 input = new Vector3(); // 入力値を格納する変数
+        if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
+        if (Input.GetKey(KeyCode.S)) input += Vector3.back;
+        if (Input.GetKey(KeyCode.A)) input += Vector3.left;
+        if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+
+        if (input != Vector3.zero)
+        {
+            input.Normalize();
+            m_Rb.transform.position += input * m_fSpeed;
+
+            // 回転させる（スムーズにしたい場合はLerpでもOK）
+            m_Rb.transform.rotation = Quaternion.LookRotation(input);
+        }
+
+        // プレイヤーの移動 正面向けるけどw+dが変になる移動
+        /*
 		if (Input.GetKey(KeyCode.W))
 		{
 			m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
-		}
+			m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
+        }
 		if (Input.GetKey(KeyCode.S))
 		{
 			m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
-		}
+			m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
+        }
 		if (Input.GetKey(KeyCode.A))
 		{
 			m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
-		}
+			m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
+        }
 		if (Input.GetKey(KeyCode.D))
 		{
-			m_Rb.transform.position += Vector3.right * m_fSpeed;	// 右
-		}
+			m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
+            m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
+        }
+		*/
 
-		/*  滑らかに動くけど加速するパターンの移動
+        /*  滑らかに動くけど加速するパターンの移動
 		//if (Input.GetKey(KeyCode.S))
 		//{
 		//    rb.AddForce(Vector3.back * speed);
@@ -134,40 +158,47 @@ public class CPlayer : MonoBehaviour
 		//}
 
 		*/
-	}
+    }
 
-	// 攻撃関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーの攻撃
-	private void Attack()
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃
+    private void Attack()
 	{
-		// 攻撃するためのクールダウン時間チェック
-		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
-		{
-			// 攻撃のクールダウン時間を更新
-			m_fLastAttackTime = Time.time;
+        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+        {
+            m_fLastAttackTime = Time.time;
 
-			// 攻撃の向き
-			Vector3 _Forward = transform.forward;
+            Vector3 forward = transform.forward;
+            Vector3 origin = transform.position;
 
-			// 攻撃範囲の計算
-			Collider[] _HitColliders = Physics.OverlapSphere(transform.position + _Forward * m_fAttackRange, m_fAttackRange);
-			foreach (var _HitCollider in _HitColliders)
-			{
-				if (_HitCollider.gameObject == this.gameObject) continue;
+            // 周囲のコライダーを一定範囲で取得（円形）
+            Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
+            foreach (var hit in hitColliders)
+            {
+                if (hit.gameObject == this.gameObject) continue;
 
-				Vector3 _DirectionToTarget = _HitCollider.transform.position - transform.position;
-				float fAngle = Vector3.Angle(_Forward, _DirectionToTarget);
-				if (fAngle <= m_fAttackAngle / 2)
-				{	
-					// 敵に攻撃が当たったときの処理を追加したい場合ここに書く
-				}
-			}
-		}
-	}
+                Vector3 toTarget = hit.transform.position - origin;
+                toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
+
+                // 距離チェック（このチェックはOverlapsphereがやってるけど一応）
+                if (toTarget.magnitude > m_fAttackRange) continue;
+
+                // 扇型の角度内か判定
+                float angle = Vector3.Angle(forward, toTarget.normalized);
+                if (angle <= m_fAttackAngle * 0.5f)
+                {
+					// デバッグ用
+                    Debug.Log("Hit target: " + hit.name);
+
+                    // TODO: 敵に攻撃処理を追加
+                }
+            }
+        }
+    }
 
 	// 更新関数
 	// 引数１：なし
@@ -221,5 +252,34 @@ public class CPlayer : MonoBehaviour
 	private void Die()
 	{
 		m_bIsDead = true;
+	}
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
+		Gizmos.color = new Color(0, 1, 0, 1.0f);
+		Gizmos.DrawWireSphere(transform.position + transform.forward * m_fAttackRange, m_fAttackRange);
+		Gizmos.color = new Color(0, 0, 1, 1.0f);
+		Gizmos.DrawLine(transform.position ,transform.position + transform.forward * 20.0f);
+    }
+
+	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+	{
+#if UNITY_EDITOR
+		Gizmos.color = new Color(1, 1, 0, 0.4f);
+		
+		Vector3 origin = transform.position;
+		Vector3 forward = transform.forward;
+		int segments = 30; // 表示する線の数（多いほどなめらか）
+
+		for (int i = 0; i <= segments; i++)
+		{
+			float angle = -m_fAttackAngle / 2 + m_fAttackAngle * i / segments;
+			Quaternion rot = Quaternion.Euler(0, angle, 0);
+			Vector3 dir = rot * forward;
+			Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
+		}
+#endif
 	}
 }
