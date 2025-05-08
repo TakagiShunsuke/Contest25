@@ -270,6 +270,26 @@ public class CPlayer : MonoBehaviour
 		
 	}
 
+	// ＞ダメージ関数
+	// 引数：なし
+	// ｘ
+	// 戻値：なし
+	// ｘ
+	// 概要：ダメージを受ける
+	public void Damage(int _nDamage)
+	{
+		if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
+		{
+			_nDamage = 1;
+		}
+		else// ダメージを与える
+		{
+			_nDamage = _nDamage - m_nDef;
+		}
+
+		m_nHp -= _nDamage; // ダメージ処理
+	}
+
 	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 	{
 #if UNITY_EDITOR
