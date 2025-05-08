@@ -19,6 +19,7 @@ D
 _MO5
 D
 07:攻撃の判定がおかしかったので修正:kato
+08:攻撃のクールダウン時間を修正:kato
 =====*/
 
 // 名前空間宣言
@@ -54,7 +55,7 @@ public class CPlayer : MonoBehaviour
 	[SerializeField]
 	[Tooltip("攻撃の角度")]
 	private float m_fAttackAngle = 45.0f;	// 45度の範囲
-	private float m_fLastAttackTime = 0.0f;	// 最後に攻撃した時間
+	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 
