@@ -20,9 +20,11 @@ _MO5
 D
 07:攻撃の判定がおかしかったので修正:kato
 08:攻撃のクールダウン時間を修正:kato
+08:ダメージ発生を仮置き:takagi
 =====*/
 
 // 名前空間宣言
+using Unity.VisualScripting;
 using UnityEngine;
 
 // クラス定義
@@ -76,7 +78,7 @@ public class CPlayer : MonoBehaviour
 	[SerializeField]
 	[Tooltip("プレイヤーの移動制限範囲の原点")]
 	private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
-    [SerializeField]
+	[SerializeField]
 	[Tooltip("プレイヤーの移動制限範囲X")]
 	private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
 	[SerializeField]
@@ -106,45 +108,45 @@ public class CPlayer : MonoBehaviour
 	private void PlayerMove()
 	{
 		Vector3 input = new Vector3(); // 入力値を格納する変数
-        if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
-        if (Input.GetKey(KeyCode.S)) input += Vector3.back;
-        if (Input.GetKey(KeyCode.A)) input += Vector3.left;
-        if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+		if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
+		if (Input.GetKey(KeyCode.S)) input += Vector3.back;
+		if (Input.GetKey(KeyCode.A)) input += Vector3.left;
+		if (Input.GetKey(KeyCode.D)) input += Vector3.right;
 
-        if (input != Vector3.zero)
-        {
-            input.Normalize();
-            m_Rb.transform.position += input * m_fSpeed;
+		if (input != Vector3.zero)
+		{
+			input.Normalize();
+			m_Rb.transform.position += input * m_fSpeed;
 
-            // 回転させる（スムーズにしたい場合はLerpでもOK）
-            m_Rb.transform.rotation = Quaternion.LookRotation(input);
-        }
+			// 回転させる（スムーズにしたい場合はLerpでもOK）
+			m_Rb.transform.rotation = Quaternion.LookRotation(input);
+		}
 
-        // プレイヤーの移動 正面向けるけどw+dが変になる移動
-        /*
+		// プレイヤーの移動 正面向けるけどw+dが変になる移動
+		/*
 		if (Input.GetKey(KeyCode.W))
 		{
 			m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
 			m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
-        }
+		}
 		if (Input.GetKey(KeyCode.S))
 		{
 			m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
 			m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
-        }
+		}
 		if (Input.GetKey(KeyCode.A))
 		{
 			m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
 			m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
-        }
+		}
 		if (Input.GetKey(KeyCode.D))
 		{
 			m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
-            m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
-        }
+			m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
+		}
 		*/
 
-        /*  滑らかに動くけど加速するパターンの移動
+		/*  滑らかに動くけど加速するパターンの移動
 		//if (Input.GetKey(KeyCode.S))
 		//{
 		//    rb.AddForce(Vector3.back * speed);
@@ -159,47 +161,53 @@ public class CPlayer : MonoBehaviour
 		//}
 
 		*/
-    }
+	}
 
-    // 攻撃関数
-    // 引数１：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーの攻撃
-    private void Attack()
+	// 攻撃関数
+	// 引数１：なし
+	// ｘ
+	// 戻値：なし
+	// ｘ
+	// 概要：プレイヤーの攻撃
+	private void Attack()
 	{
-        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
-        {
-            m_fLastAttackTime = Time.time;
+		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+		{
+			m_fLastAttackTime = Time.time;
 
-            Vector3 forward = transform.forward;
-            Vector3 origin = transform.position;
+			Vector3 forward = transform.forward;
+			Vector3 origin = transform.position;
 
-            // 周囲のコライダーを一定範囲で取得（円形）
-            Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
-            foreach (var hit in hitColliders)
-            {
-                if (hit.gameObject == this.gameObject) continue;
+			// 周囲のコライダーを一定範囲で取得（円形）
+			Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
+			foreach (var hit in hitColliders)
+			{
+				if (hit.gameObject == this.gameObject) continue;
 
-                Vector3 toTarget = hit.transform.position - origin;
-                toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
+				Vector3 toTarget = hit.transform.position - origin;
+				toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
 
-                // 距離チェック（このチェックはOverlapsphereがやってるけど一応）
-                if (toTarget.magnitude > m_fAttackRange) continue;
+				// 距離チェック（このチェックはOverlapsphereがやってるけど一応）
+				if (toTarget.magnitude > m_fAttackRange) continue;
 
-                // 扇型の角度内か判定
-                float angle = Vector3.Angle(forward, toTarget.normalized);
-                if (angle <= m_fAttackAngle * 0.5f)
-                {
+				// 扇型の角度内か判定
+				float angle = Vector3.Angle(forward, toTarget.normalized);
+				if (angle <= m_fAttackAngle * 0.5f)
+				{
 					// デバッグ用
-                    Debug.Log("Hit target: " + hit.name);
+					Debug.Log("Hit target: " + hit.name);
 
-                    // TODO: 敵に攻撃処理を追加
-                }
-            }
-        }
-    }
+					// TODO: 敵に攻撃処理を追加
+					var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
+					if(_EnemyScript != null)
+					{
+						_EnemyScript.Damage(m_nAtk);	// 一時的なダメージ処理
+						Debug.Log("AttackHit!");
+					}
+				}
+			}
+		}
+	}
 
 	// 更新関数
 	// 引数１：なし
@@ -255,12 +263,12 @@ public class CPlayer : MonoBehaviour
 		m_bIsDead = true;
 	}
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(1, 0, 0, 0.5f);
-        Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
+	void OnDrawGizmos()
+	{
+		Gizmos.color = new Color(1, 0, 0, 0.5f);
+		Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
 		
-    }
+	}
 
 	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 	{
@@ -279,8 +287,8 @@ public class CPlayer : MonoBehaviour
 			Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
 		}
 
-        Gizmos.color = new Color(0, 0, 1, 1.0f);
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
+		Gizmos.color = new Color(0, 0, 1, 1.0f);
+		Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
 #endif
-    }
+	}
 }
