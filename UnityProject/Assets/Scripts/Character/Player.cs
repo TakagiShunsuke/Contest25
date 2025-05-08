@@ -258,10 +258,7 @@ public class CPlayer : MonoBehaviour
     {
         Gizmos.color = new Color(1, 0, 0, 0.5f);
         Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
-		Gizmos.color = new Color(0, 1, 0, 1.0f);
-		Gizmos.DrawWireSphere(transform.position + transform.forward * m_fAttackRange, m_fAttackRange);
-		Gizmos.color = new Color(0, 0, 1, 1.0f);
-		Gizmos.DrawLine(transform.position ,transform.position + transform.forward * 20.0f);
+		
     }
 
 	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
@@ -280,6 +277,9 @@ public class CPlayer : MonoBehaviour
 			Vector3 dir = rot * forward;
 			Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
 		}
+
+        Gizmos.color = new Color(0, 0, 1, 1.0f);
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
 #endif
-	}
+    }
 }
