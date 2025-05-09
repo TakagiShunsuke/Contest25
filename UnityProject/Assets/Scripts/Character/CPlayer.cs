@@ -28,12 +28,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 // クラス定義
-public class CPlayer : MonoBehaviour
+public class CPlayer : MonoBehaviour, IDH
 {
 	// 変数宣言
 	private Rigidbody m_Rb; // リジットボディ
 
-	[Header("プレイヤーステータス")]
+
+    private float m_ftime = 0.0f;//たいまー
+    private float m_fcount = 0.0f;//かうんと
+
+    [Header("プレイヤーステータス")]
 	[SerializeField]
 	[Tooltip("HP")]
 	private int m_nHp = 100;
@@ -60,9 +64,11 @@ public class CPlayer : MonoBehaviour
 	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
+    private bool m_bIsPoison = false; //プレイヤーが毒カ
 
-	// 攻撃キーの変数
-	[SerializeField]
+    private bool m_bPoisonUpdate = false;//毒更新用
+    // 攻撃キーの変数
+    [SerializeField]
 	[Tooltip("攻撃キー")]
 	private KeyCode m_AttackKey = KeyCode.Return;
 
@@ -197,14 +203,14 @@ public class CPlayer : MonoBehaviour
 					// デバッグ用
 					Debug.Log("Hit target: " + hit.name);
 
-					// TODO: 敵に攻撃処理を追加
-					var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
-					if(_EnemyScript != null)
-					{
-						_EnemyScript.Damage(m_nAtk);	// 一時的なダメージ処理
-						Debug.Log("AttackHit!");
-					}
-				}
+                    // TODO: 敵に攻撃処理を追加
+                    var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
+                    if (_EnemyScript != null)
+                    {
+                        _EnemyScript.Damage(m_nAtk);    // 一時的なダメージ処理
+                        Debug.Log("AttackHit!");
+                    }
+                }
 			}
 		}
 	}
@@ -224,8 +230,28 @@ public class CPlayer : MonoBehaviour
 		{
 			Die(); // 死ぬ
 		}
+        if (m_bIsPoison == true)//毒だったら
+        {
+            if (m_bPoisonUpdate == true)
+            {
+                m_fcount = 0.0f;
+            }
+            m_ftime += Time.deltaTime;
+            m_fcount += Time.deltaTime;
+            if (m_ftime >= 1.0f)//１びょうごと
+            {
+                m_nHp -= 5;
+                Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
+                m_ftime = 0.0f;
+            }
+            if (m_fcount >= 5.0f)
+            {
+                m_bIsPoison = false;
+            }
+            m_bPoisonUpdate = false;
+        }
 
-		Vector3 _NowPosition = transform.position;	// 現在の位置を取得
+        Vector3 _NowPosition = transform.position;	// 現在の位置を取得
 
 		_NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
 		_NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
@@ -290,7 +316,11 @@ public class CPlayer : MonoBehaviour
 		m_nHp -= _nDamage; // ダメージ処理
 	}
 
-	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+
+
+
+
+private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 	{
 #if UNITY_EDITOR
 		Gizmos.color = new Color(1, 1, 0, 0.4f);
@@ -311,4 +341,40 @@ public class CPlayer : MonoBehaviour
 		Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
 #endif
 	}
+    //ダメージ処理
+    public void Adddamege(int damage)
+    {
+        m_nHp -= damage;
+        Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        if (m_nHp < 0)//しんだら
+        {
+            Debug.Log("死んだ");
+        }
+    }
+
+    public void Addheal(int heal)
+    {
+        m_nHp += heal;
+        Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
+    }
+    public void Addposion()
+    {
+        m_bIsPoison = true;
+        m_bPoisonUpdate = true;
+    }
+    public void Addacid(int damage)
+    {
+        if (m_nHp > damage)
+        {
+
+
+            m_nHp -= damage;
+            Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        }
+        else
+        {
+            Debug.Log("酸だからしなん");
+        }
+    }
 }
+
