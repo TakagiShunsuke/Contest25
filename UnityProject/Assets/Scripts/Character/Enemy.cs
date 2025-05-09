@@ -65,6 +65,19 @@ public class CEnemy : MonoBehaviour
     {
         // NavMeshAgentを取得
         m_Agent = GetComponent<NavMeshAgent>();
+
+        // Playerを自動で探してターゲットに設定
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            m_Target = playerObj.transform;
+        }
+
+        // 地面の位置を探す
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+        {
+            m_Agent.Warp(hit.position); // NavMeshの地面にワープさせる
+        }
     }
 
     // ＞更新関数
