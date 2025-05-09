@@ -17,6 +17,7 @@ D
 _M05
 D
 1:攻撃追加
+9:臨時的にスポナー対応の追跡機能拡張:takagi
 =====*/
 
 // 名前空間宣言
@@ -65,6 +66,20 @@ public class CEnemy : MonoBehaviour
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
+
+		// 臨時処理	//TODO:適切な処理に置き換え
+		if (!m_Target)   // ヌルチェック
+		{
+			var _Targetable = GameObject.FindGameObjectWithTag("Player");
+			if (_Targetable) // ターゲット候補を確認
+			{
+				m_Target = _Targetable.transform;	// ターゲット候補で追跡対象を代替
+			}
+			else
+			{
+				Debug.LogError("追跡する相手が見つかりません");
+			}
+		}
 	}
 
 	// ＞更新関数

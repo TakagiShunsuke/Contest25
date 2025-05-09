@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6966685398897491391}
   - component: {fileID: 9203589630774836163}
   - component: {fileID: 4462452211973853219}
+  - component: {fileID: 6024236168568518783}
   m_Layer: 0
   m_Name: Gorefin
   m_TagString: Untagged
@@ -186,3 +187,15 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &6024236168568518783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3017918768006073836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26cdd165bd3e334b930dec094aea947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
