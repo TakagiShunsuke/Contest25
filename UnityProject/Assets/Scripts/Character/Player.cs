@@ -223,7 +223,8 @@ public class CPlayer : MonoBehaviour
 		if(m_nHp <= 0 && !m_bIsDead)
 		{
 			Die(); // 死ぬ
-		}
+			Destroy(this.gameObject); // プレイヤーを消す
+        }
 
 		Vector3 _NowPosition = transform.position;	// 現在の位置を取得
 
