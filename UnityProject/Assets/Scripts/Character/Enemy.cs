@@ -18,6 +18,9 @@ _M05
 D
 1:攻撃追加
 9:臨時的にスポナー対応の追跡機能拡張:takagi
+9:Enemyを生成時に近くのナビメッシュにワープする
+	プレイヤーを自動でターゲットするように修正:sezaki
+9:ターゲットを自動取得していたので非シリアライズ化:takagi
 =====*/
 
 // 名前空間宣言
@@ -49,7 +52,7 @@ public class CEnemy : MonoBehaviour
 	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
 
-	[SerializeField, Tooltip("ターゲット")] private Transform m_Target;  // プレイヤーのTransform
+	private Transform m_Target;  // プレイヤーのTransform
 	[SerializeField, Tooltip("成長間隔")] private float m_fGrowthInterval = 5f; // 成長間隔（秒）
 
 	private float m_fGrowthTimer = 0f; // 成長タイマー
@@ -67,18 +70,17 @@ public class CEnemy : MonoBehaviour
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
 
-		// 臨時処理	//TODO:適切な処理に置き換え
-		if (!m_Target)   // ヌルチェック
+		// Playerを自動で探してターゲットに設定
+		GameObject playerObj = GameObject.FindWithTag("Player");
+		if (playerObj != null)
 		{
-			var _Targetable = GameObject.FindGameObjectWithTag("Player");
-			if (_Targetable) // ターゲット候補を確認
-			{
-				m_Target = _Targetable.transform;	// ターゲット候補で追跡対象を代替
-			}
-			else
-			{
-				Debug.LogError("追跡する相手が見つかりません");
-			}
+			m_Target = playerObj.transform;
+		}
+
+		// 地面の位置を探す
+		if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+		{
+			m_Agent.Warp(hit.position); // NavMeshの地面にワープさせる
 		}
 	}
 
