@@ -31,10 +31,16 @@ __Y25
 _M04
 D
 03:新チーム用にコードを刷新:takagi
+23:enum型の変数宣言を明記:takagi
+_M05
+D
+09::takagi
 =====*/
 
 // 名前空間宣言
 using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;	// 名前宣言時にはコメントは不要(勝手にずれるため)
 
 // 名前空間定義
@@ -44,10 +50,10 @@ namespace Space
 	public static class CSpace
 	{
 		// 定数定義
-		private const uint CONST = 0;	// 仮置きのfps値
+		private const uint CONST = 0;	// 定数はコンスタンス記法に従う(ハンガリアン記法には従わない)
 
 		// 変数宣言
-		public static readonly double ms_Temp = 0.0d;	// readonlyな変数も書き方は同じ
+		public static readonly double ms_dTemp = 0.0d;	// readonlyな変数も書き方は同じ
 	}
 }
 
@@ -92,7 +98,11 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	[SerializeField, Tooltip("メンバー変数")] private uint m_uMember;	// 属性は記法に影響しない
 	private int m_nInt;	// 通常の型はハンガリアン記法に従う[メンバ変数はm_と付ける]
 	[SerializeField, Tooltip("構造体")] private SerializeStruct m_Struct;	// その変数が何なのかインスペクタからわかるようにする
-	private static string m_szStr;	// メンバ変数∧静的変数なら融合してms_と記述する
+	private static string m_szStr;  // メンバ変数∧静的変数なら融合してms_と記述する
+	private E_ENUM m_eEnum;	// 列挙はハンガリアン記法に従いeを接頭辞にする
+	private float[] m_fArray;	// 配列は子の型名のみ記述(aとかは不要)
+	private List<uint> m_uLists;	// リストも子の型名のみ記述
+	private Dictionary<string, float> m_fDictionary;	// 辞書の命名はvalue部の型名に依存
 
 	// プロパティ定義
 	public double PriProp { get; private set; }	// readonlyな形式でも記法は無し
@@ -103,17 +113,31 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	// 引数１：double _dDouble：数値   // 引数：内容の形で記述
 	// 引数２：GameObject _GameObject：物体   // 引数は_から始める
 	// ｘ
-	// 戻値：虚無   // 内容のみ記述
+	// 戻値：何入れても0   // 内容のみ記述
 	// ｘ
 	// 概要：関数記述例
 	private int Example(double _dDouble, GameObject _GameObject)
 	{
 		// 変数宣言
-		float _fFloat = 0.0f;	// メンバー変数も_から始める
+		float _fFloat = 0.0f;	// ローカル変数も_から始める
 		GameObject _Object = _GameObject;	// 接頭字が無い場合、頭文字を大文字にする
 
 		// 算出
 		m_nInt = (int)((float)_dDouble * _fFloat);	// なるべく全処理にコメントをつける
+
+		// 分岐
+		switch(m_nInt)
+		{
+			case 0:	// A
+				break;
+				// ケース間は空行
+			case 1: // B
+				m_nInt = 0;  // なるべく全処理にコメントをつける
+				break;
+
+			default:	// その他
+				break;
+		}
 
 		// 提供
 		return m_nInt;
@@ -125,7 +149,21 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	// 戻値：なし
 	// ｘ
 	// 概要：関数例
+	[MenuItem("ffff/gggg")]
 	public void Function()
 	{
 	}
 }
+
+// ＞xx関数
+// 引数：なし   // 引数がない場合は１を省略してもよい
+// ｘ
+// 戻値：なし
+// ｘ
+// 概要：関数例
+class CMenuItem : ScriptableObject
+{
+	private void DoSomething()
+	{
+	}
+};
