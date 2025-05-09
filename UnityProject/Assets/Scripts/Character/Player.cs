@@ -192,8 +192,8 @@ public class CPlayer : MonoBehaviour
                 float angle = Vector3.Angle(forward, toTarget.normalized);
                 if (angle <= m_fAttackAngle * 0.5f)
                 {
-
                     // TODO: “G‚ÉUŒ‚ˆ—‚ð’Ç‰Á
+					
                 }
             }
         }
