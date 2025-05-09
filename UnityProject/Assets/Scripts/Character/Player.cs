@@ -192,8 +192,6 @@ public class CPlayer : MonoBehaviour
                 float angle = Vector3.Angle(forward, toTarget.normalized);
                 if (angle <= m_fAttackAngle * 0.5f)
                 {
-					// デバッグ用
-                    Debug.Log("Hit target: " + hit.name);
 
                     // TODO: 敵に攻撃処理を追加
                 }
