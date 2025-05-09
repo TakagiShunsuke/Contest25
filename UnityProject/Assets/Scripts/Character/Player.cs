@@ -226,12 +226,7 @@ public class CPlayer : MonoBehaviour
 			Destroy(this.gameObject); // プレイヤーを消す
         }
 
-		Vector3 _NowPosition = transform.position;	// 現在の位置を取得
-
-		_NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
-		_NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
-
-		transform.position = _NowPosition;	// プレイヤーの位置を制限範囲内に収める
+		
 	}
 
 	// 物理更新関数
@@ -242,11 +237,18 @@ public class CPlayer : MonoBehaviour
 	// 概要：プレイヤーの移動処理と攻撃処理
 	private void FixedUpdate()
 	{
-		// 移動処理
-		PlayerMove();
+        // 移動処理
+        PlayerMove();
 
-		// プレイヤーの攻撃(Enter)
-		if (Input.GetKeyDown(m_AttackKey))
+        Vector3 _NowPosition = transform.position;  // 現在の位置を取得
+
+        _NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
+        _NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
+
+        transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
+
+        // プレイヤーの攻撃(Enter)
+        if (Input.GetKeyDown(m_AttackKey))
 		{
 			Attack();	// 攻撃処理を呼び出す
 
