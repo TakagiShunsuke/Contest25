@@ -266,7 +266,7 @@ public class CPlayer : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		Gizmos.color = new Color(1, 0, 0, 0.5f);
-		Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
+		Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
 		
 	}
 
@@ -294,8 +294,9 @@ public class CPlayer : MonoBehaviour
 	{
 #if UNITY_EDITOR
 		Gizmos.color = new Color(1, 1, 0, 0.4f);
-		
-		Vector3 origin = transform.position;
+
+		Vector3 offSet = new Vector3(0, 1, 0);
+		Vector3 origin = transform.position + offSet;
 		Vector3 forward = transform.forward;
 		int segments = 30; // ï\é¶Ç∑ÇÈê¸ÇÃêîÅiëΩÇ¢ÇŸÇ«Ç»ÇﬂÇÁÇ©Åj
 
@@ -308,7 +309,9 @@ public class CPlayer : MonoBehaviour
 		}
 
 		Gizmos.color = new Color(0, 0, 1, 1.0f);
-		Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
+		Vector3 start = transform.position + offSet;
+        Vector3 end = transform.position + transform.forward * 20.0f + offSet;
+		Gizmos.DrawLine(start, end);
 #endif
 	}
 }
