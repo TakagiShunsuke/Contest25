@@ -15,6 +15,6 @@ MonoBehaviour:
   m_nMaxEnemyCount: 9
   m_SpawnPointDataList:
   - m_EnemyPrefabs:
-    - {fileID: 5283285105095799031, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
+    - {fileID: 3017918768006073836, guid: 1f65130fe4585cd4aa055065fbf08751, type: 3}
   - m_EnemyPrefabs:
-    - {fileID: 1852579308506021535, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
+    - {fileID: 3017918768006073836, guid: 1f65130fe4585cd4aa055065fbf08751, type: 3}
