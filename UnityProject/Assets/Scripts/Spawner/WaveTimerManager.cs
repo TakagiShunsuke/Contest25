@@ -20,10 +20,6 @@ using UnityEngine;
 // クラス定義
 public class CWaveTimerManager : MonoBehaviour
 {
-    [Header("1ウェーブ時間(分)")]
-    [Tooltip("ウェーブ時間（分単位）")]
-    [SerializeField] private float m_fWaveTime = 2f;
-
     private float m_fTimer = 0f; // 経過時間
 
     // ＞更新関数
@@ -34,13 +30,23 @@ public class CWaveTimerManager : MonoBehaviour
     // 概要: 毎フレームごとに経過時間を加算し、指定時間を過ぎたらEnemySpawnerに次のWave開始を通知する
     private void Update()
     {
-        m_fTimer += Time.deltaTime; // 毎フレーム加算
+        // ゲーム開始前またはすべてのWaveが終了している場合は処理しない
+        if (CEnemySpawner.Instance == null || CEnemySpawner.Instance.IsWaveFinished())
+            return;
 
-        // 指定した時間が経過したら次のWaveへ
-        if (m_fTimer >= m_fWaveTime * 60f)
+        // 現在のWaveのデータ取得
+        CEnemyWaveData waveData = CEnemySpawner.Instance.GetCurrentWaveData();
+        if (waveData == null)
+            return;
+
+        // 経過時間を加算
+        m_fTimer += Time.deltaTime;
+
+        // Waveの持続時間を超えたら次のWaveへ
+        if (m_fTimer >= waveData.m_fWaveDuration)
         {
             m_fTimer = 0f;
-            CEnemySpawner.Instance.NextWave(); 
+            CEnemySpawner.Instance.NextWave();
         }
     }
 }

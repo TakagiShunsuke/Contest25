@@ -17,3 +17,5 @@ MonoBehaviour:
   - m_EnemyPrefabs:
     - {fileID: 3017918768006073836, guid: 1f65130fe4585cd4aa055065fbf08751, type: 3}
   - m_EnemyPrefabs: []
+  m_fWaveDuration: 120
+  m_SpawnInterval: 2
