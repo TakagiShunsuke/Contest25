@@ -34,6 +34,14 @@ public class CEnemyWaveData : ScriptableObject
     [Header("スポナー別の敵設定(上…スポナーA 下…スポナーB)")]
     [Tooltip("各スポーン場所ごとの出現敵設定")]
     public List<CSpawnPointData> m_SpawnPointDataList = new List<CSpawnPointData>();
+
+    [Header("Wave時間（秒）")]
+    [Tooltip("このWaveの継続時間（秒）")]
+    public float m_fWaveDuration = 120f; 
+
+    [Header("スポーン間隔")]
+    [Tooltip("敵をスポーンする間隔（秒）")]
+    public float m_SpawnInterval = 1.0f;
 }
 
 // スポーンポイント用の敵プレハブリスト
