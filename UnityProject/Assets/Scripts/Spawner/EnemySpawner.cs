@@ -38,10 +38,6 @@ public class CEnemySpawner : MonoBehaviour
     [Tooltip("各Waveの最大敵数とスポーン設定を持つリスト")]
     [SerializeField] private List<CEnemyWaveData> m_WaveDataList;
 
-    [Header("スポーン間隔")]
-    [Tooltip("敵をスポーンする間隔（秒）")]
-    [SerializeField] private float m_SpawnInterval = 1.0f;
-
     private List<CSpawnPoint> m_SpawnPoints = new List<CSpawnPoint>(); // 登録されたすべてのスポーンポイント
     private int m_CurrentWave = 0; // 現在のWave番号
 
@@ -90,14 +86,14 @@ public class CEnemySpawner : MonoBehaviour
     {
         while (true)
         {
-            // スポーン間隔分待機
-            yield return new WaitForSeconds(m_SpawnInterval);
-
             // 全Wave終了していたらコルーチン終了
             if (m_CurrentWave >= m_WaveDataList.Count) yield break;
 
             // 現在のWaveのデータを取得
             CEnemyWaveData m_WaveData = m_WaveDataList[m_CurrentWave];
+
+            // スポーン間隔分待機
+            yield return new WaitForSeconds(m_WaveData.m_SpawnInterval);
 
             // 敵の最大数未満のときスポーン
             if (CCountEnemy.m_nValInstances < m_WaveData.m_nMaxEnemyCount)
@@ -119,8 +115,8 @@ public class CEnemySpawner : MonoBehaviour
         // スポーンポイントIDがWaveDataに含まれているか確認
         for (int i = 0; i < m_SpawnPoints.Count; i++)
         {
-            int index = (m_StartIndex + i) % m_SpawnPoints.Count;
-            CSpawnPoint m_Point = m_SpawnPoints[index];
+            int _nIndex = (m_StartIndex + i) % m_SpawnPoints.Count;
+            CSpawnPoint m_Point = m_SpawnPoints[_nIndex];
 
             // PointIDがWaveData内に存在しなければスキップ
             if (m_Point.m_nPointID >= _WaveData.m_SpawnPointDataList.Count) continue;
@@ -136,6 +132,20 @@ public class CEnemySpawner : MonoBehaviour
             Instantiate(m_Prefab, m_Point.transform.position, Quaternion.identity);
             break; // 1体スポーンしたら終了
         }
+    }
+
+    // 現在のWaveのデータを取得
+    public CEnemyWaveData GetCurrentWaveData()
+    {
+        if (m_CurrentWave < m_WaveDataList.Count)
+            return m_WaveDataList[m_CurrentWave];
+        return null;
+    }
+
+    // 全Wave終了しているかどうか
+    public bool IsWaveFinished()
+    {
+        return m_CurrentWave >= m_WaveDataList.Count;
     }
 }
 
