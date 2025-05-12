@@ -251,7 +251,8 @@ public class CEnemy : MonoBehaviour
 			}
 
 			//Debug.Log(_temp_y);
-			Instantiate(m_Blood, new Vector3(transform.position.x, _temp_y, transform.position.z), Quaternion.identity);
+			//Instantiate(m_Blood, new Vector3(transform.position.x, _temp_y, transform.position.z), Quaternion.identity);
+			Instantiate(m_Blood, transform.position, Quaternion.identity);
 			//Debug.LogError("ëÃâtê∂ê¨");
 		}
 		else

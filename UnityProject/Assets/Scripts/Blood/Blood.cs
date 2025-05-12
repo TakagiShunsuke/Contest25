@@ -92,7 +92,7 @@ public class CBlood : MonoBehaviour
 		}
 	}
 
-	private void OnCollisionEnter(Collision _Entered)
+	private void OnTriggerEnter(Collider _Entered)
 	{
 		// 
 		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
@@ -105,7 +105,7 @@ public class CBlood : MonoBehaviour
 		}
 	}
 
-	private void OnCollisionStay(Collision _Staying)
+	private void OnTriggerStay(Collider _Staying)
 	{
 		// 
 		if (m_fCoolDownTimers.ContainsKey(_Staying.gameObject.GetInstanceID()))	// 初登録
@@ -127,6 +127,41 @@ public class CBlood : MonoBehaviour
 		}
 #endif
 	}
+//	private void OnCollisionEnter(Collision _Entered)
+//	{
+//		// 
+//		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
+//		{
+//			// 効果発動
+//			m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
+
+//			// クールタイム開始
+//			m_fCoolDownTimers.Add(_Entered.gameObject.GetInstanceID(), m_fCoolTime);	// タイマーを登録
+//		}
+//	}
+
+//	private void OnCollisionStay(Collision _Staying)
+//	{
+//		// 
+//		if (m_fCoolDownTimers.ContainsKey(_Staying.gameObject.GetInstanceID()))	// 初登録
+//		{
+//			if (m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] == 0.0f)	// 
+//			{
+//				// 効果発動
+//				m_Affect.Affect(gameObject, _Staying.gameObject);	// 自分が相手に効果を発動
+
+//				// クールタイム開始
+//				m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] = m_fCoolTime;	// タイマーをリセット
+//			}
+//		}
+//#if UNITY_EDITOR	// エディタ使用中
+//		else
+//		{
+//			// エラー出力
+//			Debug.LogError("エラー");	// ログ出力
+//		}
+//#endif
+//	}
 
 	//private void OnCollisionExit(Collision _Exited)
 	//{
