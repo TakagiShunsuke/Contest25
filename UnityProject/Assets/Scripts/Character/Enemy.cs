@@ -25,6 +25,7 @@ D
 
 // 名前空間宣言
 using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -35,7 +36,7 @@ public class CEnemy : MonoBehaviour
 	[Serializable]
 	public struct Status //敵ステータス
 	{
-		[SerializeField, Tooltip("HP")] public int m_nHp;					   // HP
+		//[SerializeField, Tooltip("HP")] public int m_nHp;					   // HP
 		[SerializeField, Tooltip("攻撃力")] public int m_nAtk;			       // 攻撃力
 		//[SerializeField, Tooltip("速度")] public float m_fSpeed;			   // 速さ
 		[SerializeField, Tooltip("攻撃速度")] public float m_fAtkSpeed;	       // 攻撃速度
@@ -48,6 +49,7 @@ public class CEnemy : MonoBehaviour
 	}
 
 	// 変数宣言
+	private CHitPoint m_HitPoint;
 
 	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
@@ -58,6 +60,8 @@ public class CEnemy : MonoBehaviour
 	private float m_fGrowthTimer = 0f; // 成長タイマー
 	private float m_fAtkCooldown = 0f; // 攻撃のクールタイム
 	private NavMeshAgent m_Agent;  // 追跡対象
+
+	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
 	// ＞初期化関数
 	// 引数：なし
@@ -82,6 +86,20 @@ public class CEnemy : MonoBehaviour
 		{
 			m_Agent.Warp(hit.position); // NavMeshの地面にワープさせる
 		}
+
+		// HPの実装
+		m_HitPoint = GetComponent<CHitPoint>();
+		if(!m_HitPoint)	// コンポーネントがない
+		{
+			m_HitPoint = gameObject.AddComponent<CHitPoint>();
+			Debug.Log("HPが不足しています：自動で作成済");
+
+			// 初期値設定
+			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...//TODO:改善
+		}
+
+		// イベント接続
+		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
 	// ＞更新関数
@@ -179,12 +197,13 @@ public class CEnemy : MonoBehaviour
 
 		if (m_fGrowthTimer >= m_fGrowthInterval)
 		{
-			m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
+			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
+			m_HitPoint.HP += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
 			m_fGrowthTimer = 0f;
 		}
 	}
 
-	// ＞ダメージ関数
+	// ＞ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
 	// 引数：なし
 	// ｘ
 	// 戻値：なし
@@ -201,11 +220,47 @@ public class CEnemy : MonoBehaviour
 			_nDamage = _nDamage - m_Status.m_nDef;
 		}
 
-		m_Status.m_nHp -= _nDamage;　// ダメージ処理
+		//m_Status.m_nHp -= _nDamage;　// ダメージ処理
+		m_HitPoint.HP -= _nDamage; // ダメージ処理
 
-		if (m_Status.m_nHp <= 0)	// HPが0の時
+		//if (m_Status.m_nHp <= 0)	// HPが0の時
+		//if (m_HitPoint.HP <= 0)	// HPが0の時
+		//{
+		//	Destroy(gameObject);	// 敵を消す
+		//}
+		if (m_HitPoint.HP <= 0) // HPが0の時
 		{
-			Destroy(gameObject);	// 敵を消す
+			Debug.Log("し");
 		}
+	}
+
+	// 死亡時処理
+	private void OnDead()
+	{
+
+		if(m_Blood != null)
+		{
+			float _temp_y = 0.0f;
+
+			Ray ray = new Ray(transform.position, Vector3.down);
+			RaycastHit hitten;
+			if (Physics.Raycast(ray, out hitten, 200.0f))
+			{
+				_temp_y = hitten.transform.gameObject.transform.position.y;
+				//Debug.Log(hitten.transform.gameObject.name);
+			}
+
+			//Debug.Log(_temp_y);
+			//Instantiate(m_Blood, new Vector3(transform.position.x, _temp_y, transform.position.z), Quaternion.identity);
+			Instantiate(m_Blood, transform.position, Quaternion.identity);
+			//Debug.LogError("体液生成");
+		}
+		else
+		{
+			Debug.LogError("体液が設定されていません");
+		}
+
+		
+		Destroy(gameObject);	// 敵を消す
 	}
 }
