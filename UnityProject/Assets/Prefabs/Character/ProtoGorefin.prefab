@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 6024236168568518783}
   - component: {fileID: -7202873497840035422}
   m_Layer: 0
-  m_Name: Gorefin
+  m_Name: ProtoGorefin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
