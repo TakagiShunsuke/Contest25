@@ -94,35 +94,12 @@ public class CBlood : MonoBehaviour
 
 	private void OnTriggerEnter(Collider _Entered)
 	{
-		if (_Entered == null)
-		{
-			Debug.Log("entering");
-		}
-		if(m_Affect == null)
-		{
-			Debug.Log("aff");
-		}
-		if(gameObject == null)
-		{
-			Debug.Log("obj");
-		}
-		if(_Entered.gameObject == null)
-		{
-			Debug.Log("enobj");
-		}
-		
 		// 
 		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
 		{
-			if(m_Affect == null)
-			{
-				Debug.Log("aff");
-			}
 			// 効果発動
 			if(m_Affect)
 				m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
-			else
-				Debug.Log("aff?");
 
 			// クールタイム開始
 			m_fCoolDownTimers.Add(_Entered.gameObject.GetInstanceID(), m_fCoolTime);	// タイマーを登録
