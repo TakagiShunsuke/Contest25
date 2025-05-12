@@ -221,13 +221,17 @@ public class CEnemy : MonoBehaviour
 		}
 
 		//m_Status.m_nHp -= _nDamage;　// ダメージ処理
-		m_HitPoint.HP -= _nDamage;　// ダメージ処理
+		m_HitPoint.HP -= _nDamage; // ダメージ処理
 
 		//if (m_Status.m_nHp <= 0)	// HPが0の時
 		//if (m_HitPoint.HP <= 0)	// HPが0の時
 		//{
 		//	Destroy(gameObject);	// 敵を消す
 		//}
+		if (m_HitPoint.HP <= 0) // HPが0の時
+		{
+			Debug.Log("し");
+		}
 	}
 
 	// 死亡時処理
@@ -236,7 +240,19 @@ public class CEnemy : MonoBehaviour
 
 		if(m_Blood != null)
 		{
-			GameObject.Instantiate(m_Blood);
+			float _temp_y = 0.0f;
+
+			Ray ray = new Ray(transform.position, Vector3.down);
+			RaycastHit hitten;
+			if (Physics.Raycast(ray, out hitten, 200.0f))
+			{
+				_temp_y = hitten.transform.gameObject.transform.position.y;
+				//Debug.Log(hitten.transform.gameObject.name);
+			}
+
+			//Debug.Log(_temp_y);
+			Instantiate(m_Blood, new Vector3(transform.position.x, _temp_y, transform.position.z), Quaternion.identity);
+			//Debug.LogError("体液生成");
 		}
 		else
 		{

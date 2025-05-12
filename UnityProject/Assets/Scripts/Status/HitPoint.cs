@@ -24,14 +24,15 @@ public class CHitPoint : MonoBehaviour
 		set
 		{
 			m_nHP = value;
-			if(m_nHP < 1)	// HP‚ª–³‚­‚È‚Á‚½
+			if (m_nHP < 1)  // HP‚ª–³‚­‚È‚Á‚½
 			{
-				IsDead = true;	// Ž€–S‚µ‚½ˆµ‚¢‚É
-				if(OnDead != null)
+				IsDead = true;  // Ž€–S‚µ‚½ˆµ‚¢‚É
+				if (OnDead != null)
 				{
-					OnDead.Invoke();
+					OnDead.Invoke();	//TODO:‚±‚ê‚¾‚ÆŽ€Œã‘h¶‚È‚Ç(‚Æ‚­‚Éˆ—‚Ì“r’†‚ÅˆêŽž“I‚ÉŽE‚µ‚½‚È‚Ç)‚µ‚½‚Æ‚«‚É•s—¶‚ÌŒÄ‚Ño‚µ‚ª”­¶‚·‚é‚½‚ß—v‰ü‘P
 				}
 			}
+
 		}
 	}
 }
