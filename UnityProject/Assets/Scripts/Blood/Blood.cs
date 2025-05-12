@@ -98,7 +98,8 @@ public class CBlood : MonoBehaviour
 		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
 		{
 			// 効果発動
-			m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
+			if(m_Affect)
+				m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
 
 			// クールタイム開始
 			m_fCoolDownTimers.Add(_Entered.gameObject.GetInstanceID(), m_fCoolTime);	// タイマーを登録
@@ -108,7 +109,7 @@ public class CBlood : MonoBehaviour
 	private void OnTriggerStay(Collider _Staying)
 	{
 		// 
-		if (m_fCoolDownTimers.ContainsKey(_Staying.gameObject.GetInstanceID()))	// 初登録
+		if (m_fCoolDownTimers.ContainsKey(_Staying.gameObject.GetInstanceID()))	// 登録済
 		{
 			if (m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] == 0.0f)	// 
 			{
@@ -123,7 +124,7 @@ public class CBlood : MonoBehaviour
 		else
 		{
 			// エラー出力
-			Debug.LogError("エラー");	// ログ出力
+			Debug.LogError("クールタイムが登録されていません");	// ログ出力
 		}
 #endif
 	}
