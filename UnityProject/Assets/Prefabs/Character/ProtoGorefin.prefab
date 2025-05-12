@@ -16,8 +16,9 @@ GameObject:
   - component: {fileID: 9203589630774836163}
   - component: {fileID: 4462452211973853219}
   - component: {fileID: 6024236168568518783}
+  - component: {fileID: -7202873497840035422}
   m_Layer: 0
-  m_Name: Gorefin
+  m_Name: ProtoGorefin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,7 +128,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Status:
-    m_nHp: 100
     m_nAtk: 10
     m_fAtkSpeed: 50
     m_nDef: 10
@@ -136,8 +136,8 @@ MonoBehaviour:
     m_nWeight: 100
     m_fAtkRange: 2
     m_fAtkAngle: 60
-  m_Target: {fileID: 0}
   m_fGrowthInterval: 5
+  m_Blood: {fileID: 75644770688212516, guid: 82a1c789e749f2644a6571719e72a761, type: 3}
 --- !u!54 &9203589630774836163
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -146,7 +146,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3017918768006073836}
   serializedVersion: 4
-  m_Mass: 50
+  m_Mass: 1
   m_Drag: 1
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -199,3 +199,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a26cdd165bd3e334b930dec094aea947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-7202873497840035422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3017918768006073836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8742f30f3f583840b7d3148fb6ad458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nHP: 100

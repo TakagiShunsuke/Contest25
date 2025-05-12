@@ -15,6 +15,8 @@ MonoBehaviour:
   m_nMaxEnemyCount: 10
   m_SpawnPointDataList:
   - m_EnemyPrefabs:
-    - {fileID: 3017918768006073836, guid: 1f65130fe4585cd4aa055065fbf08751, type: 3}
+    - {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
   - m_EnemyPrefabs:
-    - {fileID: 3017918768006073836, guid: 1f65130fe4585cd4aa055065fbf08751, type: 3}
+    - {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
+  m_fWaveDuration: 120
+  m_SpawnInterval: 1
