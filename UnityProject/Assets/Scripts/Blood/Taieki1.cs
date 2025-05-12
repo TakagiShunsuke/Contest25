@@ -1,3 +1,6 @@
+
+
+
 using UnityEngine;
 
 public class Taieki1 : MonoBehaviour
@@ -23,7 +26,6 @@ public class Taieki1 : MonoBehaviour
             GameObject hitobj = collision.gameObject;
             if ((hitobj.CompareTag("Enemy")) || (hitobj.CompareTag("Player")))
             {
-
                time += Time.deltaTime;
                 
                 if (time >= 0.5f)
