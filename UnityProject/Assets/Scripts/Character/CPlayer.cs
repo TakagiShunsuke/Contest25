@@ -21,6 +21,7 @@ D
 07:攻撃の判定がおかしかったので修正:kato
 08:攻撃のクールダウン時間を修正:kato
 08:ダメージ発生を仮置き:takagi
+12:HP関係の機能を外部に切り出し:takagi
 =====*/
 
 // 名前空間宣言
@@ -68,6 +69,7 @@ public class CPlayer : MonoBehaviour, IDH
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
 
 	private bool m_bPoisonUpdate = false;//毒更新用
+
 	// 攻撃キーの変数
 	[SerializeField]
 	[Tooltip("攻撃キー")]
@@ -118,7 +120,7 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 
 		//// イベント接続
-		//m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
+		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
 	// 移動処理関数
@@ -223,7 +225,7 @@ public class CPlayer : MonoBehaviour, IDH
 					var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
 					if (_EnemyScript != null)
 					{
-						_EnemyScript.Damage(m_nAtk);    // 一時的なダメージ処理
+						_EnemyScript.Damage(m_nAtk);	// 一時的なダメージ処理
 						Debug.Log("AttackHit!");
 					}
 				}
@@ -270,12 +272,7 @@ public class CPlayer : MonoBehaviour, IDH
 			m_bPoisonUpdate = false;
 		}
 
-		Vector3 _NowPosition = transform.position;	// 現在の位置を取得
-
-		_NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
-		_NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
-
-		transform.position = _NowPosition;	// プレイヤーの位置を制限範囲内に収める
+		
 	}
 
 	// 物理更新関数
@@ -288,6 +285,13 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		// 移動処理
 		PlayerMove();
+
+		Vector3 _NowPosition = transform.position;  // 現在の位置を取得
+
+		_NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
+		_NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
+
+		transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
 
 		// プレイヤーの攻撃(Enter)
 		if (Input.GetKeyDown(m_AttackKey))
@@ -311,7 +315,7 @@ public class CPlayer : MonoBehaviour, IDH
 	void OnDrawGizmos()
 	{
 		Gizmos.color = new Color(1, 0, 0, 0.5f);
-		Gizmos.DrawCube(transform.position, new Vector3(1, 1, 1));
+		Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
 		
 	}
 
@@ -336,16 +340,13 @@ public class CPlayer : MonoBehaviour, IDH
 		m_HitPoint.HP -= _nDamage; // ダメージ処理
 	}
 
-
-
-
-
-private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 	{
 #if UNITY_EDITOR
 		Gizmos.color = new Color(1, 1, 0, 0.4f);
-		
-		Vector3 origin = transform.position;
+
+		Vector3 offSet = new Vector3(0, 1, 0);
+		Vector3 origin = transform.position + offSet;
 		Vector3 forward = transform.forward;
 		int segments = 30; // 表示する線の数（多いほどなめらか）
 
@@ -358,9 +359,18 @@ private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 		}
 
 		Gizmos.color = new Color(0, 0, 1, 1.0f);
-		Gizmos.DrawLine(transform.position, transform.position + transform.forward * 20.0f);
+		Vector3 start = transform.position + offSet;
+		Vector3 end = transform.position + transform.forward * 20.0f + offSet;
+		Gizmos.DrawLine(start, end);
 #endif
 	}
+
+		// 死亡時処理
+	private void OnDead()
+	{
+		Destroy(gameObject);	// プレイヤーを消す
+	}
+
 
 	//---↓消す---
 	//ダメージ処理
@@ -414,4 +424,3 @@ private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 		}
 	}
 }
-

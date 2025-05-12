@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 6509670574215255275}
   - component: {fileID: 3928871976778083513}
   - component: {fileID: 4797563343693972548}
+  - component: {fileID: -360961637502934674}
   m_Layer: 0
-  m_Name: Player
+  m_Name: ProtoPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,7 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb5a558c5065c094b9850d0fafe05f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nHp: 100
   m_nAtk: 100
   m_fSpeed: 0.2
   m_fAtkSpeed: 100
@@ -164,3 +164,16 @@ MonoBehaviour:
   m_vMoveLimitOrigin: {x: 0, y: 0, z: 0}
   m_fMoveLimit_x: 10
   m_fMoveLimit_z: 10
+--- !u!114 &-360961637502934674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5283285105095799031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8742f30f3f583840b7d3148fb6ad458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nHP: 100
