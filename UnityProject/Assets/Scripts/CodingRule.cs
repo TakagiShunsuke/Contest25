@@ -61,6 +61,7 @@ namespace Space
 public interface IInterface	// インターフェースの頭文字にIをつける
 {
 	// プロパティ定義
+	/// <value>？？？</value>
 	public double Prop { get; set; }	// 自動実装プロパティはハンガリアン記法を無視してよい
 
 	// プロトタイプ宣言
@@ -116,6 +117,15 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	// 戻値：何入れても0   // 内容のみ記述
 	// ｘ
 	// 概要：関数記述例
+	/// <summary>
+	/// title
+	/// <para>概要を記載</para>
+	/// <para>複数項目</para>
+	/// <param name="Called">コールバック関数を所有するクラス名</param>
+	/// </summary>
+	/// <param name="_dDouble">だぶ～</param>
+	/// <returns>戻り～</returns>
+	/// <remarks>補足？</remarks>
 	private int Example(double _dDouble, GameObject _GameObject)
 	{
 		// 変数宣言
@@ -136,7 +146,19 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 				break;
 
 			default:	// その他
+#if _Debug	//プリプロセッサは左端
+				Debug.Log("デフォルト");	// 中身は通常と同じ
+#endif
 				break;
+		}
+
+		if (m_nInt != 0)	// if文は()の前に空白
+		{
+			m_nInt = 0;
+		}
+		else	// else自体のコメント位置
+		{
+			m_nInt *= 0;
 		}
 
 		// 提供
@@ -155,14 +177,21 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	}
 }
 
-// ＞xx関数
-// 引数：なし   // 引数がない場合は１を省略してもよい
-// ｘ
-// 戻値：なし
-// ｘ
-// 概要：関数例
+[CreateAssetMenu(menuName = "ObjectMenu/Menu")]
 class CMenuItem : ScriptableObject
 {
+	// ＞xx関数
+	// 引数：なし   // 引数がない場合は１を省略してもよい
+	// ｘ
+	// 戻値：なし
+	// ｘ
+	// 概要：関数例
+	/// <summary>
+	/// <para>概要を記載</para>
+	/// </summary>
+	/// <remarks>タイトル</remarks>
+	// 引数がない場合は省略
+	// 戻り値がない場合は省略
 	private void DoSomething()
 	{
 	}
