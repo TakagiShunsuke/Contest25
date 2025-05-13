@@ -16,7 +16,5 @@ MonoBehaviour:
   m_SpawnPointDataList:
   - m_EnemyPrefabs:
     - {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
-  - m_EnemyPrefabs:
-    - {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
-  m_fWaveDuration: 120
+  m_fWaveDuration: 20
   m_SpawnInterval: 3
