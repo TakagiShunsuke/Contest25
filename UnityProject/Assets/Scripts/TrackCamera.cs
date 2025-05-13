@@ -20,7 +20,6 @@ D
 // 名前空間宣言
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 // クラス定義
