@@ -21,6 +21,7 @@ D
 9:Enemyを生成時に近くのナビメッシュにワープする
 	プレイヤーを自動でターゲットするように修正:sezaki
 9:ターゲットを自動取得していたので非シリアライズ化:takagi
+14:成長のHP計算を訂正:takagi
 =====*/
 
 // 名前空間宣言
@@ -197,7 +198,7 @@ public class CEnemy : MonoBehaviour
 		if (m_fGrowthTimer >= m_fGrowthInterval)
 		{
 			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
-			m_HitPoint.HP += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
+			m_HitPoint.HP = m_Status.m_nGrowth + (int)(m_Status.m_nGrowthSpeed * 0.1f);
 			m_fGrowthTimer = 0f;
 		}
 	}
