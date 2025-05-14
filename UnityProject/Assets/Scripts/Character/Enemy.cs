@@ -95,7 +95,7 @@ public class CEnemy : MonoBehaviour
 			Debug.Log("HPが不足しています：自動で作成済");
 
 			// 初期値設定
-			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...//TODO:改善
+			m_HitPoint.HP = m_Status.m_nGrowth;	// 設定されてないということは未調整な数字のはず...//TODO:改善
 		}
 
 		// イベント接続
@@ -198,7 +198,7 @@ public class CEnemy : MonoBehaviour
 		if (m_fGrowthTimer >= m_fGrowthInterval)
 		{
 			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
-			m_HitPoint.HP = m_Status.m_nGrowth + (int)(m_Status.m_nGrowthSpeed * 0.1f);
+			m_HitPoint.HP += (int)(m_Status.m_nGrowthSpeed * 0.1f);
 			m_fGrowthTimer = 0f;
 		}
 	}
