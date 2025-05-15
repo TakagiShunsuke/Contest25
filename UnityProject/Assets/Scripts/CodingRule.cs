@@ -50,7 +50,7 @@ namespace Space
 	public static class CSpace
 	{
 		// 定数定義
-		private const uint CONST = 0;	// 定数はコンスタンス記法に従う(ハンガリアン記法には従わない)
+		private const uint CONST = 0;	// 定数はコンスタンスケースに従う(ハンガリアン記法には従わない)
 
 		// 変数宣言
 		public static readonly double ms_dTemp = 0.0d;	// readonlyな変数も書き方は同じ
@@ -75,8 +75,8 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	// 列挙定義
 	public enum E_ENUM	// 列挙は接頭字をE_とする
 	{
-		E_ENUM_A,	// 列挙名_XXと続ける
-		E_ENUM_B,
+		A,	// 中身もコンスタンスケース
+		B,	// 列挙名を引き継ぐ必要はない
 	}
 
 	// 構造体定義
@@ -99,34 +99,51 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	[SerializeField, Tooltip("メンバー変数")] private uint m_uMember;	// 属性は記法に影響しない
 	private int m_nInt;	// 通常の型はハンガリアン記法に従う[メンバ変数はm_と付ける]
 	[SerializeField, Tooltip("構造体")] private SerializeStruct m_Struct;	// その変数が何なのかインスペクタからわかるようにする
-	private static string m_szStr;  // メンバ変数∧静的変数なら融合してms_と記述する
+	private static string ms_sStr;	// メンバ変数∧静的変数なら融合してms_と記述する
+									// string型のハンガリアン記法はsとする
 	private E_ENUM m_eEnum;	// 列挙はハンガリアン記法に従いeを接頭辞にする
 	private float[] m_fArray;	// 配列は子の型名のみ記述(aとかは不要)
 	private List<uint> m_uLists;	// リストも子の型名のみ記述
 	private Dictionary<string, float> m_fDictionary;	// 辞書の命名はvalue部の型名に依存
 
 	// プロパティ定義
-	public double PriProp { get; private set; }	// readonlyな形式でも記法は無し
-
-
-	// 初回関数定義前に2行空ける
-	// ＞例関数
-	// 引数１：double _dDouble：数値   // 引数：内容の形で記述
-	// 引数２：GameObject _GameObject：物体   // 引数は_から始める
-	// ｘ
-	// 戻値：何入れても0   // 内容のみ記述
-	// ｘ
-	// 概要：関数記述例
+		// プロパティを書く前に一つ空行を入れる
 	/// <summary>
-	/// title
-	/// <para>概要を記載</para>
-	/// <para>複数項目</para>
-	/// <param name="Called">コールバック関数を所有するクラス名</param>
+	/// xxプロパティ(プロパティ名)
 	/// </summary>
-	/// <param name="_dDouble">だぶ～</param>
-	/// <returns>戻り～</returns>
-	/// <remarks>補足？</remarks>
-	private int Example(double _dDouble, GameObject _GameObject)
+	/// <value>プロパティの取り扱う値について記述</value>
+	public double PriProp { get; private set; }	// プロパティはパスカルケースのみ従いハンガリアン記法は無視(関数扱い)
+
+	/// <summary>
+	/// メンバープロパティ
+	/// </summary>
+	/// <value><see cref="m_uMember"/></value>	// 参照しているタイプのプロパティはcrefで示せばOK
+	public uint Member
+	{
+		get
+		{
+			return m_uMember;
+		}
+		set
+		{
+			m_uMember = value;
+		}
+	}
+
+		// 初回関数定義前に2行空ける	※↓関数コメントはXML形式で
+	/// <summary>
+	/// -例関数(関数名)
+	/// <para>概要を記載</para>
+	/// <para>複数項目ある場合は段落(para属性)を分けると効果的</para>
+	/// <see href = "https://www.youtube.com/">参考サイト添付</see>
+	/// <see cref="m_Struct"/>
+	/// </summary>
+	/// <typeparam name="Meta">ジェネリック型の説明</typeparam>
+	/// <param name="_dDouble">引数1の説明</param>
+	/// <param name="_GameObject">引数2の説明</param>
+	/// <param name="_MetaData">引数3の説明</param>
+	/// <returns>戻り値の説明</returns>
+	private int Example<Meta>(double _dDouble, GameObject _GameObject, Meta _MetaData)
 	{
 		// 変数宣言
 		float _fFloat = 0.0f;	// ローカル変数も_から始める
@@ -164,13 +181,20 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 		// 提供
 		return m_nInt;
 	}
-
+		// 二回目以降の関数定義は書く前に一つ空行を入れる
 	// ＞xx関数
 	// 引数：なし   // 引数がない場合は１を省略してもよい
 	// ｘ
 	// 戻値：なし
 	// ｘ
 	// 概要：関数例
+	/// <summary>
+	/// -xx関数
+	/// <para>関数例</para>
+	/// </summary>
+	// ジェネリック型がない場合は省略
+	// 引数がない場合は省略
+	// 戻り値がない場合は省略
 	[MenuItem("ffff/gggg")]
 	public void Function()
 	{
@@ -180,18 +204,11 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 [CreateAssetMenu(menuName = "ObjectMenu/Menu")]
 class CMenuItem : ScriptableObject
 {
-	// ＞xx関数
-	// 引数：なし   // 引数がない場合は１を省略してもよい
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：関数例
 	/// <summary>
-	/// <para>概要を記載</para>
+	/// -○○関数
+	/// <para>関数例</para>
 	/// </summary>
 	/// <remarks>タイトル</remarks>
-	// 引数がない場合は省略
-	// 戻り値がない場合は省略
 	private void DoSomething()
 	{
 	}
