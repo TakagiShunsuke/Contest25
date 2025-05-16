@@ -97,7 +97,7 @@ public class CDamage : CAffect
 	/// <para>参考：<see cref="m_fBaseCorrection">基礎値補正</see></para>
 	/// <para>参考：<see cref="m_fCorrectionRatio">補正倍率</see></para>
 	/// </value>
-	private float CorrectedDamage
+	protected float CorrectedDamage
 	{
 		get
 		{
@@ -144,7 +144,7 @@ public class CDamage : CAffect
 	/// <param name="_Opponent">効果の受動者</param>
 	/// <returns>最終ダメージ</returns>
 	protected int CulcDamage(float _fDamageValue, float _fDefence)
-	{	
+	{
 		// 変数宣言
 		int _Result = 0;	// 演算結果格納用
 
