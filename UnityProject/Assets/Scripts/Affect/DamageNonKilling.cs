@@ -1,4 +1,4 @@
-
+//TODO：後でコメント
 
 
 using System;
@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
-public class CDamageNonKilling : CAffect
+public class CDamageNonKilling : CDamage
 {
+	// 定数定義
+	[SerializeField, Tooltip("ダメージ値")]public static int _min_damage = 0;
 	// 変数宣言
 	[Header("パラメータ")]
 	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage;
