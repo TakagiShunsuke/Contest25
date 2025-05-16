@@ -21,6 +21,7 @@ D
 07:攻撃の判定がおかしかったので修正:kato
 08:攻撃のクールダウン時間を修正:kato
 08:ダメージ発生を仮置き:takagi
+16:Rayで遊んでみる:kato
 =====*/
 
 // 名前空間宣言
@@ -33,7 +34,9 @@ public class CPlayer : MonoBehaviour
 	// 変数宣言
 	private Rigidbody m_Rb; // リジットボディ
 
-	[Header("プレイヤーステータス")]
+	private float m_RayDistance = 10.0f;
+
+    [Header("プレイヤーステータス")]
 	[SerializeField]
 	[Tooltip("HP")]
 	private int m_nHp = 100;
@@ -83,16 +86,22 @@ public class CPlayer : MonoBehaviour
 	private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
 	[SerializeField]
 	[Tooltip("プレイヤーの移動制限範囲Z")]
-	private float m_fMoveLimit_z = 10.0f;	// プレイヤーの移動制限範囲
-	
+	private float m_fMoveLimit_z = 10.0f;   // プレイヤーの移動制限範囲
 
-	// 初期化関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：初期化処理
-	private void Start()
+	[SerializeField]
+	[Tooltip("Rayによる障害物回避距離")]
+	private float m_fAvoidDistance = 1.0f;  // 障害物との最低距離
+
+	[SerializeField]
+	[Tooltip("PlayerRayの高さ")]
+	private float m_fRayHeight = 1.5f; // Rayの高さ
+    // 初期化関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：初期化処理
+    private void Start()
 	{
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
@@ -107,61 +116,106 @@ public class CPlayer : MonoBehaviour
 	// 概要：プレイヤーの移動処理
 	private void PlayerMove()
 	{
-		Vector3 input = new Vector3(); // 入力値を格納する変数
-		if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
-		if (Input.GetKey(KeyCode.S)) input += Vector3.back;
-		if (Input.GetKey(KeyCode.A)) input += Vector3.left;
-		if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+		Ray ray = new Ray(transform.position, transform.forward); // プレイヤーの前方にRayを飛ばす
+        RaycastHit hit; // Rayの当たり判定を格納する変数
 
-		if (input != Vector3.zero)
-		{
-			input.Normalize();
-			m_Rb.transform.position += input * m_fSpeed;
+        Vector3 input = new Vector3(); // 入力値を格納する変数
 
-			// 回転させる（スムーズにしたい場合はLerpでもOK）
-			m_Rb.transform.rotation = Quaternion.LookRotation(input);
-		}
-
-		// プレイヤーの移動 正面向けるけどw+dが変になる移動
-		/*
 		if (Input.GetKey(KeyCode.W))
 		{
-			m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
-			m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
-		}
-		if (Input.GetKey(KeyCode.S))
-		{
-			m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
-			m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
-		}
-		if (Input.GetKey(KeyCode.A))
-		{
-			m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
-			m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
-			m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
-		}
-		*/
+            input += Vector3.forward;
 
-		/*  滑らかに動くけど加速するパターンの移動
-		//if (Input.GetKey(KeyCode.S))
-		//{
-		//    rb.AddForce(Vector3.back * speed);
-		//}
-		//if (Input.GetKey(KeyCode.A))
-		//{
-		//    rb.AddForce(Vector3.left * speed);
-		//}
-		//if (Input.GetKey(KeyCode.D))
-		//{
-		//    rb.AddForce(Vector3.right * speed);
-		//}
+        }
+        if (Input.GetKey(KeyCode.S))
+		{
+            input += Vector3.back;
 
-		*/
-	}
+        }
+        if (Input.GetKey(KeyCode.A))
+		{
+            input += Vector3.left;
+
+        }
+        if (Input.GetKey(KeyCode.D))
+		{
+            input += Vector3.right;
+
+        }
+
+        if (input != Vector3.zero)
+        {
+            input.Normalize();
+            Vector3 moveDir = input;
+			Vector3 RayPosition = transform.position + Vector3.up * m_fRayHeight; // Rayの位置をプレイヤーの位置に設定
+            float moveDistance = m_fSpeed;
+
+
+            // Rayを前方に飛ばして障害物との距離をチェック
+            if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
+            {
+                m_fAvoidDistance = 1.0f; // 障害物との最低距離
+
+                if (hit.distance <= m_fAvoidDistance)
+                {
+                    // 近すぎて移動しない
+                    moveDistance = 0;
+                }
+                else if (hit.distance < moveDistance + m_fAvoidDistance)
+                {
+                    // 距離を調整して止まる
+                    moveDistance = hit.distance - m_fAvoidDistance;
+                }
+            }
+
+            m_Rb.transform.position += moveDir * moveDistance;
+
+            
+
+            // 回転
+            m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
+
+        }
+
+    // プレイヤーの移動 正面向けるけどw+dが変になる移動
+    /*
+    if (Input.GetKey(KeyCode.W))
+    {
+        m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
+        m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
+    }
+    if (Input.GetKey(KeyCode.S))
+    {
+        m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
+        m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
+    }
+    if (Input.GetKey(KeyCode.A))
+    {
+        m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
+        m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
+    }
+    if (Input.GetKey(KeyCode.D))
+    {
+        m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
+        m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
+    }
+    */
+
+    /*  滑らかに動くけど加速するパターンの移動
+    //if (Input.GetKey(KeyCode.S))
+    //{
+    //    rb.AddForce(Vector3.back * speed);
+    //}
+    //if (Input.GetKey(KeyCode.A))
+    //{
+    //    rb.AddForce(Vector3.left * speed);
+    //}
+    //if (Input.GetKey(KeyCode.D))
+    //{
+    //    rb.AddForce(Vector3.right * speed);
+    //}
+
+    */
+}
 
 	// 攻撃関数
 	// 引数１：なし
@@ -226,8 +280,10 @@ public class CPlayer : MonoBehaviour
 			Destroy(this.gameObject); // プレイヤーを消す
         }
 
-		
-	}
+        Vector3 origin = transform.position + Vector3.up * m_fRayHeight;
+        Debug.DrawRay(origin, transform.forward * 1.0f, Color.green);
+
+    }
 
 	// 物理更新関数
 	// 引数１：なし
