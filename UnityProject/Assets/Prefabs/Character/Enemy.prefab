@@ -187,6 +187,7 @@ MonoBehaviour:
     m_nDefense: 10
     m_nGrowth: 100
   m_Target: {fileID: 5098792744888997742, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
+  deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!54 &4641085303155893431
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -68,24 +68,7 @@ public class CDeathEffect : MonoBehaviour
             m_FadeMaterials = new Material[1];
             m_FadeMaterials[0] = m_InstanceMaterial;
         }
-        else
-        {
-            // ’Êí’Ê‚è Renderer ‚ğ’T‚·ˆ—
-            Renderer[] _Renderers = GetComponentsInChildren<Renderer>();
-            m_FadeMaterials = new Material[_Renderers.Length];
-
-            for (int i = 0; i < _Renderers.Length; i++)
-            {
-                Material _NewMaterial = new Material(_Renderers[i].sharedMaterial);
-                _Renderers[i].material = _NewMaterial;
-                m_FadeMaterials[i] = _NewMaterial;
-
-                Color color = _NewMaterial.GetColor("_Color");
-                color.a = m_fStartAlpha;
-                _NewMaterial.SetColor("_Color", color);
-            }
-        }
-
+        
         // ƒŒƒ“ƒ_ƒ‰[æ“¾
         EffectRenderer = GetComponent<CEffectRenderer>();
         if (EffectRenderer == null)

@@ -72,6 +72,7 @@ public class CEnemy : MonoBehaviour
 	{
 		//’ÇÕ
 		m_Agent.SetDestination(m_Target.position);
+        Damage(1);
 	}
 
     // „UŒ‚ŠÖ”
