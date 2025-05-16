@@ -21,6 +21,7 @@ D
 9:Enemyを生成時に近くのナビメッシュにワープする
 	プレイヤーを自動でターゲットするように修正:sezaki
 9:ターゲットを自動取得していたので非シリアライズ化:takagi
+12:CHitPointを適用:takagi
 14:成長のHP計算を訂正:takagi
 =====*/
 
@@ -49,7 +50,7 @@ public class CEnemy : MonoBehaviour
 	}
 
 	// 変数宣言
-	private CHitPoint m_HitPoint;
+	private CHitPoint m_HitPoint;	// HP
 
 	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
@@ -62,6 +63,7 @@ public class CEnemy : MonoBehaviour
 	private NavMeshAgent m_Agent;  // 追跡対象
 
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
+
 
 	// ＞初期化関数
 	// 引数：なし
@@ -88,14 +90,17 @@ public class CEnemy : MonoBehaviour
 		}
 
 		// HPの実装
-		m_HitPoint = GetComponent<CHitPoint>();
+		m_HitPoint = GetComponent<CHitPoint>();	// HPを取得
 		if(!m_HitPoint)	// コンポーネントがない
 		{
-			m_HitPoint = gameObject.AddComponent<CHitPoint>();
-			Debug.Log("HPが不足しています：自動で作成済");
+			// 機能の確保
+			m_HitPoint = gameObject.AddComponent<CHitPoint>();	// 代わりに作成
+			
+			// 出力
+			Debug.LogWarning("HPが不足しています：自動で作成済");
 
 			// 初期値設定
-			m_HitPoint.HP = m_Status.m_nGrowth;	// 設定されてないということは未調整な数字のはず...//TODO:改善
+			m_HitPoint.HP = m_Status.m_nGrowth;	// 設定されてないということは未調整な数字のはず...	//TODO:改善
 		}
 
 		// イベント接続
@@ -221,24 +226,23 @@ public class CEnemy : MonoBehaviour
 		}
 
 		//m_Status.m_nHp -= _nDamage;　// ダメージ処理
-		m_HitPoint.HP -= _nDamage; // ダメージ処理
+		m_HitPoint.HP -= _nDamage;	// ダメージ処理
 
 		//if (m_Status.m_nHp <= 0)	// HPが0の時
 		//if (m_HitPoint.HP <= 0)	// HPが0の時
 		//{
 		//	Destroy(gameObject);	// 敵を消す
 		//}
-		if (m_HitPoint.HP <= 0) // HPが0の時
-		{
-			Debug.Log("し");
-		}
 	}
 
-	// 死亡時処理
+	/// <summary>
+	/// -死亡時処理関数
+	/// <para>HPが0になったときに呼び出される関数</para>
+	/// </summary>
 	private void OnDead()
 	{
-
-		if(m_Blood != null)
+		// 体液の排出
+		if(m_Blood != null)	// 
 		{
 			float _temp_y = 0.0f;
 
