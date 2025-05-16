@@ -27,6 +27,7 @@ D
 // 名前空間宣言
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections; // 無敵状態用
 
 // クラス定義
 public class CPlayer : MonoBehaviour
@@ -95,6 +96,10 @@ public class CPlayer : MonoBehaviour
 	[SerializeField]
 	[Tooltip("PlayerRayの高さ")]
 	private float m_fRayHeight = 1.5f; // Rayの高さ
+
+	private bool m_bIsInvicible = false; // 無敵フラグ
+	private int m_nInvicibleTime = 90; // 無敵時間
+
     // 初期化関数
     // 引数１：なし
     // ｘ
@@ -337,7 +342,9 @@ public class CPlayer : MonoBehaviour
 	// 概要：ダメージを受ける
 	public void Damage(int _nDamage)
 	{
-		if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
+		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
+
+        if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
 		{
 			_nDamage = 1;
 		}
@@ -347,9 +354,32 @@ public class CPlayer : MonoBehaviour
 		}
 
 		m_nHp -= _nDamage; // ダメージ処理
-	}
 
-	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+		
+		// 無敵状態開始
+		StartCoroutine(InvincibilityCoroutine());
+        
+    }
+
+    // ＞無敵状態関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：ダメージを受けたときに90フレーム無敵状態になる
+    private IEnumerator InvincibilityCoroutine()
+    {
+        m_bIsInvicible = true; // 無敵状態にする
+        Debug.Log("無敵状態!!!");
+        for (int i = 0; i < m_nInvicibleTime; ++i)
+		{
+			yield return null; // 1フレーム待つ
+        }
+
+        m_bIsInvicible = false; // 無敵状態を解除する
+		Debug.Log("無敵状態解除!!");
+    }
+    private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
 	{
 #if UNITY_EDITOR
 		Gizmos.color = new Color(1, 1, 0, 0.4f);
