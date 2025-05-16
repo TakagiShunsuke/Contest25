@@ -23,6 +23,12 @@ using UnityEngine;
 // クラス定義
 public class CDamageNonKilling : CDamage
 {
+	/// <summary>
+	/// -非致死性ダメージ効果関数
+	/// <para>不殺のダメージ効果を行う関数</para>
+	/// </summary>
+	/// <param name="_Oneself">効果の発動者</param>
+	/// <param name="_Opponent">効果の受動者</param>
 	public override sealed void Affect(GameObject _Oneself, GameObject _Opponent)
 	{
 		// 変数宣言
