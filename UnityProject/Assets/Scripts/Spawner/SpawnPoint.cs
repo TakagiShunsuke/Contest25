@@ -13,39 +13,39 @@ D
 6:修正:nishibu
 7:修正、コメント:nishibu
 8:EnemyWaveDataと連携できるように変更:nishibu
+14:WaveDataのメタデータの修正に伴い修正1:nishibu
+16:WaveDataのメタデータの修正に伴い修正2:nishibu
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 using System.Collections.Generic;
 
-// クラス定義
+// クラス定義  
 public class CSpawnPoint : MonoBehaviour
 {
-    [Header("スポーンポイントID")]
-    [Tooltip("このスポーンポイントのID")]
-    public int m_nPointID;
+    [Header("このスポーン地点が対応するタグ（複数可）")]
+    [Tooltip("スポーン地点が対応するタグを設定する")]
+    public List<E_SpawnTagType> m_eMetaTags = new();
 
 
-    // ＞初期化関数
-    // 引数：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：シーン開始時に自身をスポーンポイントとしてEnemySpawnerに登録する
+    /// <summary>
+	/// -初期化関数
+	/// <para>スポーンポイントを追加</para>
+	/// </summary>
     private void Start()
     {
-        CEnemySpawner.Instance.RegisterSpawnPoint(this);
+        if (CEnemySpawner.Instance != null)
+            CEnemySpawner.Instance.RegisterSpawnPoint(this);
     }
 
-    // ＞破棄関数
-    // 引数：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：シーン終了時などに自身をEnemySpawnerのリストから解除する
+    /// <summary>
+	/// -破棄関数
+	/// <para>スポーンポイントを削除</para>
+	/// </summary>
     private void OnDestroy()
     {
-        CEnemySpawner.Instance.UnregisterSpawnPoint(this);
+        if (CEnemySpawner.Instance != null)
+            CEnemySpawner.Instance.UnregisterSpawnPoint(this);
     }
 }

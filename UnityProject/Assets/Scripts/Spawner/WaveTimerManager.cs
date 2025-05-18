@@ -12,6 +12,7 @@ D
 5:WaveTimerManager管理クラス生成:nishibu
 6:修正:nishibu
 7:修正、コメント:nishibu
+18:コメント修正:nishibu
 =====*/
 
 // 名前空間宣言
@@ -22,12 +23,11 @@ public class CWaveTimerManager : MonoBehaviour
 {
     private float m_fTimer = 0f; // 経過時間
 
-    // ＞更新関数
-    // 引数：なし   
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要: 毎フレームごとに経過時間を加算し、指定時間を過ぎたらEnemySpawnerに次のWave開始を通知する
+
+    /// <summary>
+	/// -更新関数
+	/// <para>毎フレームごとに経過時間を加算し、指定時間を過ぎたらEnemySpawnerに次のWave開始を通知する</para>
+	/// </summary>
     private void Update()
     {
         // ゲーム開始前またはすべてのWaveが終了している場合は処理しない
@@ -35,15 +35,15 @@ public class CWaveTimerManager : MonoBehaviour
             return;
 
         // 現在のWaveのデータ取得
-        CEnemyWaveData waveData = CEnemySpawner.Instance.GetCurrentWaveData();
-        if (waveData == null)
+        CEnemyWaveData _WaveData = CEnemySpawner.Instance.GetCurrentWaveData();
+        if (_WaveData == null)
             return;
 
         // 経過時間を加算
         m_fTimer += Time.deltaTime;
 
         // Waveの持続時間を超えたら次のWaveへ
-        if (m_fTimer >= waveData.m_fWaveDuration)
+        if (m_fTimer >= _WaveData.m_fWaveDuration)
         {
             m_fTimer = 0f;
             CEnemySpawner.Instance.NextWave();
