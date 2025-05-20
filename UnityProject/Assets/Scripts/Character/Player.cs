@@ -22,6 +22,7 @@ D
 08:攻撃のクールダウン時間を修正:kato
 08:ダメージ発生を仮置き:takagi
 16:Rayで遊んでみる:kato
+20:ローリングの時に移動するように:kato
 =====*/
 
 // 名前空間宣言
@@ -93,11 +94,32 @@ public class CPlayer : MonoBehaviour
 	[Tooltip("Rayによる障害物回避距離")]
 	private float m_fAvoidDistance = 1.0f;  // 障害物との最低距離
 
-	[SerializeField]
+    [SerializeField]
 	[Tooltip("PlayerRayの高さ")]
 	private float m_fRayHeight = 1.5f; // Rayの高さ
 
-	private bool m_bIsInvicible = false; // 無敵フラグ
+	[Header("プレイヤーのローリング関係")]
+
+    [SerializeField]
+    [Tooltip("Playerがローリングするときの除算処理固定値")]
+    private float m_fRollSpeed = 0.05f; // 移動速度*0.05用
+    [SerializeField]
+    [Tooltip("Playerのリーリングのクールタイム")]
+    private float m_fRollCooldown = 3.0f; // ローリングのクールタイム(秒)
+
+	private bool m_bIsRolling = false; // ローリングフラグ
+    private float m_fRollingCoolTimer = 0.0f; // ローリングが最後に行われてからの経過時間
+	private float m_fRollTimer = 0.0f; // ローリング中の経過時間
+	private Vector3 m_vRollDirection; // ローリングの方向
+	private float m_fRollDuration = 0.3f; // ローリングの持続時間
+
+	// ローリング中の無敵時間
+	[SerializeField]
+	[Tooltip("Playerのローリング中の無敵時間")]
+	private float m_fRollingInvicibleTime = 0.5f; // 一旦ね
+	private bool m_bIsRollingInvicible = false; // ローリング中の無敵フラグ
+
+    private bool m_bIsInvicible = false; // 無敵フラグ
 	private int m_nInvicibleTime = 90; // 無敵時間
 
     // 初期化関数
@@ -158,7 +180,7 @@ public class CPlayer : MonoBehaviour
             // Rayを前方に飛ばして障害物との距離をチェック
             if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
             {
-                m_fAvoidDistance = 1.0f; // 障害物との最低距離
+                
 
                 if (hit.distance <= m_fAvoidDistance)
                 {
@@ -222,13 +244,49 @@ public class CPlayer : MonoBehaviour
     */
 }
 
-	// 攻撃関数
+	// ローリング関数
 	// 引数１：なし
 	// ｘ
 	// 戻値：なし
 	// ｘ
-	// 概要：プレイヤーの攻撃
-	private void Attack()
+	// 概要：プレイヤーのローリングの初期化処理関数
+	private void StartRolling()
+	{
+		m_bIsRolling = true;
+		m_fRollTimer = 0.0f;
+        m_fRollingCoolTimer = 0.0f; // ローリングのクールタイムをリセット
+        m_vRollDirection = transform.forward; // ローリングの方向を設定
+
+		// アニメーションの再生があればここで再生する
+    }
+
+    // ローリング関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーのローリング処理
+	private void RollMovement()
+	{
+		m_fRollTimer += Time.fixedDeltaTime;
+
+		float fRollSpeed = m_fSpeed * m_fRollSpeed; // ローリングの移動速度
+
+		m_Rb.MovePosition(m_Rb.position + m_vRollDirection * fRollSpeed);
+
+		if(m_fRollTimer >= m_fRollDuration)
+		{
+			m_bIsRolling = false; // ローリング終了
+        }
+    }
+
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃
+    private void Attack()
 	{
 		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
 		{
@@ -285,6 +343,17 @@ public class CPlayer : MonoBehaviour
 			Destroy(this.gameObject); // プレイヤーを消す
         }
 
+		if(!m_bIsRolling)
+		{
+			m_fRollingCoolTimer += Time.deltaTime; // ローリングのクールタイムを加算
+
+			if(Input.GetKeyDown(KeyCode.Space) && m_fRollingCoolTimer >= m_fRollCooldown)
+			{
+				StartRolling(); // ローリング開始
+				StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
+            }
+        }
+
         Vector3 origin = transform.position + Vector3.up * m_fRayHeight;
         Debug.DrawRay(origin, transform.forward * 1.0f, Color.green);
 
@@ -298,9 +367,16 @@ public class CPlayer : MonoBehaviour
 	// 概要：プレイヤーの移動処理と攻撃処理
 	private void FixedUpdate()
 	{
-        // 移動処理
-        PlayerMove();
-
+		if(m_bIsRolling)
+		{
+			RollMovement();
+		}
+		else
+		{
+            // 移動処理
+            PlayerMove();
+        }
+        // プレイヤーの移動制限
         Vector3 _NowPosition = transform.position;  // 現在の位置を取得
 
         _NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
@@ -379,7 +455,21 @@ public class CPlayer : MonoBehaviour
         m_bIsInvicible = false; // 無敵状態を解除する
 		Debug.Log("無敵状態解除!!");
     }
-    private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+
+    // ＞無敵状態関数(ローリング中)
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：ローリングしている間一定時間無敵になる
+	private IEnumerator RollingInvincibilityCoroutine()
+	{
+        m_bIsRollingInvicible = true; // 無敵状態にする
+		yield return new WaitForSeconds(m_fRollingInvicibleTime); // 一定時間待つ
+        m_bIsRollingInvicible = false; // 無敵状態を解除する
+    }
+
+    private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
 		Gizmos.color = new Color(1, 1, 0, 0.4f);

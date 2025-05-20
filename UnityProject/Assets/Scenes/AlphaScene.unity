@@ -581,6 +581,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraStudio
       objectReference: {fileID: 0}
+    - target: {fileID: 2489571614954517693, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8d8c2e9cc2fedca4f9bee35957296688, type: 2}
     - target: {fileID: 2911241567616120835, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 17
