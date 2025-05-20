@@ -9,11 +9,6 @@
 __Y25 
 _M04
 D
-18:スポナーを仮作成:nishibu
-// 修正箇所: 'FirstOrDefault' を使用するために 'System.Linq' をインポート
-using System.Linq;
-
-// 既存のコードに変更は不要です。'System.Linq' をインポートすることで、'FirstOrDefault' が使用可能になります。
 25:スポナー作成(α版):nishibu
 29:コメント追加、修正:nishibu
 30:仕様作成、修正1:nishibu
@@ -28,6 +23,10 @@ D
 8:修正3:nishibu
 16:WaveDataのメタデータの修正に伴い修正1:nishibu
 16:WaveDataのメタデータの修正に伴い修正2:nishibu
+18:スポナーを仮作成:nishibu
+	// 修正箇所: 'FirstOrDefault' を使用するために 'System.Linq' をインポート
+	using System.Linq;
+	// 既存のコードに変更は不要です。'System.Linq' をインポートすることで、'FirstOrDefault' が使用可能になります。
 21:コメント微修正:takagi
 =====*/
 
