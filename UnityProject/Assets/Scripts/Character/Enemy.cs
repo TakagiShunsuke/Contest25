@@ -37,47 +37,59 @@ public class CEnemy : MonoBehaviour
 	[Serializable]
 	public struct Status //敵ステータス
 	{
-		//[SerializeField, Tooltip("HP")] public int m_nHp;					   // HP
-		[SerializeField, Tooltip("攻撃力")] public int m_nAtk;			       // 攻撃力
-		//[SerializeField, Tooltip("速度")] public float m_fSpeed;			   // 速さ
-		[SerializeField, Tooltip("攻撃速度")] public float m_fAtkSpeed;	       // 攻撃速度
-		[SerializeField, Tooltip("防御力")] public int m_nDef;			       // 防御
-		[SerializeField, Tooltip("成長度")] public int m_nGrowth;              // 成長度
-		[SerializeField, Tooltip("成長速度")] public int m_nGrowthSpeed;       // 成長速度
-		[SerializeField, Tooltip("重量")] public int m_nWeight;                // 重量
-		[SerializeField, Tooltip("攻撃距離")] public float m_fAtkRange;        // 攻撃範囲         
-		[SerializeField, Tooltip("攻撃角度")] public float m_fAtkAngle;	       // 攻撃角度		
+        //[SerializeField, Tooltip("HP")] public int m_nHp;					                    // HP　HitPoint.csに移行
+        [SerializeField, Tooltip("攻撃力")] public int m_nAtk;			                        // 攻撃力
+		//[SerializeField, Tooltip("移動速度")] public float m_fSpeed;			                // 速さ　NavMeshで編集
+		[SerializeField, Tooltip("攻撃速度")] public float m_fAtkSpeed;	                        // 攻撃速度
+		[SerializeField, Tooltip("防御力")] public int m_nDef;                                  // 防御
+        [SerializeField, Tooltip("重量")] public int m_nWeight;                                 // 重量
+        [SerializeField, Tooltip("成長度")] public int m_nGrowth;                               // 成長度
+        [SerializeField, Tooltip("成長上限")] public int m_nGrowthLimit;                        // 成長上限
+        [SerializeField, Tooltip("体力成長力")] public int m_nGrowthHP;                         // 体力成長力 
+        [SerializeField, Tooltip("攻撃成長力")] public int m_nGrowthAtk;                        // 攻撃成長力
+        [SerializeField, Tooltip("移動成長力")] public int m_nGrowthMoveSpeed;                  // 移動成長力
+        [SerializeField, Tooltip("攻撃速度成長力")] public int m_nGrowthAtkSpeed;               // 攻撃速度成長力
+        [SerializeField, Tooltip("防御成長力")] public int m_nGrowthDef;                        // 防御成長力
+        [SerializeField, Tooltip("重量成長力")] public int m_nGrowthWeight;                     // 重量成長力
+        [SerializeField, Tooltip("成長速度")] public int m_nGrowthSpeed;                        // 成長速度
+        [SerializeField, Tooltip("成長力")] public int m_nGrowthPower;                          // 成長力
+        [SerializeField, Tooltip("攻撃距離")] public float m_fAtkRange;                         // 攻撃範囲         
+		[SerializeField, Tooltip("攻撃角度")] public float m_fAtkAngle;	                        // 攻撃角度		
 	}
 
-	// 変数宣言
-	private CHitPoint m_HitPoint;	// HP
+    [SerializeField] private Status m_StatusInitial; // 初期値
+    
+    // 変数宣言
+    private CHitPoint m_HitPoint;	// HP
 
 	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status; // ステータス
 
 	private Transform m_Target;  // プレイヤーのTransform
-	[SerializeField, Tooltip("成長間隔")] private float m_fGrowthInterval = 5f; // 成長間隔（秒）
+	private float m_fGrowthInterval; // 成長間隔（秒）
 
 	private float m_fGrowthTimer = 0f; // 成長タイマー
 	private float m_fAtkCooldown = 0f; // 攻撃のクールタイム
+    private float m_fSpeedInitial; // 速度初期値
+    private int m_nHPInitial; //体力初期値
+    private float m_fScale; //サイズ変更
 	private NavMeshAgent m_Agent;  // 追跡対象
 
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
 
-	// ＞初期化関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：初期化処理
-	private void Start()
-	{
-		// NavMeshAgentを取得
-		m_Agent = GetComponent<NavMeshAgent>();
 
-		// Playerを自動で探してターゲットに設定
-		GameObject playerObj = GameObject.FindWithTag("Player");
+    /// <summary>
+    /// -初期化関数
+    /// <para>初期化処理関数</para>
+    /// </summary>
+    private void Start()
+	{
+        // NavMeshAgentを取得
+        m_Agent = GetComponent<NavMeshAgent>();
+
+        // Playerを自動で探してターゲットに設定
+        GameObject playerObj = GameObject.FindWithTag("Player");
 		if (playerObj != null)
 		{
 			m_Target = playerObj.transform;
@@ -91,7 +103,7 @@ public class CEnemy : MonoBehaviour
 
 		// HPの実装
 		m_HitPoint = GetComponent<CHitPoint>();	// HPを取得
-		if(!m_HitPoint)	// コンポーネントがない
+		if (!m_HitPoint)	// コンポーネントがない
 		{
 			// 機能の確保
 			m_HitPoint = gameObject.AddComponent<CHitPoint>();	// 代わりに作成
@@ -103,17 +115,20 @@ public class CEnemy : MonoBehaviour
 			m_HitPoint.HP = m_Status.m_nGrowth;	// 設定されてないということは未調整な数字のはず...	//TODO:改善
 		}
 
-		// イベント接続
-		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
+        //初期ステータスを確保
+        m_StatusInitial = m_Status;
+        m_fSpeedInitial = m_Agent.speed;
+        m_nHPInitial = m_HitPoint.HP;
+
+        // イベント接続
+        m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
-	// ＞更新関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：更新処理
-	private void Update()
+    /// <summary>
+    /// -更新関数
+    /// <para>更新処理関数</para>
+    /// </summary>
+    private void Update()
 	{
 		m_fAtkCooldown -= Time.deltaTime; // 経過時間で減らす
 
@@ -127,13 +142,12 @@ public class CEnemy : MonoBehaviour
 		Growth();
 	}
 
-	// ＞攻撃関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：Playerに近づいたら攻撃する
-	public void Attack()
+
+    /// <summary>
+    /// -攻撃関数
+    /// <para>Playerに近づいたら攻撃する関数</para>
+    /// </summary>
+    public void Attack()
 	{
 		if (!m_Agent.pathPending && m_Agent.remainingDistance <= m_Agent.stoppingDistance)// 敵に最大限近づいたら
 		{
@@ -165,7 +179,11 @@ public class CEnemy : MonoBehaviour
 	}
 
 
-	private void OnDrawGizmos()
+    /// <summary>
+    /// -攻撃範囲関数
+    /// <para>攻撃範囲を視覚化する関数</para>
+    /// </summary>
+    private void OnDrawGizmos()
 	{
 		int _nsegments = 30;               // 扇形を構成する線の本数
 
@@ -190,31 +208,56 @@ public class CEnemy : MonoBehaviour
 		}
 	}
 
-	// ＞成長関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：時間ごとに敵のステータスを上げる
-	public void Growth()
+    /// <summary>
+    /// -成長関数
+    /// <para>時間ごとに敵のステータスを上げる関数</para>
+    /// </summary>
+    public void Growth()
 	{
-		m_fGrowthTimer += Time.deltaTime;
-
+        //成長しないならスキップ
+        if (m_Status.m_nGrowthSpeed == 0)
+        {
+            return;
+        }
+        //成長速度を求める
+        m_fGrowthInterval = 100 / m_Status.m_nGrowthSpeed;
+        m_fGrowthTimer += Time.deltaTime;
+        //成長する
 		if (m_fGrowthTimer >= m_fGrowthInterval)
 		{
-			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
-			m_HitPoint.HP += (int)(m_Status.m_nGrowthSpeed * 0.1f);
-			m_fGrowthTimer = 0f;
+            // 成長度が上限に達していたら何もしない
+            if (m_Status.m_nGrowth >= m_Status.m_nGrowthLimit)
+            {
+                m_Status.m_nGrowth = m_Status.m_nGrowthLimit; 
+                return;
+            }
+            //m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
+            //m_HitPoint.HP += (int)(m_Status.m_nGrowthSpeed * 0.1f);
+            m_HitPoint.HP = m_HitPoint.HP + (m_nHPInitial * m_Status.m_nGrowthHP);
+            m_Status.m_nAtk = m_Status.m_nAtk + (m_StatusInitial.m_nAtk * m_Status.m_nGrowthAtk);
+            m_Agent.speed = m_Agent.speed + (m_fSpeedInitial * m_Status.m_nGrowthMoveSpeed);
+            m_Status.m_fAtkSpeed = m_Status.m_fAtkSpeed + (m_StatusInitial.m_fAtkSpeed * m_Status.m_nGrowthAtkSpeed);
+            m_Status.m_nDef = m_Status.m_nDef + (m_StatusInitial.m_nDef * m_Status.m_nGrowthDef);
+            m_Status.m_nWeight = m_Status.m_nWeight + (m_StatusInitial.m_nWeight * m_Status.m_nGrowthWeight);
+            m_Status.m_nGrowth = m_Status.m_nGrowth + m_Status.m_nGrowthPower;
+            m_fScale = m_Status.m_nGrowth / m_StatusInitial.m_nGrowth;
+            transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
+            // 成長度が上限を超えたら、上限に揃えておく
+            if (m_Status.m_nGrowth > m_Status.m_nGrowthLimit)
+            {
+                m_Status.m_nGrowth = m_Status.m_nGrowthLimit;
+            }
+
+            m_fGrowthTimer = 0f;
 		}
 	}
 
-	// ＞ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ダメージを受ける
-	public void Damage(int _nDamage)
+    /// <summary>
+    /// -ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
+    /// <para>ダメージを受ける関数</para>
+    /// <param name="_nDamage">相手の攻撃力</param>
+    /// </summary>
+    public void Damage(int _nDamage)
 	{
 		if (_nDamage <= m_Status.m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -242,7 +285,7 @@ public class CEnemy : MonoBehaviour
 	private void OnDead()
 	{
 		// 体液の排出
-		if(m_Blood != null)	// 
+		if (m_Blood != null)	
 		{
 			float _temp_y = 0.0f;
 
