@@ -136,12 +136,20 @@ MonoBehaviour:
     m_nAtk: 10
     m_fAtkSpeed: 50
     m_nDef: 10
-    m_nGrowth: 100
-    m_nGrowthSpeed: 100
     m_nWeight: 100
+    m_nGrowth: 100
+    m_nGrowthLimit: 0
+    m_nGrowthSpeed: 100
+    m_nGrowthPower: 15
     m_fAtkRange: 2
     m_fAtkAngle: 60
-  m_fGrowthInterval: 10
+  m_Growth:
+    m_fHP: 0.2
+    m_fAtk: 0.1
+    m_fMoveSpeed: 0
+    m_fAtkSpeed: 0
+    m_fDef: 0
+    m_fWeight: 0.2
   m_Blood: {fileID: 75644770688212516, guid: 82a1c789e749f2644a6571719e72a761, type: 3}
 --- !u!54 &-3751507921953174285
 Rigidbody:
