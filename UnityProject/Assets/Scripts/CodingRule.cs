@@ -32,11 +32,13 @@ _M04
 D
 03:新チーム用にコードを刷新:takagi
 23:enum型の変数宣言を明記:takagi
+
 _M05
 D
 09:コピペがそのままだったりなどの誤りを訂正、enum変数などの記載法を追加:takagi
 14:関数コメントにXMLドキュメントコメントを採用:takagi
 15:更新履歴の記述漏れを追加:takagi
+21:Editor上でしか稼働しないものをプリプロセッサに:takagi
 =====*/
 
 // 名前空間宣言
@@ -183,13 +185,8 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 		// 提供
 		return m_nInt;
 	}
-		// 二回目以降の関数定義は書く前に一つ空行を入れる
-	// ＞xx関数
-	// 引数：なし   // 引数がない場合は１を省略してもよい
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：関数例
+
+#if UNITY_EDITOR
 	/// <summary>
 	/// -xx関数
 	/// <para>関数例</para>
@@ -201,6 +198,7 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	public void Function()
 	{
 	}
+#endif
 }
 
 [CreateAssetMenu(menuName = "ObjectMenu/Menu")]
