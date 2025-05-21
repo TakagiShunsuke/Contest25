@@ -125,23 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb686cb51d331a4ba7739107aefa3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_StatusInitial:
-    m_nAtk: 0
-    m_fAtkSpeed: 0
-    m_nDef: 0
-    m_nWeight: 0
-    m_nGrowth: 0
-    m_nGrowthLimit: 0
-    m_nGrowthHP: 0
-    m_nGrowthAtk: 0
-    m_nGrowthMoveSpeed: 0
-    m_nGrowthAtkSpeed: 0
-    m_nGrowthDef: 0
-    m_nGrowthWeight: 0
-    m_nGrowthSpeed: 0
-    m_nGrowthPower: 0
-    m_fAtkRange: 0
-    m_fAtkAngle: 0
   m_Status:
     m_nAtk: 100
     m_fAtkSpeed: 50
@@ -149,17 +132,17 @@ MonoBehaviour:
     m_nWeight: 50
     m_nGrowth: 100
     m_nGrowthLimit: 300
-    m_nGrowthHP: 20
-    m_nGrowthAtk: 10
-    m_nGrowthMoveSpeed: 0
-    m_nGrowthAtkSpeed: 0
-    m_nGrowthDef: 0
-    m_nGrowthWeight: 20
     m_nGrowthSpeed: 10
     m_nGrowthPower: 15
     m_fAtkRange: 2
     m_fAtkAngle: 60
-  m_fGrowthInterval: 5
+  m_Growth:
+    m_fHP: 0.2
+    m_fAtk: 0.1
+    m_fMoveSpeed: 0
+    m_fAtkSpeed: 0
+    m_fDef: 0
+    m_fWeight: 0.2
   m_Blood: {fileID: 0}
 --- !u!114 &3669639855496588308
 MonoBehaviour:
@@ -223,7 +206,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.02
-  m_Speed: 2
+  m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
