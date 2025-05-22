@@ -23,18 +23,22 @@ D
 08:ダメージ発生を仮置き:takagi
 16:Rayで遊んでみる:kato
 20:ローリングの時に移動するように:kato
+22:効果音の追加(WASDで移動時とEnterで攻撃時のみ):kato 
 =====*/
 
 // 名前空間宣言
-using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections; // 無敵状態用
 
 // クラス定義
 public class CPlayer : MonoBehaviour
 {
-	// 変数宣言
-	private Rigidbody m_Rb; // リジットボディ
+	public AudioClip m_MoveGroundSE; // 移動音
+	public AudioClip m_StabAttackSE; // 攻撃(突き)
+	AudioSource m_AudioSource; // AudioSource
+
+    // 変数宣言
+    private Rigidbody m_Rb; // リジットボディ
 
 	private float m_RayDistance = 10.0f;
 
@@ -122,6 +126,13 @@ public class CPlayer : MonoBehaviour
     private bool m_bIsInvicible = false; // 無敵フラグ
 	private int m_nInvicibleTime = 90; // 無敵時間
 
+	[Header("プレイヤーのSE関係")]
+    [SerializeField]
+	[Tooltip("プレイヤーの足音の間隔")]
+    private float m_fFootStepInterval = 0.4f; // 足音の間隔
+	private float m_fFootStepTimer = 0.0f;
+
+
     // 初期化関数
     // 引数１：なし
     // ｘ
@@ -132,8 +143,9 @@ public class CPlayer : MonoBehaviour
 	{
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
-		m_fAttackCooldown = 1.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定
-	}
+		m_fAttackCooldown = 1.0f / m_fAtkSpeed; // 攻撃速度に応じて攻撃間隔を設定
+        m_AudioSource = GetComponent<AudioSource>(); // AudioSourceの取得
+    }
 
 	// 移動処理関数
 	// 引数１：なし
@@ -175,7 +187,17 @@ public class CPlayer : MonoBehaviour
             Vector3 moveDir = input;
 			Vector3 RayPosition = transform.position + Vector3.up * m_fRayHeight; // Rayの位置をプレイヤーの位置に設定
             float moveDistance = m_fSpeed;
-
+			m_fFootStepTimer += Time.deltaTime; // 足音の間隔を加算
+			
+			if(m_fFootStepTimer >= m_fFootStepInterval)
+			{
+				m_AudioSource.PlayOneShot(m_MoveGroundSE); // 足音のSEを再生
+                m_fFootStepTimer = 0.0f; // 足音の間隔をリセット
+            }
+			else
+			{
+				m_fFootStepTimer = 0.0f;
+			}
 
             // Rayを前方に飛ばして障害物との距離をチェック
             if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
@@ -295,8 +317,10 @@ public class CPlayer : MonoBehaviour
 			Vector3 forward = transform.forward;
 			Vector3 origin = transform.position;
 
-			// 周囲のコライダーを一定範囲で取得（円形）
-			Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
+			m_AudioSource.PlayOneShot(m_StabAttackSE); // 攻撃音を再生
+
+            // 周囲のコライダーを一定範囲で取得（円形）
+            Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
 			foreach (var hit in hitColliders)
 			{
 				if (hit.gameObject == this.gameObject) continue;
