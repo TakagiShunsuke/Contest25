@@ -142,7 +142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1751085354969255658, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.29034042
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 1751085354969255658, guid: 41e693c1b7f8cd74b8e070e688e1adfc, type: 3}
       propertyPath: m_LocalRotation.w
@@ -472,6 +472,10 @@ PrefabInstance:
       propertyPath: m_RequiresOpaqueTextureOption
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3928871976778083513, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4739035376687685961, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
       propertyPath: m_LocalPosition.y
       value: 2.23
@@ -482,11 +486,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5098792744888997742, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5098792744888997742, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.18
+      value: -1.8
       objectReference: {fileID: 0}
     - target: {fileID: 5098792744888997742, guid: f65f431511e72d64daf3991c90fbc08c, type: 3}
       propertyPath: m_LocalRotation.w
