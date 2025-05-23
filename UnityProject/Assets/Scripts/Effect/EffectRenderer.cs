@@ -19,6 +19,7 @@ D
 01：スクリプト名、変数名修正：tei
 04：コーディングルールの沿ってコード修正：tei
 22：球体取得方式大改良、球体のデータを管理：tei
+23：エフェクトクリア処理不具合修正：tei
 
 =====*/
 
@@ -81,6 +82,7 @@ public class CEffectRenderer : MonoBehaviour
         
         for (int i = 0; i < m_Colliders.Length; i++)
         {
+
             var col = m_Colliders[i];
             
             if (col == null) continue; // 個別のコライダーが null の場合もスキップ
@@ -107,8 +109,8 @@ public class CEffectRenderer : MonoBehaviour
             m_Spheres[i] = Vector4.zero;
         }
 
-        // Shader へ反映（0個にする）
-        m_RenderMaterial.SetInt("_nSphereCount", 0);
-        m_RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
+        //// Shader へ反映（0個にする）
+        //m_RenderMaterial.SetInt("_nSphereCount", 0);
+        //m_RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
     }
 }

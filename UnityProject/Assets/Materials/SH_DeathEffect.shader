@@ -23,10 +23,11 @@ Shader "Custom/SH_DeathEffect"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }// 透明だけど少し早く描く
         Pass
         {
-            ZWrite Off                          // 背景のものが透けるようにZWriteオフ
+            ZWrite On
+            ZTest LEqual
             Blend SrcAlpha OneMinusSrcAlpha     // 半透明用のブレンド設定
 
             CGPROGRAM
