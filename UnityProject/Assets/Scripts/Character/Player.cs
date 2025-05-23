@@ -181,49 +181,50 @@ public class CPlayer : MonoBehaviour
 
         }
 
-        if (input != Vector3.zero)
-        {
-            input.Normalize();
-            Vector3 moveDir = input;
+		if (input != Vector3.zero)
+		{
+			input.Normalize();
+			Vector3 moveDir = input;
 			Vector3 RayPosition = transform.position + Vector3.up * m_fRayHeight; // Rayの位置をプレイヤーの位置に設定
-            float moveDistance = m_fSpeed;
-			m_fFootStepTimer += Time.deltaTime; // 足音の間隔を加算
+			float moveDistance = m_fSpeed;
 			
-			if(m_fFootStepTimer >= m_fFootStepInterval)
+
+			if(!m_AudioSource.isPlaying)
 			{
-				m_AudioSource.PlayOneShot(m_MoveGroundSE); // 足音のSEを再生
-                m_fFootStepTimer = 0.0f; // 足音の間隔をリセット
+				m_AudioSource.clip = m_MoveGroundSE; // 足音のSEを設定
+				m_AudioSource.loop = true; // ループ再生
+				m_AudioSource.Play(); // 足音のSEを再生
             }
-			else
+
+			// Rayを前方に飛ばして障害物との距離をチェック
+			if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
 			{
-				m_fFootStepTimer = 0.0f;
+
+
+				if (hit.distance <= m_fAvoidDistance)
+				{
+					// 近すぎて移動しない
+					moveDistance = 0;
+				}
+				else if (hit.distance < moveDistance + m_fAvoidDistance)
+				{
+					// 距離を調整して止まる
+					moveDistance = hit.distance - m_fAvoidDistance;
+				}
 			}
+			m_Rb.transform.position += moveDir * moveDistance;
+			// 回転
+			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
 
-            // Rayを前方に飛ばして障害物との距離をチェック
-            if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
-            {
-                
-
-                if (hit.distance <= m_fAvoidDistance)
-                {
-                    // 近すぎて移動しない
-                    moveDistance = 0;
-                }
-                else if (hit.distance < moveDistance + m_fAvoidDistance)
-                {
-                    // 距離を調整して止まる
-                    moveDistance = hit.distance - m_fAvoidDistance;
-                }
+		}
+		else
+		{
+			if(m_AudioSource.isPlaying)
+			{
+				m_AudioSource.Stop(); // 足音のSEを停止
             }
-
-            m_Rb.transform.position += moveDir * moveDistance;
-
-            
-
-            // 回転
-            m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
-
-        }
+		}
+		
 
     // プレイヤーの移動 正面向けるけどw+dが変になる移動
     /*
