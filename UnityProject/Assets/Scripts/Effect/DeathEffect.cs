@@ -122,6 +122,12 @@ public class CDeathEffect : MonoBehaviour
             EffectRenderer.ClearEffect();
         }
 
+        // マネージャから削除
+        if (CDeathEffectManager.Instance != null)
+        {
+            CDeathEffectManager.Instance.Unregister(EffectRenderer);
+        }
+
         // このGameObject（エフェクト）を削除
         Destroy(gameObject);
     }

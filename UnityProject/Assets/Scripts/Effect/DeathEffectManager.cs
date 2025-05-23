@@ -66,6 +66,20 @@ public class CDeathEffectManager : MonoBehaviour
         }
     }
 
+    // ＞登録解除関数
+    // 引数：CEffectRenderer renderer：スクリプト
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：マネージャから登録したデータを解除する
+    public void Unregister(CEffectRenderer renderer)
+    {
+        if (EffectRenderers.Contains(renderer))
+        {
+            EffectRenderers.Remove(renderer);
+        }
+    }
+
     // ＞更新関数
     // 引数：なし
     // ｘ

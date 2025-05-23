@@ -70,10 +70,21 @@ public class CEffectRenderer : MonoBehaviour
     // 概要：球体データを取得
     public Vector4[] GetSphereData()
     {
+        // nullチェック：コライダー未取得または空の場合は空配列を返す
+        if (m_Colliders == null || m_Colliders.Length == 0)
+        {
+            Debug.LogWarning($"[EffectRenderer] SphereCollider が未設定です（{gameObject.name}）");
+            return new Vector4[0]; // 空の配列を返す
+        }
+
         Vector4[] result = new Vector4[m_Colliders.Length];
+        
         for (int i = 0; i < m_Colliders.Length; i++)
         {
             var col = m_Colliders[i];
+            
+            if (col == null) continue; // 個別のコライダーが null の場合もスキップ
+
             var pos = col.transform.position;
             var rad = col.radius * col.transform.lossyScale.x;
             result[i] = new Vector4(pos.x, pos.y, pos.z, rad);
