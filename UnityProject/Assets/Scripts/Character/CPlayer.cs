@@ -204,7 +204,10 @@ public class CPlayer : MonoBehaviour, IDH
         adjustedDistance = originalDistance;
         RaycastHit hit;
 
-        if (Physics.Raycast(origin, direction, out hit, originalDistance + m_RayDistance))
+		// RayÇÃçÇÇ≥Çê›íËÇ∑ÇÈ
+		Vector3 OffSetOrigin = origin + Vector3.up * m_fRayHeight;
+
+        if (Physics.Raycast(OffSetOrigin, direction, out hit, originalDistance + m_RayDistance))
         {
             if (hit.distance <= m_fAvoidDistance)
             {
