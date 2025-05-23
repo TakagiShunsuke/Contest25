@@ -445,7 +445,6 @@ public class CPlayer : MonoBehaviour, IDH
         }
 
         Vector3 origin = transform.position + Vector3.up * m_fRayHeight;
-        Debug.DrawRay(origin, transform.forward * 1.0f, Color.green);
 
     }
 
@@ -497,7 +496,9 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		Gizmos.color = new Color(1, 0, 0, 0.5f);
 		Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
-		
+		// ray表示
+		Gizmos.color = Color.green;
+		Gizmos.DrawLine(transform.position + Vector3.up * m_fRayHeight, transform.position + Vector3.up * m_fRayHeight + transform.forward * 1.0f);
 	}
 
 	// ＞ダメージ関数	//TODO:敵の「攻撃」動作にAffectとしてDamageをアタッチ
