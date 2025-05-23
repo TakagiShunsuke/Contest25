@@ -24,7 +24,7 @@ public class CSystemController : MonoBehaviour
 {
 	// 変数宣言
 	[Header("入力")]
-	[SerializeField, Tooltip("ゲーム終了キー")] private KeyCode m_FinishKey;
+	[SerializeField, Tooltip("ゲーム終了キー")] private KeyCode m_FinishKey = KeyCode.Escape;
 
 	// 更新関数
 	// 引数１：なし
@@ -36,7 +36,7 @@ public class CSystemController : MonoBehaviour
 	{
 		// 終了判定
 #if !UNITY_EDITOR
-		if(Input.GetKeyUp(KeyCode.Escape))	// 終了コマンド
+		if(Input.GetKeyUp(m_FinishKey))	// 終了コマンド
 		{
 			Application.Quit();	// アプリケーション終了
 		}
