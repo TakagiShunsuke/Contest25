@@ -23,40 +23,49 @@ Shader "Custom/SH_DeathEffect"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }// 透明だけど少し早く描く
+        Tags { "RenderType"="Opaque" "Queue"="transparent" }
         Pass
         {
+            Name "RaymarchWithDepth"
+            Tags { "LightMode" = "UniversalForward" }
+
             ZWrite On
             ZTest LEqual
             Blend SrcAlpha OneMinusSrcAlpha     // 半透明用のブレンド設定
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             // 構造体定義
-            // 頂点データを受け取る
-            struct VS_IN
+            // 頂点/フラグメント構造体
+            struct Attributes
             {
-                float4 vertex : POSITION;
+                float4 positionOS : POSITION;
             };
 
-            // 頂点シェーダーの出力
-            struct VS_OUT
+            struct Varyings
             {
-                float4 pos : SV_POSITION;       // 空間座標
-                float3 worldPos : TEXCOORD0;    // ワールド座標
+                float4 positionHCS : SV_POSITION;
+                float3 worldPos : TEXCOORD0;
             };
 
-            // 頂点シェーダー：平面上の各点のワールド位置を取得
-            VS_OUT vert(VS_IN v)
+            struct FragOutput
             {
-                VS_OUT o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                return o;
-            }
+                float4 color : SV_Target;
+                float depth : SV_Depth;
+            };
+
+            // // 頂点シェーダー：平面上の各点のワールド位置を取得
+            // VS_OUT vert(VS_IN v)
+            // {
+            //     VS_OUT o;
+            //     o.pos = UnityObjectToClipPos(v.vertex);
+            //     o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+            //     return o;
+            // }
 
             // ＞結合補間関数
             // 引数１：float fFirstNum：数値
@@ -74,6 +83,8 @@ Shader "Custom/SH_DeathEffect"
             }
 
             // 変数宣言
+            float4 _Color;  // カラー
+
             // 最大256個の球を扱えるように定義
             uniform int _nSphereCount;      // 球体の数を計算
             uniform float4 _fSpheres[256];  // 球体のデータ （xyz: 中心, w: 半径）
@@ -87,13 +98,13 @@ Shader "Custom/SH_DeathEffect"
 
             float GetDistance(float3 fPos)
             {
-                float fDistance = 1000; // 距離を格納用
+                float d = 1000.0;
                 for (int i = 0; i < _nSphereCount; i++)
                 {
-                    float dis = length(fPos - _fSpheres[i].xyz) - _fSpheres[i].w;
-                    fDistance = SmoothMin(fDistance, dis, 0.8); // 第3引数が滑らかさの強さ（大きくすると接合が広がる）
+                    float dist = length(fPos - _fSpheres[i].xyz) - _fSpheres[i].w;
+                    d = SmoothMin(d, dist, 0.8);
                 }
-                return fDistance;
+                return d;
             }
 
             // ＞法線計算関数
@@ -103,75 +114,70 @@ Shader "Custom/SH_DeathEffect"
             // ｘ
             // 概要：法線（ノーマル）をSDFから計算
 
-            float3 getNormal(float3 fPos)
+            float3 GetNormal(float3 fPos)
             {
-                float eps = 0.001; // 微小差分
-                float3 dx = float3(eps, 0, 0);
-                float3 dy = float3(0, eps, 0);
-                float3 dz = float3(0, 0, eps);
-
+                float eps = 0.001;
                 return normalize(float3(
-                    GetDistance(fPos + dx) - GetDistance(fPos - dx),
-                    GetDistance(fPos + dy) - GetDistance(fPos - dy),
-                    GetDistance(fPos + dz) - GetDistance(fPos - dz)
+                    GetDistance(fPos + float3(eps, 0, 0)) - GetDistance(fPos - float3(eps, 0, 0)),
+                    GetDistance(fPos + float3(0, eps, 0)) - GetDistance(fPos - float3(0, eps, 0)),
+                    GetDistance(fPos + float3(0, 0, eps)) - GetDistance(fPos - float3(0, 0, eps))
                 ));
             }
-           
-            fixed4 _Color;  // カラー
 
-            // フラグメントシェーダー：ピクセルごとに球にレイを飛ばして色を決定
-            fixed4 frag(VS_OUT i) : SV_Target
+            // 頂点シェーダー
+            Varyings vert(Attributes IN)
             {
-                
-                float3 rayOrigin = _WorldSpaceCameraPos; // レイの出発点（カメラ）
-                float3 rayDir = normalize(i.worldPos - rayOrigin); // 平面のピクセルへ向かう方向
-
-                float3 pos = rayOrigin; // 現在のレイの位置
-                float dist = 0;
-                
-                // 最大64ステップまで進めて球との交差を探す
-                for (int j = 0; j < 64; j++)
-                {
-                    // 原点からの距離を取得
-                    dist = GetDistance(pos); // ここで複数球の距離を使う
-                    
-                    if (dist < 0.001) break; // 距離が小さい＝ヒット
-                    pos += rayDir * dist; // ヒットしなければ距離ぶん進む
-                }
-
-                if (dist < 0.001)
-                {
-                    // ライトの向き＆法線計算
-                    float3 normal = getNormal(pos); // スライム表面の法線
-
-                    // シーンのDirectional Lightの向き
-                    float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
-
-                    // Lamabert拡散光(0~1)
-                    float diff = saturate(dot(normal, lightDir));
-
-
-                    // トゥーン風段階
-                    // 色定義
-                    float3 shadowColor = float3(0.05, 0.2, 0.1); // 影
-                    float3 lightColor  = float3(0.3, 1.0, 0.6);  // 明るい
-
-                    // 陰影の滑らかさを調整
-                    float shade = smoothstep(0.3, 0.7, diff);
-
-                    // 明るさに応じて色を補間
-                    float3 col = lerp(shadowColor, lightColor, shade);
-                    
-                    // 出力＆α値調整
-                    return float4(col, _Color.a);
-                }
-                else
-                {
-                    return float4(0, 0, 0, 0);
-                }
+                Varyings OUT;
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS);
+                OUT.worldPos = TransformObjectToWorld(IN.positionOS).xyz;
+                return OUT;
             }
 
-            ENDCG
+            // フラグメントシェーダー：ピクセルごとに球にレイを飛ばして色を決定
+            FragOutput frag(Varyings IN)
+            {
+                
+                FragOutput OUT;
+
+                // レイの起点と方向
+                float3 rayOrigin = GetCameraPositionWS(); // Unity 6 URPの安全なカメラ位置取得
+                float3 rayDir = normalize(IN.worldPos - rayOrigin);
+                float3 pos = rayOrigin;
+
+                float dist;
+                const int maxSteps = 64;
+                for (int i = 0; i < maxSteps; i++)
+                {
+                    dist = GetDistance(pos);
+                    if (dist < 0.001) break;
+                    pos += rayDir * dist;
+                }
+
+                if (dist >= 0.001)
+                {
+                    OUT.color = float4(0, 0, 0, 0);
+                    OUT.depth = IN.positionHCS.z / IN.positionHCS.w;
+                    return OUT;
+                }
+
+                // ライティング
+                float3 normal = GetNormal(pos);
+                Light mainLight = GetMainLight();
+                float3 lightDir = normalize(mainLight.direction);
+                float diff = saturate(dot(normal, lightDir));
+                float3 col = lerp(float3(0.05, 0.2, 0.1), float3(0.3, 1.0, 0.6), diff);
+
+                // 最終カラー
+                OUT.color = float4(col * _Color.rgb, _Color.a);
+
+                // 深度書き込み（カメラ空間から取得）
+                float4 clipPos = TransformWorldToHClip(pos);
+                OUT.depth = clipPos.z / clipPos.w;
+
+                return OUT;
+            }
+
+            ENDHLSL
         }
     }
 }

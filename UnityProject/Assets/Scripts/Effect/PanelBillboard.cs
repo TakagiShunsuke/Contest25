@@ -29,6 +29,9 @@ using UnityEngine;
 // クラス定義
 public class CPanelBillboard : MonoBehaviour
 {
+    // 変数宣言
+    [SerializeField, Tooltip("カメラとの固定距離")] private float m_fDistanceFromCamera = 5f;
+
     // ＞更新関数
     // 引数：なし
     // ｘ
@@ -39,10 +42,15 @@ public class CPanelBillboard : MonoBehaviour
     {
         if (Camera.main == null) return;
 
-        // カメラの向いている方向（Y軸だけ取得）
-        Vector3 camEuler = Camera.main.transform.rotation.eulerAngles;
+        // カメラの位置と向きを取得
+        Vector3 _CameraPosition = Camera.main.transform.position;
+        Vector3 _CameraForward = Camera.main.transform.forward;
 
-        // XZ平面に張られた板として、-90度で正しく表示しつつY軸だけ追従
-        transform.rotation = Quaternion.Euler(-90f, camEuler.y, 0f);
+        // カメラの前方distanceだけ離れた場所にパネルを移動
+        transform.position = _CameraPosition + _CameraForward * m_fDistanceFromCamera;
+
+        // カメラのY軸回転だけ取る
+        Vector3 _Euler = Camera.main.transform.rotation.eulerAngles;
+        transform.rotation = Quaternion.Euler(-90f, _Euler.y, 0f);
     }
 }
