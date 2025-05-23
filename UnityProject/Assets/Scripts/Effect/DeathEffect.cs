@@ -34,9 +34,6 @@ public class CDeathEffect : MonoBehaviour
     [SerializeField, Tooltip("フェード時間")] private float m_fFadeDuration = 2f;
     [SerializeField, Tooltip("初期アルファ")] private float m_fStartAlpha = 0.9f;
     [SerializeField, Tooltip("フェード対象のマテリアル配列")] private Material[] m_FadeMaterials;
-    [SerializeField, Tooltip("フェード対象マテリアル")]
-    private Material m_OriginalMaterial;    // マテリアル本体
-    private Material m_InstanceMaterial;    // 複製のマテリアル
 
     // プロパティ定義
     private float TimeCount { get; set; } = 0f;    // エフェクト表示時間カウンター
@@ -54,26 +51,12 @@ public class CDeathEffect : MonoBehaviour
 
     private void Start()
     {
-        if (m_OriginalMaterial != null)
-        {
-            // Renderer がない場合でもマテリアルを手動で複製・設定
-            m_InstanceMaterial = new Material(m_OriginalMaterial);
-
-            // 初期アルファ設定
-            Color color = m_InstanceMaterial.GetColor("_Color");
-            color.a = m_fStartAlpha;
-            m_InstanceMaterial.SetColor("_Color", color);
-
-            // 配列に入れてフェード処理対応
-            m_FadeMaterials = new Material[1];
-            m_FadeMaterials[0] = m_InstanceMaterial;
-        }
         
-        // レンダラー取得
+        // レンダラー取得（なくても警告）
         EffectRenderer = GetComponent<CEffectRenderer>();
         if (EffectRenderer == null)
         {
-            Debug.LogWarning("[DeathEffect] EffectRenderer がアタッチされていません。エフェクトの終了処理はスキップされます。");
+            Debug.LogWarning("[DeathEffect] EffectRenderer がアタッチされていません。");
         }
     }
 
@@ -138,11 +121,8 @@ public class CDeathEffect : MonoBehaviour
         {
             EffectRenderer.ClearEffect();
         }
-        if (m_InstanceMaterial != null)
-        {
-            Destroy(m_InstanceMaterial);
-        }
 
+        // このGameObject（エフェクト）を削除
         Destroy(gameObject);
     }
 }

@@ -3,7 +3,7 @@
 └作成者：tei
 
 ＞内容
-エフェクトプレハブの各球体のプロパティを取得して、シェーダーに渡す
+エフェクトプレハブの各球体のデータを管理
 
 ＞注意事項
 
@@ -18,6 +18,7 @@ _M05
 D
 01：スクリプト名、変数名修正：tei
 04：コーディングルールの沿ってコード修正：tei
+22：球体取得方式大改良、球体のデータを管理：tei
 
 =====*/
 
@@ -47,42 +48,40 @@ public class CEffectRenderer : MonoBehaviour
     // 概要：初期化処理
     private void Start()
     {
-        // 初回だけコライダーを取得しておく
+        // 子オブジェクトのSphereColliderを取得
         m_Colliders = GetComponentsInChildren<SphereCollider>();
 
-        // 球の数をマテリアルに渡す
-        m_RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
+        // CDeathEffectManagerに自分を登録
+        if (CDeathEffectManager.Instance != null)
+        {
+            CDeathEffectManager.Instance.Register(this);
+        }
+        else
+        {
+            Debug.LogWarning("[EffectRenderer] DeathEffectManagerがシーン上に存在しません。");
+        }
     }
 
-    // ＞更新関数
+    // ＞ゲット関数
     // 引数：なし
     // ｘ
     // 戻値：なし
     // ｘ
-    // 概要：更新処理
-    private void Update()
+    // 概要：球体データを取得
+    public Vector4[] GetSphereData()
     {
-        // 毎フレーム、各球の情報を更新
+        Vector4[] result = new Vector4[m_Colliders.Length];
         for (int i = 0; i < m_Colliders.Length; i++)
         {
-            var _Col = m_Colliders[i];
-            var _T = _Col.transform;
-
-            // 中心位置（ワールド座標）
-            Vector3 _Center = _T.position;
-
-            // 実際の半径（スケールが変わってたら考慮）
-            float _Radius = _T.lossyScale.x * _Col.radius;
-
-            // Vector4 で格納（x,y,z = 中心位置、w = 半径）
-            m_Spheres[i] = new Vector4(_Center.x, _Center.y, _Center.z, _Radius);
+            var col = m_Colliders[i];
+            var pos = col.transform.position;
+            var rad = col.radius * col.transform.lossyScale.x;
+            result[i] = new Vector4(pos.x, pos.y, pos.z, rad);
         }
-
-        // シェーダーに現在の球の数と配列を送信
-        m_RenderMaterial.SetInt("_nSphereCount", m_Colliders.Length);
-        m_RenderMaterial.SetVectorArray("_fSpheres", m_Spheres);
+        return result;
     }
 
+    
     // ＞エフェクト削除関数
     // 引数：なし
     // ｘ
