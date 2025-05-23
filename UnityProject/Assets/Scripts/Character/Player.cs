@@ -75,8 +75,12 @@ public class CPlayer : MonoBehaviour
 	[Tooltip("攻撃キー")]
 	private KeyCode m_AttackKey = KeyCode.Return;
 
-	// アニメーター関連の変数
-	public Animator m_Animator;	// アニメーター変数維持用
+	[SerializeField]
+	[Tooltip("ローリングキー")]
+	private KeyCode m_RollingKey = KeyCode.Space; // ローリングキー
+
+    // アニメーター関連の変数
+    public Animator m_Animator;	// アニメーター変数維持用
 	private bool m_bWalkInput	= false;	// 移動入力フラグ
 	private bool m_bAttack		= false;	// 攻撃フラグ
 	public bool m_bOnGround	= true;	// 地面にいるかどうかのフラグ
@@ -147,125 +151,132 @@ public class CPlayer : MonoBehaviour
         m_AudioSource = GetComponent<AudioSource>(); // AudioSourceの取得
     }
 
-	// 移動処理関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーの移動処理
-	private void PlayerMove()
+    // 入力をまとめて取得する関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの入力処理
+	private Vector3 GetMoveInput()
 	{
-		Ray ray = new Ray(transform.position, transform.forward); // プレイヤーの前方にRayを飛ばす
-        RaycastHit hit; // Rayの当たり判定を格納する変数
+		Vector3 input = Vector3.zero; // 入力値を格納する変数
 
-        Vector3 input = new Vector3(); // 入力値を格納する変数
+        if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
+        if (Input.GetKey(KeyCode.S)) input += Vector3.back;
+        if (Input.GetKey(KeyCode.A)) input += Vector3.left;
+        if (Input.GetKey(KeyCode.D)) input += Vector3.right;
 
-		if (Input.GetKey(KeyCode.W))
-		{
-            input += Vector3.forward;
+        return input.normalized;
+    }
 
+    // 障害物との当たり判定処理関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの障害物との当たり判定処理
+    private bool AdjustDistanceByRaycast(Vector3 origin, Vector3 direction, float originalDistance, out float adjustedDistance)
+    {
+        adjustedDistance = originalDistance;
+        RaycastHit hit;
+
+        if (Physics.Raycast(origin, direction, out hit, originalDistance + m_RayDistance))
+        {
+            if (hit.distance <= m_fAvoidDistance)
+            {
+                adjustedDistance = 0f;
+                return true;
+            }
+            else if (hit.distance < originalDistance + m_fAvoidDistance)
+            {
+                adjustedDistance = hit.distance - m_fAvoidDistance;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 移動処理関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの移動処理
+    private void PlayerMove()
+	{
+		Vector3 input = GetMoveInput();
+
+        if (input != Vector3.zero)
+        {
+            Vector3 moveDir = input;
+            Vector3 rayOrigin = transform.position + Vector3.up * m_fRayHeight;
+            float moveDistance = m_fSpeed;
+
+            // 距離補正
+            AdjustDistanceByRaycast(rayOrigin, moveDir, moveDistance, out moveDistance);
+
+            // 足音再生
+            if (!m_AudioSource.isPlaying)
+            {
+                m_AudioSource.clip = m_MoveGroundSE;
+                m_AudioSource.loop = true;
+                m_AudioSource.Play();
+            }
+
+            // 移動・回転
+            m_Rb.transform.position += moveDir * moveDistance;
+            m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
+        }
+        else
+        {
+            // 入力なし時の足音停止
+            if (m_AudioSource.isPlaying)
+            {
+                m_AudioSource.Stop();
+            }
+        }
+
+
+        // プレイヤーの移動 正面向けるけどw+dが変になる移動
+        /*
+        if (Input.GetKey(KeyCode.W))
+        {
+            m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
+            m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
         }
         if (Input.GetKey(KeyCode.S))
-		{
-            input += Vector3.back;
-
+        {
+            m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
+            m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
         }
         if (Input.GetKey(KeyCode.A))
-		{
-            input += Vector3.left;
-
+        {
+            m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
+            m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
         }
         if (Input.GetKey(KeyCode.D))
-		{
-            input += Vector3.right;
-
+        {
+            m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
+            m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
         }
+        */
 
-		if (input != Vector3.zero)
-		{
-			input.Normalize();
-			Vector3 moveDir = input;
-			Vector3 RayPosition = transform.position + Vector3.up * m_fRayHeight; // Rayの位置をプレイヤーの位置に設定
-			float moveDistance = m_fSpeed;
-			
+        /*  滑らかに動くけど加速するパターンの移動
+        //if (Input.GetKey(KeyCode.S))
+        //{
+        //    rb.AddForce(Vector3.back * speed);
+        //}
+        //if (Input.GetKey(KeyCode.A))
+        //{
+        //    rb.AddForce(Vector3.left * speed);
+        //}
+        //if (Input.GetKey(KeyCode.D))
+        //{
+        //    rb.AddForce(Vector3.right * speed);
+        //}
 
-			if(!m_AudioSource.isPlaying)
-			{
-				m_AudioSource.clip = m_MoveGroundSE; // 足音のSEを設定
-				m_AudioSource.loop = true; // ループ再生
-				m_AudioSource.Play(); // 足音のSEを再生
-            }
-
-			// Rayを前方に飛ばして障害物との距離をチェック
-			if (Physics.Raycast(RayPosition, moveDir, out hit, m_RayDistance))
-			{
-
-
-				if (hit.distance <= m_fAvoidDistance)
-				{
-					// 近すぎて移動しない
-					moveDistance = 0;
-				}
-				else if (hit.distance < moveDistance + m_fAvoidDistance)
-				{
-					// 距離を調整して止まる
-					moveDistance = hit.distance - m_fAvoidDistance;
-				}
-			}
-			m_Rb.transform.position += moveDir * moveDistance;
-			// 回転
-			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
-
-		}
-		else
-		{
-			if(m_AudioSource.isPlaying)
-			{
-				m_AudioSource.Stop(); // 足音のSEを停止
-            }
-		}
-		
-
-    // プレイヤーの移動 正面向けるけどw+dが変になる移動
-    /*
-    if (Input.GetKey(KeyCode.W))
-    {
-        m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
-        m_Rb.transform.rotation = Quaternion.Euler(0, 0, 0);    // 前を向く
+        */
     }
-    if (Input.GetKey(KeyCode.S))
-    {
-        m_Rb.transform.position += Vector3.back * m_fSpeed;	// 後ろ
-        m_Rb.transform.rotation = Quaternion.Euler(0, 180, 0);  // 後ろを向く
-    }
-    if (Input.GetKey(KeyCode.A))
-    {
-        m_Rb.transform.position += Vector3.left * m_fSpeed;	// 左
-        m_Rb.transform.rotation = Quaternion.Euler(0, 270, 0);  // 左を向く
-    }
-    if (Input.GetKey(KeyCode.D))
-    {
-        m_Rb.transform.position += Vector3.right * m_fSpeed;    // 右
-        m_Rb.transform.rotation = Quaternion.Euler(0, 90, 0);   // 右を向く
-    }
-    */
-
-    /*  滑らかに動くけど加速するパターンの移動
-    //if (Input.GetKey(KeyCode.S))
-    //{
-    //    rb.AddForce(Vector3.back * speed);
-    //}
-    //if (Input.GetKey(KeyCode.A))
-    //{
-    //    rb.AddForce(Vector3.left * speed);
-    //}
-    //if (Input.GetKey(KeyCode.D))
-    //{
-    //    rb.AddForce(Vector3.right * speed);
-    //}
-
-    */
-}
 
 	// ローリング関数
 	// 引数１：なし
@@ -294,10 +305,15 @@ public class CPlayer : MonoBehaviour
 		m_fRollTimer += Time.fixedDeltaTime;
 
 		float fRollSpeed = m_fSpeed * m_fRollSpeed; // ローリングの移動速度
+		Vector3 RollDir = m_vRollDirection.normalized; //ローリング方向 
+		Vector3 RayOrigin = transform.position + Vector3.up * m_fRayHeight; // Rayの原点
 
-		m_Rb.MovePosition(m_Rb.position + m_vRollDirection * fRollSpeed);
+		//障害物との距離をチェックして、移動距離を補正する
+		AdjustDistanceByRaycast(RayOrigin, RollDir, fRollSpeed, out fRollSpeed);
 
-		if(m_fRollTimer >= m_fRollDuration)
+		transform.position += RollDir * fRollSpeed; // ローリング移動
+
+        if (m_fRollTimer >= m_fRollDuration)
 		{
 			m_bIsRolling = false; // ローリング終了
         }
@@ -372,7 +388,7 @@ public class CPlayer : MonoBehaviour
 		{
 			m_fRollingCoolTimer += Time.deltaTime; // ローリングのクールタイムを加算
 
-			if(Input.GetKeyDown(KeyCode.Space) && m_fRollingCoolTimer >= m_fRollCooldown)
+			if(Input.GetKeyDown(m_RollingKey) && m_fRollingCoolTimer >= m_fRollCooldown)
 			{
 				StartRolling(); // ローリング開始
 				StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
