@@ -66,13 +66,23 @@ public class CPlayer : MonoBehaviour, IDH
 	private int m_nDef = 5;
 
 	[Header("攻撃ステータス")]
+
+    [SerializeField]
+	[Tooltip("攻撃範囲の横幅")]
+	private float m_fAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+    [SerializeField]
+	[Tooltip("攻撃範囲の奥行き")]
+    private float m_fAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+    [SerializeField]
+    [Tooltip("攻撃範囲の高さ")]
+	private float m_fAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
 	[SerializeField]
-	[Tooltip("攻撃の半径")]
-	private float m_fAttackRange = 0.02f;	// 攻撃の半径
-	[SerializeField]
-	[Tooltip("攻撃の角度")]
-	private float m_fAttackAngle = 45.0f;	// 45度の範囲
-	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
+	[Tooltip("攻撃範囲の縦オフセット")]
+    private float m_fAttackBoxYOffset = 1.0f;
+    [SerializeField]
+	[Tooltip("攻撃範囲の横オフセット")]
+    private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+    private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
@@ -354,56 +364,109 @@ public class CPlayer : MonoBehaviour, IDH
     // 概要：プレイヤーの攻撃
     private void Attack()
 	{
-		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
-		{
-			m_fLastAttackTime = Time.time;
+        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+        {
+            m_fLastAttackTime = Time.time;
 
-			Vector3 forward = transform.forward;
-			Vector3 origin = transform.position;
+            Vector3 origin = transform.position;
+            Vector3 forward = transform.forward;
 
-			m_AudioSource.PlayOneShot(m_StabAttackSE); // 攻撃音を再生
+            Vector3 boxHalfExtents = new Vector3(
+                m_fAttackBoxWidth * 0.5f,
+                m_fAttackBoxHeight * 0.5f,
+                m_fAttackBoxDepth * 0.5f
+            );
 
-            // 周囲のコライダーを一定範囲で取得（円形）
-            Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
-			foreach (var hit in hitColliders)
-			{
-				if (hit.gameObject == this.gameObject) continue;
+            Vector3 boxCenter = origin + forward  * (m_fAttackBoxDepth * 0.5f)
+								+ transform.up * (boxHalfExtents.y + m_fAttackBoxYOffset)
+								+ transform.right * m_fAttackBoxXOffset;
+            //boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
 
-				Vector3 toTarget = hit.transform.position - origin;
-				toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
+            // Debug表示
+            //DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
 
-				// 距離チェック（このチェックはOverlapsphereがやってるけど一応）
-				if (toTarget.magnitude > m_fAttackRange) continue;
+            Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+            foreach (var hit in hitColliders)
+            {
+                if (hit.gameObject == this.gameObject) continue;
 
-				// 扇型の角度内か判定
-				float angle = Vector3.Angle(forward, toTarget.normalized);
-				if (angle <= m_fAttackAngle * 0.5f)
-				{
-					// デバッグ用
-					Debug.Log("Hit target: " + hit.name);
+                var enemy = hit.GetComponent<CEnemy>();
+                if (enemy != null)
+                {
+                    enemy.Damage(m_nAtk);
+                }
+            }
+        }
+    }
+	// ↓後で消すやつ
+	private void DrawAttackDebugBox()
+	{
+		Vector3 origin = transform.position;
+		Vector3 forward = transform.forward;
 
-					// TODO: 敵に攻撃処理を追加
-					var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
-					if (_EnemyScript != null)
-					{
-						_EnemyScript.Damage(m_nAtk);	// 一時的なダメージ処理
-						Debug.Log("AttackHit!");
-					}
-				}
-			}
-		}
+		Vector3 boxHalfExtents = new Vector3(
+			m_fAttackBoxWidth * 0.5f,
+			m_fAttackBoxHeight * 0.5f,
+			m_fAttackBoxDepth * 0.5f
+		);
+
+		Vector3 boxCenter = origin
+			+ forward * (m_fAttackBoxDepth * 0.5f)
+			+ transform.up * (boxHalfExtents.y + m_fAttackBoxYOffset)
+			+ transform.right * m_fAttackBoxXOffset;
+
+		DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.blue, 0f); // ← duration 0でもOK
 	}
 
-	// 更新関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーが死んでいるかと死んだときの処理
-	private void Update()
+	// ボックスの可視化関数
+	private void DebugDrawBox(Vector3 center, Vector3 halfExtents, Quaternion rotation, Color color, float duration)
+    {
+        Vector3[] points = new Vector3[8];
+        Matrix4x4 matrix = Matrix4x4.TRS(center, rotation, Vector3.one);
+
+        // ボックスの8点をローカルからワールドに変換
+        Vector3 he = halfExtents;
+        points[0] = matrix.MultiplyPoint3x4(new Vector3(-he.x, -he.y, -he.z));
+        points[1] = matrix.MultiplyPoint3x4(new Vector3(he.x, -he.y, -he.z));
+        points[2] = matrix.MultiplyPoint3x4(new Vector3(he.x, -he.y, he.z));
+        points[3] = matrix.MultiplyPoint3x4(new Vector3(-he.x, -he.y, he.z));
+        points[4] = matrix.MultiplyPoint3x4(new Vector3(-he.x, he.y, -he.z));
+        points[5] = matrix.MultiplyPoint3x4(new Vector3(he.x, he.y, -he.z));
+        points[6] = matrix.MultiplyPoint3x4(new Vector3(he.x, he.y, he.z));
+        points[7] = matrix.MultiplyPoint3x4(new Vector3(-he.x, he.y, he.z));
+
+        // 下部
+        Debug.DrawLine(points[0], points[1], color, duration);
+        Debug.DrawLine(points[1], points[2], color, duration);
+        Debug.DrawLine(points[2], points[3], color, duration);
+        Debug.DrawLine(points[3], points[0], color, duration);
+
+        // 上部
+        Debug.DrawLine(points[4], points[5], color, duration);
+        Debug.DrawLine(points[5], points[6], color, duration);
+        Debug.DrawLine(points[6], points[7], color, duration);
+        Debug.DrawLine(points[7], points[4], color, duration);
+
+        // 垂直
+        Debug.DrawLine(points[0], points[4], color, duration);
+        Debug.DrawLine(points[1], points[5], color, duration);
+        Debug.DrawLine(points[2], points[6], color, duration);
+        Debug.DrawLine(points[3], points[7], color, duration);
+    }
+
+
+    // 更新関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーが死んでいるかと死んだときの処理
+    private void Update()
 	{
 		//if(m_bIsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
-		if(m_HitPoint.IsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
+		if(m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
+
+		//DrawAttackDebugBox();
 
 		//// プレイヤーのHPが0以下になったとき
 		//if(m_nHp <= 0 && !m_bIsDead)
@@ -495,10 +558,11 @@ public class CPlayer : MonoBehaviour, IDH
 
 	void OnDrawGizmos()
 	{
-		Gizmos.color = new Color(1, 0, 0, 0.5f);
-		Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
-		
-	}
+		//Gizmos.color = new Color(1, 0, 0, 0.5f);
+		//Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
+
+        DrawAttackDebugBox();
+    }
 
 	// ＞ダメージ関数	//TODO:敵の「攻撃」動作にAffectとしてDamageをアタッチ
 	// 引数：なし
@@ -563,25 +627,7 @@ public class CPlayer : MonoBehaviour, IDH
     private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
-		Gizmos.color = new Color(1, 1, 0, 0.4f);
-
-		Vector3 offSet = new Vector3(0, 1, 0);
-		Vector3 origin = transform.position + offSet;
-		Vector3 forward = transform.forward;
-		int segments = 30; // 表示する線の数（多いほどなめらか）
-
-		for (int i = 0; i <= segments; i++)
-		{
-			float angle = -m_fAttackAngle / 2 + m_fAttackAngle * i / segments;
-			Quaternion rot = Quaternion.Euler(0, angle, 0);
-			Vector3 dir = rot * forward;
-			Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
-		}
-
-		Gizmos.color = new Color(0, 0, 1, 1.0f);
-		Vector3 start = transform.position + offSet;
-		Vector3 end = transform.position + transform.forward * 20.0f + offSet;
-		Gizmos.DrawLine(start, end);
+	// セレクトした時のDebug処理をここに追加
 #endif
 	}
 

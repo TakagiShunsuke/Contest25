@@ -202,6 +202,26 @@ PrefabInstance:
       propertyPath: m_fRayHeight
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: -251802179169056943, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
+      propertyPath: m_fAttackBoxDepth
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -251802179169056943, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
+      propertyPath: m_fAttackBoxWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -251802179169056943, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
+      propertyPath: m_fAttackBoxHeight
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -251802179169056943, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
+      propertyPath: m_fAttackBoxXOffset
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -251802179169056943, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
+      propertyPath: m_fAttackBoxYOffset
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5828574321953478918, guid: 35ccd5d2bc07cfd46b025abca04e09fe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
