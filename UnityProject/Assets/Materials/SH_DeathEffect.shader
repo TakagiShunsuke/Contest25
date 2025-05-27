@@ -102,7 +102,7 @@ Shader "Custom/SH_DeathEffect"
                 for (int i = 0; i < _nSphereCount; i++)
                 {
                     float dist = length(fPos - _fSpheres[i].xyz) - _fSpheres[i].w;
-                    d = SmoothMin(d, dist, 0.9);
+                    d = SmoothMin(d, dist, 0.75);
                 }
                 return d;
             }
