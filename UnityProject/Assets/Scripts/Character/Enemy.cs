@@ -13,7 +13,8 @@ D
 23:変数名修正・
 	Damage()関数のダメージ値を引数化:sezaki
 23:ファイルモードをspc→タブに変更:takagi
-25:navMesh追加
+25:navMesh追加:sezaki
+25：死亡エフェクト用のオブジェクト宣言と敵死亡した後のエフェクト生成処理追加：tei
 _M05
 D
 1:攻撃追加
@@ -25,6 +26,7 @@ D
 14:成長のHP計算を訂正:takagi
 21:ステータス、成長修正:sezaki
 21:成長力を切り出し、その他細かいリファクタリング作業:takagi
+28:エフェクトをマージ:takagi
 =====*/
 
 // 名前空間宣言
@@ -77,6 +79,9 @@ public class CEnemy : MonoBehaviour
 	private float m_fScale;	//サイズ変更
 	private NavMeshAgent m_Agent;	// 追跡対象
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
+
+	[Header("エフェクト")]
+	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
 
 	/// <summary>
@@ -306,6 +311,14 @@ public class CEnemy : MonoBehaviour
 		{
 			Debug.LogError("体液が設定されていません");
 		}
+
+		// 死亡エフェクトを敵の位置に生成
+		if (deathEffectPrefab != null)
+		{
+			Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+		}
+
+		Destroy(gameObject);	// 敵を消す
 
 		Destroy(gameObject);	// 敵を消す
 	}
