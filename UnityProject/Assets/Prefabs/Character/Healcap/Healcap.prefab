@@ -144,6 +144,7 @@ MonoBehaviour:
     m_fDef: 0
     m_fWeight: 0.2
   m_Blood: {fileID: 0}
+  deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!114 &3669639855496588308
 MonoBehaviour:
   m_ObjectHideFlags: 0
