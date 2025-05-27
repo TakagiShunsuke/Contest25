@@ -495,58 +495,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraStudio
       objectReference: {fileID: 0}
-    - target: {fileID: 2911241567616120835, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -7.000001
-      objectReference: {fileID: 0}
-    - target: {fileID: 2911241567616120835, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.49269882
-      objectReference: {fileID: 0}
-    - target: {fileID: 2911241567616120835, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 15.380001
-      objectReference: {fileID: 0}
-    - target: {fileID: 3160066719063312523, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_Mass
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820096373375656787, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6674890523416510887, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.38
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_fSpeed
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_fAttackAngle
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_fAttackRange
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_fMoveLimit_x
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_fMoveLimit_z
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_vMoveLimitOrigin.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 26b770ae513be5a40bd93dccfb34a0f6, type: 3}
-      propertyPath: m_vMoveLimitOrigin.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.z
       value: -7.000001
