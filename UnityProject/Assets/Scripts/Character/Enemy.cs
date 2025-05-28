@@ -33,7 +33,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // クラス定義
-public class CEnemy : MonoBehaviour
+public class CEnemy : MonoBehaviour, IDH
 {
 	// 構造体定義
 	[Serializable]
@@ -62,9 +62,13 @@ public class CEnemy : MonoBehaviour
 	}
 	
 	// 変数宣言
-	private CHitPoint m_HitPoint;	// HP
+	private CHitPoint m_HitPoint;   // HP
 
-	[Header("ステータス")]
+    private float m_ftime = 0.0f;//たいまー
+    private float m_fcount = 0.0f;//かうんと
+    private bool m_bIsPoison = false; //プレイヤーが毒カ
+    private bool m_bPoisonUpdate = false;//毒更新用
+    [Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status;
 	[SerializeField, Tooltip("成長力")] private GrowthRate m_Growth;
 	private Status m_StatusInitial;	// ステータス初期値
@@ -138,8 +142,34 @@ public class CEnemy : MonoBehaviour
 		// 攻撃
 		Attack();
 
-		// 成長
-		Growth();
+
+        //デバフ
+        if (m_bIsPoison == true)//毒だったら
+        {
+            if (m_bPoisonUpdate == true)
+            {
+                m_fcount = 0.0f;
+            }
+            m_ftime += Time.deltaTime;
+            m_fcount += Time.deltaTime;
+            if (m_ftime >= 1.0f)//１びょうごと
+            {
+                //m_nHp -= 5;
+                //Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
+                m_HitPoint.HP -= 5;
+                Debug.Log("毒!5ダメージ現在のHP" + m_HitPoint.HP);
+                m_ftime = 0.0f;
+
+            }
+            if (m_fcount >= 5.0f)
+            {
+                m_bIsPoison = false;
+            }
+            m_bPoisonUpdate = false;
+
+        }
+        // 成長
+        Growth();
 	}
 
 
@@ -309,4 +339,55 @@ public class CEnemy : MonoBehaviour
 
 		Destroy(gameObject);	// 敵を消す
 	}
+
+    public void Adddamege(int damage)
+    {
+        //m_nHp -= damage;
+        //Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        //if (m_nHp < 0)//しんだら
+        //{
+        //	Debug.Log("死んだ");
+        //}
+        m_HitPoint.HP -= damage;
+        Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+        if (m_HitPoint.HP < 0)//しんだら
+        {
+            Debug.Log("死んだ");
+        }
+    }
+
+    public void Addheal(int heal)
+    {
+        //m_nHp += heal;
+        //Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
+        m_HitPoint.HP += heal;
+        Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
+    }
+    public void Addposion()
+    {
+        m_bIsPoison = true;
+        m_bPoisonUpdate = true;
+    }
+    public void Addacid(int damage)
+    {
+        //if (m_nHp > damage)
+        //{
+
+
+        //	m_nHp -= damage;
+        //	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        //}
+        if (m_HitPoint.HP > damage)
+        {
+
+
+            m_HitPoint.HP -= damage;
+            Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+        }
+        else
+        {
+            Debug.Log("酸だからしなん");
+        }
+    }
+
 }

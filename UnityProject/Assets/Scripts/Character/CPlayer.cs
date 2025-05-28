@@ -25,129 +25,133 @@ D
 =====*/
 
 // 名前空間宣言
+using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // クラス定義
 public class CPlayer : MonoBehaviour, IDH
 {
-	// 変数宣言
-	private Rigidbody m_Rb; // リジットボディ
+    // 変数宣言
+    private Rigidbody m_Rb; // リジットボディ
 
 
-	private float m_ftime = 0.0f;//たいまー
-	private float m_fcount = 0.0f;//かうんと
+    private float m_ftime = 0.0f;//たいまー
+    private float m_fcount = 0.0f;//かうんと
 
-	[Header("プレイヤーステータス")]
-	//[SerializeField]
-	//[Tooltip("HP")]
-	//private int m_nHp = 100;
-	private CHitPoint m_HitPoint;
-	[SerializeField]
-	[Tooltip("攻撃力")]
-	private int m_nAtk = 100;
-	[SerializeField]
-	[Tooltip("移動速度")]
-	private float m_fSpeed = 2.0f;
-	[SerializeField]
-	[Tooltip("攻撃速度")]
-	private float m_fAtkSpeed = 100.0f;	// 攻撃速度
-	[SerializeField]
-	[Tooltip("防御力")]
-	private int m_nDef = 5;
+    private List<CAffect> activedebuffs = new List<CAffect>();
+    [Header("プレイヤーステータス")]
+    //[SerializeField]
+    //[Tooltip("HP")]
+    //private int m_nHp = 100;
+    private CHitPoint m_HitPoint;
+    [SerializeField]
+    [Tooltip("攻撃力")]
+    private int m_nAtk = 100;
+    [SerializeField]
+    [Tooltip("移動速度")]
+    private float m_fSpeed = 2.0f;
+    [SerializeField]
+    [Tooltip("攻撃速度")]
+    private float m_fAtkSpeed = 100.0f; // 攻撃速度
+    [SerializeField]
+    [Tooltip("防御力")]
+    private int m_nDef = 5;
 
-	[Header("攻撃ステータス")]
-	[SerializeField]
-	[Tooltip("攻撃の半径")]
-	private float m_fAttackRange = 0.02f;	// 攻撃の半径
-	[SerializeField]
-	[Tooltip("攻撃の角度")]
-	private float m_fAttackAngle = 45.0f;	// 45度の範囲
-	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
-	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
-	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
-	private bool m_bIsPoison = false; //プレイヤーが毒カ
+    [Header("攻撃ステータス")]
+    [SerializeField]
+    [Tooltip("攻撃の半径")]
+    private float m_fAttackRange = 0.02f;   // 攻撃の半径
+    [SerializeField]
+    [Tooltip("攻撃の角度")]
+    private float m_fAttackAngle = 45.0f;   // 45度の範囲
+    private float m_fLastAttackTime = -Mathf.Infinity;  // 最後に攻撃した時間
+    private float m_fAttackCooldown;    // 攻撃のクールダウン時間
+                                        //private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
+    private bool m_bIsPoison = false; //プレイヤーが毒カ
 
-	private bool m_bPoisonUpdate = false;//毒更新用
+    private bool m_bPoisonUpdate = false;//毒更新用
 
-	// 攻撃キーの変数
-	[SerializeField]
-	[Tooltip("攻撃キー")]
-	private KeyCode m_AttackKey = KeyCode.Return;
+    // 攻撃キーの変数
+    [SerializeField]
+    [Tooltip("攻撃キー")]
+    private KeyCode m_AttackKey = KeyCode.Return;
 
-	// アニメーター関連の変数
-	public Animator m_Animator;	// アニメーター変数維持用
-	private bool m_bWalkInput	= false;	// 移動入力フラグ
-	private bool m_bAttack		= false;	// 攻撃フラグ
-	public bool m_bOnGround	= true;	// 地面にいるかどうかのフラグ
+    // アニメーター関連の変数
+    public Animator m_Animator; // アニメーター変数維持用
+    private bool m_bWalkInput = false;  // 移動入力フラグ
+    private bool m_bAttack = false; // 攻撃フラグ
+    public bool m_bOnGround = true; // 地面にいるかどうかのフラグ
 
-	[Header("プレイヤー移動制限")]
-	// プレイヤー移動制限用の変数
+    [Header("プレイヤー移動制限")]
+    // プレイヤー移動制限用の変数
 
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲の原点")]
-	private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲X")]
-	private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲Z")]
-	private float m_fMoveLimit_z = 10.0f;	// プレイヤーの移動制限範囲
-	
+    [SerializeField]
+    [Tooltip("プレイヤーの移動制限範囲の原点")]
+    private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
+    [SerializeField]
+    [Tooltip("プレイヤーの移動制限範囲X")]
+    private float m_fMoveLimit_x = 10.0f;   // プレイヤーの移動制限範囲
+    [SerializeField]
+    [Tooltip("プレイヤーの移動制限範囲Z")]
+    private float m_fMoveLimit_z = 10.0f;   // プレイヤーの移動制限範囲
 
-	// 初期化関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：初期化処理
-	private void Start()
-	{
-		// プレイヤーの初期化
-		m_Rb = GetComponent<Rigidbody>();
-		m_fAttackCooldown = 1.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定
 
-		
-		// HPの実装
-		m_HitPoint = GetComponent<CHitPoint>();
-		if(!m_HitPoint)	// コンポーネントがない
-		{
-			m_HitPoint = gameObject.AddComponent<CHitPoint>();
-			Debug.Log("HPが不足しています：自動で作成済");
+    // 初期化関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：初期化処理
+    private void Start()
+    {
+        // プレイヤーの初期化
+        m_Rb = GetComponent<Rigidbody>();
+        m_fAttackCooldown = 1.0f / m_fAtkSpeed; // 攻撃速度に応じて攻撃間隔を設定
 
-			// 初期値設定
-			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...//TODO:改善
-		}
 
-		//// イベント接続
-		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
-	}
+        // HPの実装
+        m_HitPoint = GetComponent<CHitPoint>();
+        if (!m_HitPoint)    // コンポーネントがない
+        {
+            m_HitPoint = gameObject.AddComponent<CHitPoint>();
+            Debug.Log("HPが不足しています：自動で作成済");
 
-	// 移動処理関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーの移動処理
-	private void PlayerMove()
-	{
-		Vector3 input = new Vector3(); // 入力値を格納する変数
-		if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
-		if (Input.GetKey(KeyCode.S)) input += Vector3.back;
-		if (Input.GetKey(KeyCode.A)) input += Vector3.left;
-		if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+            // 初期値設定
+            m_HitPoint.HP = 100;    // 設定されてないということは未調整な数字のはず...//TODO:改善
+        }
 
-		if (input != Vector3.zero)
-		{
-			input.Normalize();
-			m_Rb.transform.position += input * m_fSpeed;
+        //// イベント接続
+        m_HitPoint.OnDead += OnDead;    // 死亡時処理を接続
+    }
 
-			// 回転させる（スムーズにしたい場合はLerpでもOK）
-			m_Rb.transform.rotation = Quaternion.LookRotation(input);
-		}
+    // 移動処理関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの移動処理
+    private void PlayerMove()
+    {
+        Vector3 input = new Vector3(); // 入力値を格納する変数
+        if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
+        if (Input.GetKey(KeyCode.S)) input += Vector3.back;
+        if (Input.GetKey(KeyCode.A)) input += Vector3.left;
+        if (Input.GetKey(KeyCode.D)) input += Vector3.right;
 
-		// プレイヤーの移動 正面向けるけどw+dが変になる移動
-		/*
+        if (input != Vector3.zero)
+        {
+            input.Normalize();
+            m_Rb.transform.position += input * m_fSpeed;
+
+            // 回転させる（スムーズにしたい場合はLerpでもOK）
+            m_Rb.transform.rotation = Quaternion.LookRotation(input);
+        }
+
+        // プレイヤーの移動 正面向けるけどw+dが変になる移動
+        /*
 		if (Input.GetKey(KeyCode.W))
 		{
 			m_Rb.transform.position += Vector3.forward * m_fSpeed;	// 前
@@ -170,7 +174,7 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 		*/
 
-		/*  滑らかに動くけど加速するパターンの移動
+        /*  滑らかに動くけど加速するパターンの移動
 		//if (Input.GetKey(KeyCode.S))
 		//{
 		//    rb.AddForce(Vector3.back * speed);
@@ -185,242 +189,255 @@ public class CPlayer : MonoBehaviour, IDH
 		//}
 
 		*/
-	}
+    }
 
-	// 攻撃関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーの攻撃
-	private void Attack()
-	{
-		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
-		{
-			m_fLastAttackTime = Time.time;
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃
+    private void Attack()
+    {
+        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+        {
+            m_fLastAttackTime = Time.time;
 
-			Vector3 forward = transform.forward;
-			Vector3 origin = transform.position;
+            Vector3 forward = transform.forward;
+            Vector3 origin = transform.position;
 
-			// 周囲のコライダーを一定範囲で取得（円形）
-			Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
-			foreach (var hit in hitColliders)
-			{
-				if (hit.gameObject == this.gameObject) continue;
+            // 周囲のコライダーを一定範囲で取得（円形）
+            Collider[] hitColliders = Physics.OverlapSphere(origin, m_fAttackRange);
+            foreach (var hit in hitColliders)
+            {
+                if (hit.gameObject == this.gameObject) continue;
 
-				Vector3 toTarget = hit.transform.position - origin;
-				toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
+                Vector3 toTarget = hit.transform.position - origin;
+                toTarget.y = 0f; // 高さ無視（XZ平面のみで計算）
 
-				// 距離チェック（このチェックはOverlapsphereがやってるけど一応）
-				if (toTarget.magnitude > m_fAttackRange) continue;
+                // 距離チェック（このチェックはOverlapsphereがやってるけど一応）
+                if (toTarget.magnitude > m_fAttackRange) continue;
 
-				// 扇型の角度内か判定
-				float angle = Vector3.Angle(forward, toTarget.normalized);
-				if (angle <= m_fAttackAngle * 0.5f)
-				{
-					// デバッグ用
-					Debug.Log("Hit target: " + hit.name);
+                // 扇型の角度内か判定
+                float angle = Vector3.Angle(forward, toTarget.normalized);
+                if (angle <= m_fAttackAngle * 0.5f)
+                {
+                    // デバッグ用
+                    Debug.Log("Hit target: " + hit.name);
 
-					// TODO: 敵に攻撃処理を追加
-					var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
-					if (_EnemyScript != null)
-					{
-						_EnemyScript.Damage(m_nAtk);	// 一時的なダメージ処理
-						Debug.Log("AttackHit!");
-					}
-				}
-			}
-		}
-	}
+                    // TODO: 敵に攻撃処理を追加
+                    var _EnemyScript = hit.gameObject.GetComponent<CEnemy>();
+                    if (_EnemyScript != null)
+                    {
+                        _EnemyScript.Damage(m_nAtk);    // 一時的なダメージ処理
+                        Debug.Log("AttackHit!");
+                    }
+                }
+            }
+        }
+    }
 
-	// 更新関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーが死んでいるかと死んだときの処理
-	private void Update()
-	{
-		//if(m_bIsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
-		if(m_HitPoint.IsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
+    // 更新関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーが死んでいるかと死んだときの処理
+    private void Update()
+    {
+       
+        //if(m_bIsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
+        if (m_HitPoint.IsDead)
+        {
+            SceneManager.LoadScene("GAMEOVER");
+            return; // プレイヤーが死んでいる場合は操作を無効にする
+        }
+       
+        //// プレイヤーのHPが0以下になったとき
+        //if(m_nHp <= 0 && !m_bIsDead)
+        //{
+        //	Die(); // 死ぬ
+        //}
+        if (m_bIsPoison == true)//毒だったら
+        {
+            if (m_bPoisonUpdate == true)
+            {
+                m_fcount = 0.0f;
+            }
+            m_ftime += Time.deltaTime;
+            m_fcount += Time.deltaTime;
+            if (m_ftime >= 1.0f)//１びょうごと
+            {
+                //m_nHp -= 5;
+                //Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
+                m_HitPoint.HP -= 5;
+                Debug.Log("毒!5ダメージ現在のHP" + m_HitPoint.HP);
+                m_ftime = 0.0f;
+                if (m_HitPoint.HP <= 0)
+                {
 
-		//// プレイヤーのHPが0以下になったとき
-		//if(m_nHp <= 0 && !m_bIsDead)
-		//{
-		//	Die(); // 死ぬ
-		//}
-		if (m_bIsPoison == true)//毒だったら
-		{
-			if (m_bPoisonUpdate == true)
-			{
-				m_fcount = 0.0f;
-			}
-			m_ftime += Time.deltaTime;
-			m_fcount += Time.deltaTime;
-			if (m_ftime >= 1.0f)//１びょうごと
-			{
-				//m_nHp -= 5;
-				//Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
-				m_HitPoint.HP -= 5;
-				Debug.Log("毒!5ダメージ現在のHP" + m_HitPoint.HP);
-				m_ftime = 0.0f;
-			}
-			if (m_fcount >= 5.0f)
-			{
-				m_bIsPoison = false;
-			}
-			m_bPoisonUpdate = false;
-		}
+                    SceneManager.LoadScene("GAMEOVER");
+                    // m_HitPoint.IsDead = true;
+                }
+            }
+            if (m_fcount >= 5.0f)
+            {
+                m_bIsPoison = false;
+            }
+            m_bPoisonUpdate = false;
+           
+        }
+       
 
-		
-	}
+    }
 
-	// 物理更新関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：プレイヤーの移動処理と攻撃処理
-	private void FixedUpdate()
-	{
-		// 移動処理
-		PlayerMove();
+    // 物理更新関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの移動処理と攻撃処理
+    private void FixedUpdate()
+    {
+        // 移動処理
+        PlayerMove();
 
-		Vector3 _NowPosition = transform.position;  // 現在の位置を取得
+        Vector3 _NowPosition = transform.position;  // 現在の位置を取得
 
-		_NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
-		_NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
+        _NowPosition.x = Mathf.Clamp(_NowPosition.x, m_vMoveLimitOrigin.x - m_fMoveLimit_x, m_vMoveLimitOrigin.x + m_fMoveLimit_x);
+        _NowPosition.z = Mathf.Clamp(_NowPosition.z, m_vMoveLimitOrigin.z - m_fMoveLimit_z, m_vMoveLimitOrigin.z + m_fMoveLimit_z);
 
-		transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
+        transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
 
-		// プレイヤーの攻撃(Enter)
-		if (Input.GetKeyDown(m_AttackKey))
-		{
-			Attack();	// 攻撃処理を呼び出す
+        // プレイヤーの攻撃(Enter)
+        if (Input.GetKeyDown(m_AttackKey))
+        {
+            Attack();   // 攻撃処理を呼び出す
 
-		}
-	}
+        }
+    }
 
-	//// 死ぬ関数
-	//// 引数１：なし
-	//// ｘ
-	//// 戻値：なし
-	//// ｘ
-	//// 概要：プレイヤーが死んだときに呼び出す処理
-	//private void Die()
-	//{
-	//	m_bIsDead = true;
-	//}
+    //// 死ぬ関数
+    //// 引数１：なし
+    //// ｘ
+    //// 戻値：なし
+    //// ｘ
+    //// 概要：プレイヤーが死んだときに呼び出す処理
+    //private void Die()
+    //{
+    //	m_bIsDead = true;
+    //}
 
-	void OnDrawGizmos()
-	{
-		Gizmos.color = new Color(1, 0, 0, 0.5f);
-		Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
-		
-	}
+    void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(transform.position + new Vector3(0, 1, 0), new Vector3(1, 2, 1));
 
-	// ＞ダメージ関数	//TODO:敵の「攻撃」動作にAffectとしてDamageをアタッチ
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ダメージを受ける
-	public void Damage(int _nDamage)
-	{
-		if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
-		{
-			_nDamage = 1;
-		}
-		else// ダメージを与える
-		{
-			_nDamage = _nDamage - m_nDef;
-		}
+    }
 
-		//m_nHp -= _nDamage; // ダメージ処理
-		m_HitPoint.HP -= _nDamage; // ダメージ処理
-	}
+    // ＞ダメージ関数	//TODO:敵の「攻撃」動作にAffectとしてDamageをアタッチ
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：ダメージを受ける
+    public void Damage(int _nDamage)
+    {
+        if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
+        {
+            _nDamage = 1;
+        }
+        else// ダメージを与える
+        {
+            _nDamage = _nDamage - m_nDef;
+        }
 
-	private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
-	{
+        //m_nHp -= _nDamage; // ダメージ処理
+        m_HitPoint.HP -= _nDamage; // ダメージ処理
+    }
+
+    private void OnDrawGizmosSelected() // オブジェクト洗濯時に表示
+    {
 #if UNITY_EDITOR
-		Gizmos.color = new Color(1, 1, 0, 0.4f);
+        Gizmos.color = new Color(1, 1, 0, 0.4f);
 
-		Vector3 offSet = new Vector3(0, 1, 0);
-		Vector3 origin = transform.position + offSet;
-		Vector3 forward = transform.forward;
-		int segments = 30; // 表示する線の数（多いほどなめらか）
+        Vector3 offSet = new Vector3(0, 1, 0);
+        Vector3 origin = transform.position + offSet;
+        Vector3 forward = transform.forward;
+        int segments = 30; // 表示する線の数（多いほどなめらか）
 
-		for (int i = 0; i <= segments; i++)
-		{
-			float angle = -m_fAttackAngle / 2 + m_fAttackAngle * i / segments;
-			Quaternion rot = Quaternion.Euler(0, angle, 0);
-			Vector3 dir = rot * forward;
-			Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
-		}
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = -m_fAttackAngle / 2 + m_fAttackAngle * i / segments;
+            Quaternion rot = Quaternion.Euler(0, angle, 0);
+            Vector3 dir = rot * forward;
+            Gizmos.DrawLine(origin, origin + dir.normalized * m_fAttackRange);
+        }
 
-		Gizmos.color = new Color(0, 0, 1, 1.0f);
-		Vector3 start = transform.position + offSet;
-		Vector3 end = transform.position + transform.forward * 20.0f + offSet;
-		Gizmos.DrawLine(start, end);
+        Gizmos.color = new Color(0, 0, 1, 1.0f);
+        Vector3 start = transform.position + offSet;
+        Vector3 end = transform.position + transform.forward * 20.0f + offSet;
+        Gizmos.DrawLine(start, end);
 #endif
-	}
+    }
 
-		// 死亡時処理
-	private void OnDead()
-	{
-		Destroy(gameObject);	// プレイヤーを消す
-	}
-
-
-	//---↓消す---
-	//ダメージ処理
-	public void Adddamege(int damage)
-	{
-		//m_nHp -= damage;
-		//Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//if (m_nHp < 0)//しんだら
-		//{
-		//	Debug.Log("死んだ");
-		//}
-		m_HitPoint.HP -= damage;
-		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		if (m_HitPoint.HP < 0)//しんだら
-		{
-			Debug.Log("死んだ");
-		}
-	}
-
-	public void Addheal(int heal)
-	{
-		//m_nHp += heal;
-		//Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
-		m_HitPoint.HP += heal;
-		Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
-	}
-	public void Addposion()
-	{
-		m_bIsPoison = true;
-		m_bPoisonUpdate = true;
-	}
-	public void Addacid(int damage)
-	{
-		//if (m_nHp > damage)
-		//{
+    // 死亡時処理
+    private void OnDead()
+    {
+        Destroy(gameObject);    // プレイヤーを消す
+    }
 
 
-		//	m_nHp -= damage;
-		//	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//}
-		if (m_HitPoint.HP > damage)
-		{
+    //---↓消す---
+    //ダメージ処理
+    public void Adddamege(int damage)
+    {
+        //m_nHp -= damage;
+        //Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        //if (m_nHp < 0)//しんだら
+        //{
+        //	Debug.Log("死んだ");
+        //}
+        m_HitPoint.HP -= damage;
+        Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+        if (m_HitPoint.HP < 0)//しんだら
+        {
+            Debug.Log("死んだ");
+        }
+    }
+
+    public void Addheal(int heal)
+    {
+        //m_nHp += heal;
+        //Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
+        m_HitPoint.HP += heal;
+        Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
+    }
+    public void Addposion()
+    {
+        m_bIsPoison = true;
+        m_bPoisonUpdate = true;
+    }
+    public void Addacid(int damage)
+    {
+        //if (m_nHp > damage)
+        //{
 
 
-			m_HitPoint.HP -= damage;
-			Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		}
-		else
-		{
-			Debug.Log("酸だからしなん");
-		}
-	}
+        //	m_nHp -= damage;
+        //	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+        //}
+        if (m_HitPoint.HP > damage)
+        {
+
+
+            m_HitPoint.HP -= damage;
+            Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+        }
+        else
+        {
+            Debug.Log("酸だからしなん");
+        }
+    }
+
 }

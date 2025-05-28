@@ -13,12 +13,20 @@ public class Scenemanage : MonoBehaviour
     {
         
     }
-    public void changSceneResult()
+    public void changSceneGAMEOVER()
     {
-        SceneManager.LoadScene("Result");
+        SceneManager.LoadScene("GAMEOVER");
+    }
+    public void changSceneGAMECLEAR()
+    {
+        SceneManager.LoadScene("GAMECLEAR");
     }
     public void ChangSceneTitle()
     {
         SceneManager.LoadScene("Title");
+    }
+    public void ChangSceneAlpha()
+    {
+        SceneManager.LoadScene("AlphaScene");
     }
 }
