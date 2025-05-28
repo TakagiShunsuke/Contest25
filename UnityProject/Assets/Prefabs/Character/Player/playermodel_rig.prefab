@@ -163,8 +163,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb5a558c5065c094b9850d0fafe05f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MoveGroundSE: {fileID: 0}
-  m_StabAttackSE: {fileID: 0}
   m_nAtk: 100
   m_fSpeed: 0.2
   m_fAtkSpeed: 100
@@ -172,7 +170,7 @@ MonoBehaviour:
   m_fAttackBoxWidth: 1
   m_fAttackBoxDepth: 2.5
   m_fAttackBoxHeight: 1.2
-  m_fAttackBoxYOffset: 0.5
+  m_fAttackBoxYOffset: 0.3
   m_fAttackBoxXOffset: 0
   m_AttackKey: 13
   m_RollingKey: 32
@@ -187,6 +185,10 @@ MonoBehaviour:
   m_fRollCooldown: 3
   m_fRollingInvicibleTime: 0.5
   m_fFootStepInterval: 0.4
+  m_MoveGroundSE: {fileID: 8300000, guid: 6bc1234106a4a144da20955ba575b49a, type: 3}
+  m_MoveGroundSEVolume: 0.05
+  m_StabAttackSE: {fileID: 8300000, guid: 84838a7bc55f8d14a9dcebd5356a4185, type: 3}
+  m_StabAttackSEVolume: 0.5
 --- !u!114 &4653354094683961336
 MonoBehaviour:
   m_ObjectHideFlags: 0
