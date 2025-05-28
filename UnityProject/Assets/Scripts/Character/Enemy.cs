@@ -43,7 +43,6 @@ public class CEnemy : MonoBehaviour
 	{
 		[SerializeField, Tooltip("攻撃力")] public int m_nAtk;
 		[SerializeField, Tooltip("攻撃速度")] public float m_fAtkSpeed;
-		[SerializeField, Tooltip("防御力")] public int m_nDef;
 		[SerializeField, Tooltip("重量")] public int m_nWeight;
 		[SerializeField, Tooltip("成長度")] public int m_nGrowth;
 		[SerializeField, Tooltip("成長上限")] public int m_nGrowthLimit;
@@ -75,7 +74,8 @@ public class CEnemy : MonoBehaviour
 	private float m_fGrowthTimer = 0f;	// 成長タイマー
 	private float m_fAtkCooldown = 0f;	// 攻撃のクールタイム
 	private float m_fSpeedInitial;	// 速度初期値
-	private int m_nHPInitial;	//体力初期値
+	[SerializeField, Tooltip("初期HP")]　private int m_nInitialHP;
+	[SerializeField, Tooltip("防御力")] public int m_nInitialDef;
 	private float m_fScale;	//サイズ変更
 	private NavMeshAgent m_Agent;	// 追跡対象
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
@@ -107,23 +107,26 @@ public class CEnemy : MonoBehaviour
 		}
 
 		// HPの実装
-		m_HitPoint = GetComponent<CHitPoint>();	// HPを取得
-		if (!m_HitPoint)	// コンポーネントがない
+		if(m_HitPoint = GetComponent<CHitPoint>())
 		{
-			// 機能の確保
-			m_HitPoint = gameObject.AddComponent<CHitPoint>();	// 代わりに作成
-			
+#if UNITY_EDITOR
 			// 出力
-			Debug.LogWarning("HPが不足しています：自動で作成済");
-
-			// 初期値設定
-			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...	//TODO:改善
+			Debug.Log(this + "にはHitPointが設定されていますが、この設定は初期化される可能性があります");
+#endif	// !UNITY_EDITOR
 		}
+		else
+		{
+			m_HitPoint = gameObject.AddComponent<CHitPoint>();	// HPの機能追加
+		}
+
+		// 初期値設定
+		m_HitPoint.MaxHP = m_nInitialHP;	// 初期HP設定
+		m_HitPoint.Defence = m_nInitialDef;	// 初期防御設定
 
 		//初期ステータスを確保
 		m_StatusInitial = m_Status;
 		m_fSpeedInitial = m_Agent.speed;
-		m_nHPInitial = m_HitPoint.HP;
+		m_nInitialHP = m_HitPoint.HP;
 
 		// イベント接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
@@ -238,11 +241,12 @@ public class CEnemy : MonoBehaviour
 			}
 			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
 			//m_HitPoint.HP += (int)(m_Status.m_nGrowthSpeed * 0.1f);
-			m_HitPoint.HP = m_HitPoint.HP + (int)(m_nHPInitial * m_Growth.m_fHP);
+			m_HitPoint.HP = m_HitPoint.HP + (int)(m_nInitialHP * m_Growth.m_fHP);
 			m_Status.m_nAtk = m_Status.m_nAtk + (int)(m_StatusInitial.m_nAtk * m_Growth.m_fAtk);
 			m_Agent.speed = m_Agent.speed + (m_fSpeedInitial * m_Growth.m_fMoveSpeed);
 			m_Status.m_fAtkSpeed = m_Status.m_fAtkSpeed + (m_StatusInitial.m_fAtkSpeed * m_Growth.m_fAtkSpeed);
-			m_Status.m_nDef = m_Status.m_nDef + (int)(m_StatusInitial.m_nDef * m_Growth.m_fDef);
+			//m_Status.m_nDef = m_Status.m_nDef + (int)(m_StatusInitial.m_nDef * m_Growth.m_fDef);
+			m_HitPoint.Defence = m_HitPoint.Defence + (int)(m_nInitialDef * m_Growth.m_fDef);
 			m_Status.m_nWeight = m_Status.m_nWeight + (int)(m_StatusInitial.m_nWeight * m_Growth.m_fWeight);
 			m_Status.m_nGrowth = m_Status.m_nGrowth + m_Status.m_nGrowthPower;
 			m_fScale = m_Status.m_nGrowth / m_StatusInitial.m_nGrowth;
@@ -264,13 +268,13 @@ public class CEnemy : MonoBehaviour
 	/// </summary>
 	public void Damage(int _nDamage)
 	{
-		if (_nDamage <= m_Status.m_nDef)	// 防御が被ダメを上回ったら被ダメを1にする
+		if (_nDamage <= m_HitPoint.Defence)	// 防御が被ダメを上回ったら被ダメを1にする
 		{
 			_nDamage = 1;
 		}
 		else	// ダメージを与える
 		{
-			_nDamage = _nDamage - m_Status.m_nDef;
+			_nDamage = _nDamage - m_HitPoint.Defence;
 		}
 
 		//m_Status.m_nHp -= _nDamage;　// ダメージ処理

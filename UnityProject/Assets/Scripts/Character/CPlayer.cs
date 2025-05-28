@@ -45,10 +45,13 @@ public class CPlayer : MonoBehaviour, IDH
 	private float m_fcount = 0.0f;//かうんと
 
 	[Header("プレイヤーステータス")]
-	//[SerializeField]
-	//[Tooltip("HP")]
-	//private int m_nHp = 100;
-	private CHitPoint m_HitPoint;
+	[SerializeField]
+	[Tooltip("初期HP")]
+	private int m_nInitialHp = 100;
+	[SerializeField]
+	[Tooltip("初期防御力")]
+	private int m_nInitialDef = 5;
+	private CHitPoint m_HitPoint;	// HP機構
 
 	[SerializeField]
 	[Tooltip("攻撃力")]
@@ -58,10 +61,7 @@ public class CPlayer : MonoBehaviour, IDH
 	private float m_fSpeed = 2.0f;
 	[SerializeField]
 	[Tooltip("攻撃速度")]
-	private float m_fAtkSpeed = 100.0f;	// 攻撃速度
-	[SerializeField]
-	[Tooltip("防御力")]
-	private int m_nDef = 5;
+	private float m_fAtkSpeed = 100.0f;
 
 	[Header("攻撃ステータス")]
 
@@ -187,15 +187,21 @@ public class CPlayer : MonoBehaviour, IDH
 		m_StabAttackSESource.volume = m_StabAttackSEVolume;	// 音量を設定
 		
 		// HPの実装
-		m_HitPoint = GetComponent<CHitPoint>();
-		if(!m_HitPoint)	// コンポーネントがない
+		if(m_HitPoint = GetComponent<CHitPoint>())
 		{
-			m_HitPoint = gameObject.AddComponent<CHitPoint>();
-			Debug.Log("HPが不足しています：自動で作成済");
-
-			// 初期値設定
-			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...//TODO:改善
+#if UNITY_EDITOR
+			// 出力
+			Debug.Log(this + "にはHitPointが設定されていますが、この設定は初期化される可能性があります");
+#endif	// !UNITY_EDITOR
 		}
+		else
+		{
+			m_HitPoint = gameObject.AddComponent<CHitPoint>();	// HPの機能追加
+		}
+
+		// 初期値設定
+		m_HitPoint.MaxHP = m_nInitialHp;	// 初期HP設定
+		m_HitPoint.Defence = m_nInitialDef;	// 初期防御設定
 
 		// イベント接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
@@ -599,13 +605,13 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
 
-		if (_nDamage <= m_nDef)// 防御が被ダメを上回ったら被ダメを1にする
+		if (_nDamage <= m_HitPoint.Defence)// 防御が被ダメを上回ったら被ダメを1にする
 		{
 			_nDamage = 1;
 		}
 		else// ダメージを与える
 		{
-			_nDamage = _nDamage - m_nDef;
+			_nDamage = _nDamage - m_HitPoint.Defence;
 		}
 
 		//m_nHp -= _nDamage; // ダメージ処理
