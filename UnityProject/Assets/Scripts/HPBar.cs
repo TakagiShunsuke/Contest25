@@ -29,6 +29,6 @@ public class HPBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        m_HpBar.value = m_cHitPoint.HP/100;
+        m_HpBar.value = m_cHitPoint.HP/100.0f;
     }
 }
