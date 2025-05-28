@@ -25,19 +25,17 @@ D
 16:Rayで遊んでみる:kato
 20:ローリングの時に移動するように:kato
 22:効果音の追加(WASDで移動時とEnterで攻撃時のみ):kato
+28:SE関係の変数にツールチップ追加:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
-using System.Collections; // 無敵状態用
+using System.Collections;
+using UnityEditor.SceneManagement; // 無敵状態用
 
 // クラス定義
 public class CPlayer : MonoBehaviour, IDH
 {
-	public AudioClip m_MoveGroundSE; // 移動音
-	public AudioClip m_StabAttackSE; // 攻撃(突き)
-	AudioSource m_AudioSource; // AudioSource
-
 	// 変数宣言
 	private Rigidbody m_Rb; // リジットボディ
 
@@ -152,8 +150,22 @@ public class CPlayer : MonoBehaviour, IDH
 	[Header("プレイヤーのSE関係")]
 	[SerializeField]
 	[Tooltip("プレイヤーの足音の間隔")]
-	private float m_fFootStepInterval = 0.4f; // 足音の間隔
+	private float m_fFootStepInterval = 0.4f;	// 足音の間隔
 	private float m_fFootStepTimer = 0.0f;
+	[SerializeField]
+	[Tooltip("移動音")]
+	private  AudioClip m_MoveGroundSE;
+	[SerializeField]
+	[Tooltip("移動音量")]
+	private float m_MoveGroundSEVolume = 0.05f;
+	private AudioSource m_MoveGroundSESource;	// 移動SE用のオーディオソース
+	[SerializeField]
+	[Tooltip("攻撃(突き)音")]
+	public AudioClip m_StabAttackSE;
+	[SerializeField]
+	[Tooltip("攻撃(突き)音量")]
+	private float m_StabAttackSEVolume = 0.05f;
+	private AudioSource m_StabAttackSESource;	// 突きSE用のオーディオソース
 
 
 	// 初期化関数
@@ -166,9 +178,13 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
-		m_AudioSource = GetComponent<AudioSource>(); // AudioSourceの取得
 		m_fAttackCooldown = 1.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定
 
+		// 音源準備
+		m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
+		m_MoveGroundSESource.volume = m_MoveGroundSEVolume;	// 音量を設定
+		m_StabAttackSESource = gameObject.AddComponent<AudioSource>();	// 突き用の音源コンポーネント作成
+		m_StabAttackSESource.volume = m_StabAttackSEVolume;	// 音量を設定
 		
 		// HPの実装
 		m_HitPoint = GetComponent<CHitPoint>();
@@ -181,7 +197,7 @@ public class CPlayer : MonoBehaviour, IDH
 			m_HitPoint.HP = 100;	// 設定されてないということは未調整な数字のはず...//TODO:改善
 		}
 
-		//// イベント接続
+		// イベント接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
@@ -253,11 +269,11 @@ public class CPlayer : MonoBehaviour, IDH
 			AdjustDistanceByRaycast(rayOrigin, moveDir, moveDistance, out moveDistance);
 
 			// 足音再生
-			if (!m_AudioSource.isPlaying)
+			if (!m_MoveGroundSESource.isPlaying)
 			{
-				m_AudioSource.clip = m_MoveGroundSE;
-				m_AudioSource.loop = true;
-				m_AudioSource.Play();
+				m_MoveGroundSESource.clip = m_MoveGroundSE;
+				m_MoveGroundSESource.loop = true;
+				m_MoveGroundSESource.Play();
 			}
 
 			// 移動・回転
@@ -267,9 +283,9 @@ public class CPlayer : MonoBehaviour, IDH
 		else
 		{
 			// 入力なし時の足音停止
-			if (m_AudioSource.isPlaying)
+			if (m_MoveGroundSESource.isPlaying)
 			{
-				m_AudioSource.Stop();
+				m_MoveGroundSESource.Stop();
 			}
 		}
 
@@ -397,7 +413,14 @@ public class CPlayer : MonoBehaviour, IDH
 				}
 			}
 		}
+
+		// 攻撃音再生
+		if (!m_StabAttackSESource.isPlaying)
+		{
+			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+		}
 	}
+
 	// ↓後で消すやつ
 	private void DrawAttackDebugBox()
 	{
