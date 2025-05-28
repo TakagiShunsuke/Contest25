@@ -10,6 +10,7 @@ __Y25
 _M05
 D
 21:ì¬@okugami
+29:—Õ“I‚ÈC³:takagi
 =====*/
 
 using UnityEngine;
@@ -29,6 +30,6 @@ public class HPBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        m_HpBar.value = m_cHitPoint.HP/100.0f;
+        m_HpBar.value = m_cHitPoint.HP / (float)m_cHitPoint.MaxHP;
     }
 }

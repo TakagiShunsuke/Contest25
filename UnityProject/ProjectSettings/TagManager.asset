@@ -4,6 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - Effect
   - Enemy
   layers:
   - Default
@@ -12,9 +13,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - EffectPanel
+  - Effect
+  - Player
   - 
   - 
   - 

@@ -24,7 +24,7 @@ using UnityEngine;
 public class CDamage : CAffect
 {
 	// 定数定義
-	protected const int _MIN_DAMAGE = 0;	// 最低保証ダメージ
+	protected const int _MIN_DAMAGE = 1;	// 最低保証ダメージ
 
 	// 変数宣言
 	[Header("パラメータ")]
@@ -117,22 +117,12 @@ public class CDamage : CAffect
 	{
 		// 変数宣言
 		var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
-		var _Deffence = _Opponent.GetComponent<CDefence>();	// ダメージに対する防御値
 
 		// ダメージ処理
 		if(_HitPoint)	// ダメージを受けられる
 		{
-			// 変数宣言
-			float _DeffenceValue = 0;	// 防御値
-
-			// 防御を取得
-			if(_Deffence)	// 防御がある
-			{
-				_DeffenceValue = _Deffence.Defence;	// 防御値を更新
-			}
-
 			// ダメージを与える
-			_HitPoint.HP -= CulcDamage(CorrectedDamage, _DeffenceValue);	// 最終ダメージをHPに影響させる
+			_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 最終ダメージをHPに影響させる
 		}
 	}
 	
