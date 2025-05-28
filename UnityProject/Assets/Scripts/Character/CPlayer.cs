@@ -31,7 +31,6 @@ D
 // 名前空間宣言
 using UnityEngine;
 using System.Collections;
-using UnityEditor.SceneManagement; // 無敵状態用
 
 // クラス定義
 public class CPlayer : MonoBehaviour, IDH
