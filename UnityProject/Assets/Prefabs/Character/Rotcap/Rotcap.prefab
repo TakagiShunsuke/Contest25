@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Status:
-    m_nAtk: 100
+    m_nAtk: 10
     m_fAtkSpeed: 50
     m_nWeight: 50
     m_nGrowth: 100
@@ -138,13 +138,13 @@ MonoBehaviour:
     m_fAtkAngle: 60
   m_Growth:
     m_fHP: 0.2
-    m_fAtk: 0.1
-    m_fMoveSpeed: 0
+    m_fAtk: 0.2
+    m_fMoveSpeed: 0.2
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0.2
-  m_nInitialHP: 80
-  m_nInitialDef: 10
+  m_nInitialHP: 120
+  m_nInitialDef: 5
   m_Blood: {fileID: 75644770688212516, guid: 55108f44291410e40b96528cab15169a, type: 3}
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!114 &5379948912958260213
