@@ -16,7 +16,7 @@ public class Blood2 : MonoBehaviour
     {
         
     }
-    void OnCollisionStay(Collision collision,Collider other)
+    void OnCollisionStay(Collision collision/*,Collider other*/)
     {
       //  IDebuffable target = other.GetComponent<IDebuffable>();
         GameObject hitobj = collision.gameObject;
