@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7f6bb419e79058943bb6b1dfce6f345c, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7f6bb419e79058943bb6b1dfce6f345c, type: 3}
       propertyPath: m_Name
       value: Rotcap
@@ -77,9 +81,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7f6bb419e79058943bb6b1dfce6f345c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5379948912958260213}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7f6bb419e79058943bb6b1dfce6f345c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4196701374338134850}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7f6bb419e79058943bb6b1dfce6f345c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3756476919548673345}
@@ -128,22 +129,24 @@ MonoBehaviour:
   m_Status:
     m_nAtk: 100
     m_fAtkSpeed: 50
-    m_nDef: 10
-    m_nWeight: 100
+    m_nWeight: 50
     m_nGrowth: 100
     m_nGrowthLimit: 300
-    m_nGrowthSpeed: 100
+    m_nGrowthSpeed: 10
     m_nGrowthPower: 15
     m_fAtkRange: 2
     m_fAtkAngle: 60
   m_Growth:
-    m_fHP: 0
-    m_fAtk: 0
+    m_fHP: 0.2
+    m_fAtk: 0.1
     m_fMoveSpeed: 0
     m_fAtkSpeed: 0
     m_fDef: 0
-    m_fWeight: 0
-  m_Blood: {fileID: 0}
+    m_fWeight: 0.2
+  m_nInitialHP: 80
+  m_nInitialDef: 10
+  m_Blood: {fileID: 75644770688212516, guid: 55108f44291410e40b96528cab15169a, type: 3}
+  deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!114 &5379948912958260213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,19 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a26cdd165bd3e334b930dec094aea947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4196701374338134850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1768655572757658626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8742f30f3f583840b7d3148fb6ad458, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_nHP: 80
 --- !u!54 &3756476919548673345
 Rigidbody:
   m_ObjectHideFlags: 0

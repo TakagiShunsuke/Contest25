@@ -39,6 +39,8 @@ D
 14:関数コメントにXMLドキュメントコメントを採用:takagi
 15:更新履歴の記述漏れを追加:takagi
 21:Editor上でしか稼働しないものをプリプロセッサに:takagi
+23:[MenuItem()]はstatic関数でないといけないので修正
+	・各タブ名をコーディングルール上の記載だとわかりやすいように変更:takagi
 =====*/
 
 // 名前空間宣言
@@ -194,14 +196,14 @@ public class CCodingRule : MonoBehaviour	// クラス型の頭文字にCをつける
 	// ジェネリック型がない場合は省略
 	// 引数がない場合は省略
 	// 戻り値がない場合は省略
-	[MenuItem("ffff/gggg")]
-	public void Function()
+	[MenuItem("CodingRule/Example")]
+	private static void Function()
 	{
 	}
 #endif
 }
 
-[CreateAssetMenu(menuName = "ObjectMenu/Menu")]
+[CreateAssetMenu(menuName = "CodingRule/Example")]
 class CMenuItem : ScriptableObject
 {
 	/// <summary>

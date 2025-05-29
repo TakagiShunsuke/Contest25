@@ -28,6 +28,7 @@ D
 	using System.Linq;
 	// 既存のコードに変更は不要です。'System.Linq' をインポートすることで、'FirstOrDefault' が使用可能になります。
 21:コメント微修正:takagi
+28:ウェーブ数のゲット関数の作成
 =====*/
 
 // 名前空間宣言
@@ -153,16 +154,24 @@ public class CEnemySpawner : MonoBehaviour
 			foreach (var tag in _Point.m_eMetaTags)
 			{
 				// WaveDataのメタタグに基づいて敵をスポーン
-				var match = _WaveData.m_EnemyByTagList.FirstOrDefault(e => e.m_Tag == tag);
-				if (match != null)
+				foreach (var _wave_enemy in _WaveData.m_EnemyByTagList)
 				{
-					_MatchList.Add(match.m_EnemyPrefabs);
+					if (tag == _wave_enemy.m_Tag)
+					{
+						_MatchList.Add(_wave_enemy.m_EnemyPrefabs);
+					}
 				}
+				//var match = _WaveData.m_EnemyByTagList.FirstOrDefault(e => e.m_Tag == tag);	// 「一つ目をとる」処理なため複数設定ができていない
+				//if (match != null)
+				//{
+				//	_MatchList.Add(match.m_EnemyPrefabs);
+				//}
 			}
 
 			// スポーンする敵が無いなら次のポイントへ
 			if (_MatchList.Count == 0) 
 				continue; 
+
 
 			// スポーンする敵が見つかったらランダムに1体スポーン
 			GameObject _Selected = _MatchList[Random.Range(0, _MatchList.Count)];
@@ -184,12 +193,23 @@ public class CEnemySpawner : MonoBehaviour
 		return null;
 	}
 
-	/// <summary>
-	/// -IsWaveFinished関数
-	/// <para>全Wave終了判定</para>
-	/// </summary>
-	/// <returns>true = 終了</returns>
-	public bool IsWaveFinished()
+    /// <summary>
+    /// -GetCurrentWaveCount関数
+    /// <para>現在Wave数の取得</para>
+    /// </summary>
+    /// <returns>現在Wave数</returns>
+    public int GetCurrentWaveCount()
+    {
+        // 現在Wave数のデータを取得
+        return m_nCurrentWave;
+    }
+
+    /// <summary>
+    /// -IsWaveFinished関数
+    /// <para>全Wave終了判定</para>
+    /// </summary>
+    /// <returns>true = 終了</returns>
+    public bool IsWaveFinished()
 	{
 		return m_nCurrentWave >= m_WaveDataList.Count;
 	}

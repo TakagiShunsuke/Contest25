@@ -7,7 +7,7 @@ public class GameOverManage : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.Return))
         {
-                SceneManager.LoadScene("TitleScene");
+                SceneManager.LoadScene("Title");
             
         }
     }

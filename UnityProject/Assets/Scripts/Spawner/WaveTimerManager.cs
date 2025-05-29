@@ -14,6 +14,7 @@ D
 7:修正、コメント:nishibu
 18:コメント修正:nishibu
 21:コメント微修正:takagi
+28:経過時間のゲット関数の作成
 =====*/
 
 // 名前空間宣言
@@ -22,8 +23,12 @@ using UnityEngine;
 // クラス定義
 public class CWaveTimerManager : MonoBehaviour
 {
-	// 変数宣言
-	private float m_fTimer = 0f;	// 経過時間
+    // イベント定義
+    public delegate void UpdateWaveEvent();  // イベント用の関数定義
+    public event UpdateWaveEvent GetWaveCount; // 死亡時のイベント
+
+    // 変数宣言
+    private float m_fTimer = 0f;	// 経過時間
 
 
 	/// <summary>
@@ -49,6 +54,17 @@ public class CWaveTimerManager : MonoBehaviour
 		{
 			m_fTimer = 0f;
 			CEnemySpawner.Instance.NextWave();
-		}
+            GetWaveCount.Invoke();
+        }
+	}
+
+    /// <summary>
+    /// -GetTimer関数
+    /// <para>現在の経過時間の取得</para>
+    /// </summary>
+    /// <returns>現在の経過時間</returns>
+    public float GetTimer()
+	{ 
+		return m_fTimer; 
 	}
 }
