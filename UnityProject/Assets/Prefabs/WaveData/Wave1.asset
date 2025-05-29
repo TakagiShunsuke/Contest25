@@ -17,8 +17,8 @@ MonoBehaviour:
   m_fSpawnInterval: 3
   m_EnemyByTagList:
   - m_Tag: 2
-    m_EnemyPrefabs: {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
+    m_EnemyPrefabs: {fileID: 1768655572757658626, guid: 23af5230f09db3740a8fdb9aa710de52, type: 3}
   - m_Tag: 1
     m_EnemyPrefabs: {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
-  - m_Tag: 2
-    m_EnemyPrefabs: {fileID: 8169219682286704884, guid: dd3c7a1e6f6f0f94ab5ed412dd79f24d, type: 3}
+  - m_Tag: 0
+    m_EnemyPrefabs: {fileID: 3440432621312319827, guid: a1137ebc668c6774ba53a16ef1cd0d22, type: 3}

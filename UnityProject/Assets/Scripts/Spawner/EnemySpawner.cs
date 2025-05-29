@@ -154,16 +154,24 @@ public class CEnemySpawner : MonoBehaviour
 			foreach (var tag in _Point.m_eMetaTags)
 			{
 				// WaveDataのメタタグに基づいて敵をスポーン
-				var match = _WaveData.m_EnemyByTagList.FirstOrDefault(e => e.m_Tag == tag);
-				if (match != null)
+				foreach (var _wave_enemy in _WaveData.m_EnemyByTagList)
 				{
-					_MatchList.Add(match.m_EnemyPrefabs);
+					if (tag == _wave_enemy.m_Tag)
+					{
+						_MatchList.Add(_wave_enemy.m_EnemyPrefabs);
+					}
 				}
+				//var match = _WaveData.m_EnemyByTagList.FirstOrDefault(e => e.m_Tag == tag);	// 「一つ目をとる」処理なため複数設定ができていない
+				//if (match != null)
+				//{
+				//	_MatchList.Add(match.m_EnemyPrefabs);
+				//}
 			}
 
 			// スポーンする敵が無いなら次のポイントへ
 			if (_MatchList.Count == 0) 
 				continue; 
+
 
 			// スポーンする敵が見つかったらランダムに1体スポーン
 			GameObject _Selected = _MatchList[Random.Range(0, _MatchList.Count)];

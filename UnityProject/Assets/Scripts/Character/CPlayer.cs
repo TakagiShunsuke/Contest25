@@ -31,17 +31,18 @@ D
 // 名前空間宣言
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 // クラス定義
 public class CPlayer : MonoBehaviour, IDH
 {
-	// 変数宣言
-	private Rigidbody m_Rb; // リジットボディ
+    // 変数宣言
+    private Rigidbody m_Rb; // リジットボディ
 
 	private float m_RayDistance = 10.0f;
 
-	private float m_ftime = 0.0f;//たいまー
-	private float m_fcount = 0.0f;//かうんと
+    private float m_ftime = 0.0f;//たいまー
+    private float m_fcount = 0.0f;//かうんと
 
 	[Header("プレイヤーステータス")]
 	[SerializeField]
@@ -84,7 +85,7 @@ public class CPlayer : MonoBehaviour, IDH
 	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
 
-	private bool m_bPoisonUpdate = false;//毒更新用
+    private bool m_bPoisonUpdate = false;//毒更新用
 
 	// 攻撃キーの変数
 	[SerializeField]
@@ -664,6 +665,7 @@ public class CPlayer : MonoBehaviour, IDH
 		// 死亡時処理
 	private void OnDead()
 	{
+		SceneManager.LoadScene("GAMEOVER");
 		Destroy(gameObject);	// プレイヤーを消す
 	}
 

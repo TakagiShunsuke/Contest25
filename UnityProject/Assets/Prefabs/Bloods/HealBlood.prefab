@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 8244880907334955269}
   - component: {fileID: 3555004824231374863}
   - component: {fileID: 6483610508869381811}
-  - component: {fileID: 2160335431490030920}
+  - component: {fileID: -2017024811805145714}
   m_Layer: 0
-  m_Name: AsidBlood
+  m_Name: HealBlood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2b8c1729e1ed1544e8b3883fbd5feb37, type: 2}
+  - {fileID: 2100000, guid: b8e1f0bfb28aaa84cb87c04d366df9bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fCoolTime: 0.5
---- !u!114 &2160335431490030920
+--- !u!114 &-2017024811805145714
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 75644770688212516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 252d2781d9a2c3c4fb48ed70061687a2, type: 3}
+  m_Script: {fileID: 11500000, guid: e15f42f5dddea294aac6f57c0d14a332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fDamage: 15
+  m_fHeal: 5

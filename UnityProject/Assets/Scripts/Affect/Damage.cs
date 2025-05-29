@@ -130,8 +130,8 @@ public class CDamage : CAffect
 	/// -ダメージ計算関数
 	/// <para>ダメージ処理に必要な情報をすべて揃え、演算する</para>
 	/// </summary>
-	/// <param name="_Oneself">効果の発動者</param>
-	/// <param name="_Opponent">効果の受動者</param>
+	/// <param name="_fDamageValue">与えるダメージ値</param>
+	/// <param name="_fDefence">ダメージ抵抗値</param>
 	/// <returns>最終ダメージ</returns>
 	protected int CulcDamage(float _fDamageValue, float _fDefence)
 	{
