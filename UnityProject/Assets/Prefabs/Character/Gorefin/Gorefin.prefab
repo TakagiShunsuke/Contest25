@@ -150,7 +150,7 @@ MonoBehaviour:
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0.2
-  m_Blood: {fileID: 75644770688212516, guid: 82a1c789e749f2644a6571719e72a761, type: 3}
+  m_Blood: {fileID: 0}
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!54 &-3751507921953174285
 Rigidbody:

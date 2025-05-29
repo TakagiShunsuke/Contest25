@@ -296,6 +296,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.94
       objectReference: {fileID: 0}
@@ -334,6 +346,10 @@ PrefabInstance:
     - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083397162976249563, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6429624142573331526, guid: fa2b01de32e9ad54aa791d598e0f6f88, type: 3}
       propertyPath: m_Name
@@ -565,6 +581,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1577921081215605075, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_RendererIndex
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1758695662791208179, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.66
@@ -1070,6 +1090,10 @@ PrefabInstance:
     - target: {fileID: 5296593150997869188, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5642929709317041165, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 5683176742091850113, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
       propertyPath: m_Enabled

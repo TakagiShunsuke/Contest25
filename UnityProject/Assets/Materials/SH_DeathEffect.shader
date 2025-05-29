@@ -19,7 +19,7 @@ Shader "Custom/SH_DeathEffect"
     // エフェクト生成に必要なプロパティ
    Properties
     {
-        _Color ("Main Color", Color) = (0.2, 1.0, 0.5, 0.8) // カラー
+        _Color ("Main Color", Color) = (1.0, 0.2, 0.2, 0.8) // カラー
     }
     SubShader
     {
@@ -165,7 +165,7 @@ Shader "Custom/SH_DeathEffect"
                 Light mainLight = GetMainLight();
                 float3 lightDir = normalize(mainLight.direction);
                 float diff = saturate(dot(normal, lightDir));
-                float3 col = lerp(float3(0.05, 0.2, 0.1), float3(0.3, 1.0, 0.6), diff);
+                float3 col = lerp(float3(0.05, 0.2, 0.1), float3(1.0, 0.3, 0.4), diff);
 
                 // 最終カラー
                 OUT.color = float4(col * _Color.rgb, _Color.a);
