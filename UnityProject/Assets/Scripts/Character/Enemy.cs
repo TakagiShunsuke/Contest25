@@ -27,6 +27,7 @@ D
 21:ステータス、成長修正:sezaki
 21:成長力を切り出し、その他細かいリファクタリング作業:takagi
 28:エフェクトをマージ:takagi
+30:HPの仕様変更に伴い、成長処理を最大HPに反映:takagi
 =====*/
 
 // 名前空間宣言
@@ -272,7 +273,8 @@ public class CEnemy : MonoBehaviour, IDH
 			}
 			//m_Status.m_nHp += m_Status.m_nGrowth + m_Status.m_nGrowthSpeed;
 			//m_HitPoint.HP += (int)(m_Status.m_nGrowthSpeed * 0.1f);
-			m_HitPoint.HP = m_HitPoint.HP + (int)(m_nInitialHP * m_Growth.m_fHP);
+			//m_HitPoint.HP = m_HitPoint.HP + (int)(m_nInitialHP * m_Growth.m_fHP);
+			m_HitPoint.MaxHP += (int)(m_nInitialHP * m_Growth.m_fHP);
 			m_Status.m_nAtk = m_Status.m_nAtk + (int)(m_StatusInitial.m_nAtk * m_Growth.m_fAtk);
 			m_Agent.speed = m_Agent.speed + (m_fSpeedInitial * m_Growth.m_fMoveSpeed);
 			m_Status.m_fAtkSpeed = m_Status.m_fAtkSpeed + (m_StatusInitial.m_fAtkSpeed * m_Growth.m_fAtkSpeed);
