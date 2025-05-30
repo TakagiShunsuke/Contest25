@@ -13,6 +13,7 @@ D
 6:修正:nishibu
 7:修正、コメント:nishibu
 21:リファクタリング:takagi
+30:緊急で討伐数カウント:takagi
 =====*/
 
 // 名前空間宣言
@@ -23,7 +24,7 @@ public class CCountEnemy : MonoBehaviour
 {
 	// 変数宣言
 	public static uint m_nValInstances { get; private set; } = 0;	// 現在ステージ上に存在している敵の数
-
+	public static uint m_DeathCount { get; set; } = 0;	// 緊急対応でステージリロード時用にsetもpublicにしてます
 	
 	/// <summary>
 	/// -生成時関数
@@ -41,5 +42,6 @@ public class CCountEnemy : MonoBehaviour
 	protected virtual void OnDestroy()
 	{
 		m_nValInstances--; // 敵の数を1減らす
+		m_DeathCount++;
 	}
 }
