@@ -145,7 +145,7 @@ MonoBehaviour:
     m_fWeight: 0.2
   m_nInitialHP: 120
   m_nInitialDef: 5
-  m_Blood: {fileID: 75644770688212516, guid: 55108f44291410e40b96528cab15169a, type: 3}
+  m_Blood: {fileID: 75644770688212516, guid: 0191eacc0f68b224d9338e8f68d322b6, type: 3}
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!114 &5379948912958260213
 MonoBehaviour:

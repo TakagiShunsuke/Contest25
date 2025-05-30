@@ -17,6 +17,7 @@ __Y25
 _M05
 D
 11:プログラム作成:takagi
+30:誤字修正:takagi
 =====*/
 
 // 名前空間宣言
@@ -33,7 +34,7 @@ public class CBlood : MonoBehaviour
 	[Header("性質")]
 	[SerializeField, Tooltip("効果発動間隔")] private float m_fCoolTime;
 	private Dictionary<int, float> m_fCoolDownTimers = new Dictionary<int, float>();	// 時間計測用
-	private CAffect m_Affect;	// 体液の効果	※自身のコンポーネントから取得	//TODO:Playerなどで別効果のCAffectを使い同居する場合、非想定の血気になる点を改善
+	private CAffect m_Affect;	// 体液の効果	※自身のコンポーネントから取得	//TODO:Playerなどで別効果のCAffectを使い同居する場合、非想定の結果になる点を改善
 
 
 	// ＞初期化関数
