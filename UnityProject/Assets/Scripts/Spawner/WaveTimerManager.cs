@@ -25,7 +25,9 @@ public class CWaveTimerManager : MonoBehaviour
 {
     // イベント定義
     public delegate void UpdateWaveEvent();  // イベント用の関数定義
-    public event UpdateWaveEvent GetWaveCount; // 死亡時のイベント
+    public event UpdateWaveEvent GetWaveCount; // ウェーブ数カウント
+    public delegate void FinishedFinalWaveEvent();  // イベント用の関数定義
+	public event FinishedFinalWaveEvent OnFinishedFinalWave;	// 最終ウェーブ終了時イベント
 
     // 変数宣言
     private float m_fTimer = 0f;	// 経過時間
@@ -38,8 +40,19 @@ public class CWaveTimerManager : MonoBehaviour
 	private void Update()
 	{
 		// ゲーム開始前またはすべてのWaveが終了している場合は処理しない
-		if (CEnemySpawner.Instance == null || CEnemySpawner.Instance.IsWaveFinished())
+		//if (CEnemySpawner.Instance == null || CEnemySpawner.Instance.IsWaveFinished())
+		if (CEnemySpawner.Instance == null)
+		{
 			return;
+		}
+
+		// 最終ウェーブ完了時処理
+		if (CEnemySpawner.Instance.IsWaveFinished())
+		{
+			OnFinishedFinalWave.Invoke();
+			return;
+		}
+
 
 		// 現在のWaveのデータ取得
 		CEnemyWaveData _WaveData = CEnemySpawner.Instance.GetCurrentWaveData();
