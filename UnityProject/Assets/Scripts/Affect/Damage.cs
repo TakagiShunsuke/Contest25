@@ -115,8 +115,17 @@ public class CDamage : CAffect
 	/// <param name="_Opponent">効果の受動者</param>
 	public override void Affect(GameObject _Oneself, GameObject _Opponent)
 	{
-		// 変数宣言
-		var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		// 保全
+		if(_Opponent == null)	// 相手がいない
+		{
+#if UNITY_EDITOR
+			Debug.Log("効果発動対象が見つかりません");
+#endif	// !UNITY_EDITOR
+			return;	// 処理中断
+		}
+
+			// 変数宣言
+			var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
 
 		// ダメージ処理
 		if(_HitPoint)	// ダメージを受けられる
