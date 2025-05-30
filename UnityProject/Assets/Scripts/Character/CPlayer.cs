@@ -415,7 +415,7 @@ public class CPlayer : MonoBehaviour, IDH
 				var enemy = hit.GetComponent<CEnemy>();
 				if (enemy != null)
 				{
-					enemy.Damage(m_nAtk);
+					enemy.Damage(m_nAtk,this.transform);
 				}
 			}
 		}
