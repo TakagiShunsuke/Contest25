@@ -32,6 +32,7 @@ D
 
 // 名前空間宣言
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -51,8 +52,10 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("成長力")] public int m_nGrowthPower;
 		[SerializeField, Tooltip("攻撃距離")] public float m_fAtkRange;
 		[SerializeField, Tooltip("攻撃角度")] public float m_fAtkAngle;
-	}
-	[Serializable]
+        [SerializeField, Tooltip("ノックバック調整値")] public float m_fBack;
+        [SerializeField, Tooltip("停止時間")] public float m_fStop;
+    }
+    [Serializable]
 	public struct GrowthRate	// 成長割合
 	{
 		[SerializeField, Tooltip("体力成長割合")] public float m_fHP;
@@ -85,7 +88,11 @@ public class CEnemy : MonoBehaviour, IDH
 	private NavMeshAgent m_Agent;	// 追跡対象
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
-	[Header("エフェクト")]
+    public float knockbackDistance = 1f; // 後退する距離
+    private Rigidbody m_Rigid;                     // Rigidbody参照
+    private bool m_IsKnockback = false;
+
+    [Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
 
@@ -97,9 +104,9 @@ public class CEnemy : MonoBehaviour, IDH
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
-
-		// Playerを自動で探してターゲットに設定
-		GameObject playerObj = GameObject.FindWithTag("Player");
+        m_Rigid = GetComponent<Rigidbody>();
+        // Playerを自動で探してターゲットに設定
+        GameObject playerObj = GameObject.FindWithTag("Player");
 		if (playerObj != null)
 		{
 			m_Target = playerObj.transform;
@@ -299,7 +306,7 @@ public class CEnemy : MonoBehaviour, IDH
 	/// <para>ダメージを受ける関数</para>
 	/// <param name="_nDamage">相手の攻撃力</param>
 	/// </summary>
-	public void Damage(int _nDamage)
+	public void Damage(int _nDamage, Transform attacker)
 	{
 		if (_nDamage <= m_HitPoint.Defence)	// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -311,20 +318,44 @@ public class CEnemy : MonoBehaviour, IDH
 		}
 
 		//m_Status.m_nHp -= _nDamage;　// ダメージ処理
-		m_HitPoint.HP -= _nDamage;	// ダメージ処理
+		m_HitPoint.HP -= _nDamage;  // ダメージ処理
 
-		//if (m_Status.m_nHp <= 0)	// HPが0の時
-		//if (m_HitPoint.HP <= 0)	// HPが0の時
-		//{
-		//	Destroy(gameObject);	// 敵を消す
-		//}
-	}
+        StartCoroutine(KnockbackCoroutine(attacker));
+        //if (m_Status.m_nHp <= 0)	// HPが0の時
+        //if (m_HitPoint.HP <= 0)	// HPが0の時
+        //{
+        //	Destroy(gameObject);	// 敵を消す
+        //}
+    }
 
-	/// <summary>
-	/// -死亡時処理関数
-	/// <para>HPが0になったときに呼び出される関数</para>
-	/// </summary>
-	private void OnDead()
+    private IEnumerator KnockbackCoroutine(Transform attacker)
+    {
+        Debug.Log("ノックバック開始！");
+        m_IsKnockback = true;
+
+        Vector3 knockbackDir = (transform.position - attacker.position).normalized;
+        float knockbackPower = 100 / m_Status.m_nWeight * m_Status.m_fBack;      // ノックバックの力（距離 or スピード）
+        float knockbackTime = 0.2f;        // ノックバック時間
+        float _fTimer = 0f;
+
+        while (_fTimer < knockbackTime)
+        {
+            transform.position += knockbackDir * knockbackPower * Time.deltaTime;
+            _fTimer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 追跡を一時停止する時間（例：0.5秒）
+        yield return new WaitForSeconds(m_Status.m_fStop);
+
+        m_IsKnockback = false;
+        Debug.Log("ノックバック終了！");
+    }
+    /// <summary>
+    /// -死亡時処理関数
+    /// <para>HPが0になったときに呼び出される関数</para>
+    /// </summary>
+    private void OnDead()
 	{
 		// 体液の排出
 		if (m_Blood != null)	
