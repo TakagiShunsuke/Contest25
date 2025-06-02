@@ -139,6 +139,8 @@ MonoBehaviour:
     m_nGrowthPower: 15
     m_fAtkRange: 2
     m_fAtkAngle: 60
+    m_fBack: 30
+    m_fStop: 0.2
   m_Growth:
     m_fHP: 0.5
     m_fAtk: 0.5
@@ -149,6 +151,7 @@ MonoBehaviour:
   m_nInitialHP: 120
   m_nInitialDef: 20
   m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}
+  knockbackDistance: 1
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!54 &-3751507921953174285
 Rigidbody:
