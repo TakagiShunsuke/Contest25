@@ -147,7 +147,7 @@ MonoBehaviour:
     m_fMoveSpeed: 0
     m_fAtkSpeed: 0
     m_fDef: 0
-    m_fWeight: 0.2
+    m_fWeight: 0
   m_nInitialHP: 120
   m_nInitialDef: 20
   m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}

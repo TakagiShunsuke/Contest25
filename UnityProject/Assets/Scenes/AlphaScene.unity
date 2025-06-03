@@ -1480,7 +1480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Wavemanager: {fileID: 1895897183}
-  m_ClearNorm: 25
+  m_ClearNorm: 20
 --- !u!4 &1530703755
 Transform:
   m_ObjectHideFlags: 0
