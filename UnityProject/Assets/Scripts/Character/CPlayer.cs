@@ -352,18 +352,6 @@ public class CPlayer : MonoBehaviour, IDH
 		m_fRollingCoolTimer = 0.0f; // ローリングのクールタイムをリセット
 		m_vRollDirection = transform.forward; // ローリングの方向を設定
 
-        float fCurrentInvincibleTime = 0.0f;
-        if (m_bIsInvicible)
-		{
-			fCurrentInvincibleTime = m_nInvincibleTime / 60.0f; // 無敵時間を秒に変換
-        }
-
-		float newInvincibleTime = Mathf.Max(fCurrentInvincibleTime, m_fRollingInvincibleTime); // 新しく設定したい無敵時間
-
-        m_bIsInvicible = true; // 無敵状態ON
-		m_nInvincibleTime = Mathf.RoundToInt(newInvincibleTime * 60); // 無敵時間をフレーム数に変換
-
-
         // アニメーションの再生があればここで再生する
     }
 
@@ -506,7 +494,7 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：プレイヤーが死んでいるかと死んだときの処理
 	private void Update()
 	{
-		UpdateInvincible(); // 無敵状態の更新
+		
 
         if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
 
@@ -704,20 +692,6 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 	}
 
-	// 無敵時間の更新関数
-	private void UpdateInvincible()
-	{
-        if (m_bIsInvicible)
-        {
-            m_nInvincibleTime--; // 無敵時間を減らす
-            if (m_nInvincibleTime <= 0)
-            {
-                m_bIsInvicible = false; // 無敵状態を解除
-                Debug.Log("無敵状態解除");
-                m_nInvincibleTime = 0;
-            }
-        }
-    }
 
 	public void Addheal(int heal)
 	{
