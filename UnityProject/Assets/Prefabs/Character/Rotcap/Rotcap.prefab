@@ -136,7 +136,7 @@ MonoBehaviour:
     m_nGrowthPower: 15
     m_fAtkRange: 2
     m_fAtkAngle: 60
-    m_fBack: 30
+    m_fBack: 20
     m_fStop: 0.2
   m_Growth:
     m_fHP: 0.2
@@ -144,7 +144,7 @@ MonoBehaviour:
     m_fMoveSpeed: 0.2
     m_fAtkSpeed: 0
     m_fDef: 0
-    m_fWeight: 0.2
+    m_fWeight: 0
   m_nInitialHP: 120
   m_nInitialDef: 5
   m_Blood: {fileID: 75644770688212516, guid: 0191eacc0f68b224d9338e8f68d322b6, type: 3}
