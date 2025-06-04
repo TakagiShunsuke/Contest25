@@ -88,7 +88,6 @@ public class CEnemy : MonoBehaviour, IDH
 	private NavMeshAgent m_Agent;	// 追跡対象
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
-    public float knockbackDistance = 1f; // 後退する距離
     private Rigidbody m_Rigid;                     // Rigidbody参照
     private bool m_IsKnockback = false;
 
@@ -152,12 +151,11 @@ public class CEnemy : MonoBehaviour, IDH
 	{
 		m_fAtkCooldown -= Time.deltaTime;	// 経過時間で減らす
 
-		//追跡
-		m_Agent.SetDestination(m_Target.position);
+            //追跡
+            m_Agent.SetDestination(m_Target.position);
 
-		// 攻撃
-		Attack();
-
+            // 攻撃
+            Attack();
 
         //デバフ
         if (m_bIsPoison == true)//毒だったら
@@ -301,12 +299,13 @@ public class CEnemy : MonoBehaviour, IDH
 		}
 	}
 
-	/// <summary>
-	/// -ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
-	/// <para>ダメージを受ける関数</para>
-	/// <param name="_nDamage">相手の攻撃力</param>
-	/// </summary>
-	public void Damage(int _nDamage, Transform attacker)
+    /// <summary>
+    /// -ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
+    /// <para>ダメージを受ける関数</para>
+    /// <param name="_nDamage">相手の攻撃力</param>
+    /// <param name="Transform attacker">相手の向いてる方向</param>
+    /// </summary>
+    public void Damage(int _nDamage, Transform attacker)
 	{
 		if (_nDamage <= m_HitPoint.Defence)	// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -321,6 +320,7 @@ public class CEnemy : MonoBehaviour, IDH
 		m_HitPoint.HP -= _nDamage;  // ダメージ処理
 
         StartCoroutine(KnockbackCoroutine(attacker));
+        //StartCoroutine(FlashRedCoroutine());   ナメクジ殴ったらエラー吐くから止めてます
         //if (m_Status.m_nHp <= 0)	// HPが0の時
         //if (m_HitPoint.HP <= 0)	// HPが0の時
         //{
@@ -328,9 +328,20 @@ public class CEnemy : MonoBehaviour, IDH
         //}
     }
 
+    /// <summary>
+    /// -ノックバック関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
+    /// <para>ノックバックする関数</para>
+    /// <param name="Transform attacker">相手の向いてる方向</param>
+    /// </summary>
+
     private IEnumerator KnockbackCoroutine(Transform attacker)
     {
         Debug.Log("ノックバック開始！");
+        if(m_Agent.enabled && m_Agent.isOnNavMesh)
+        {
+            m_Agent.isStopped = true;
+
+        }
         m_IsKnockback = true;
 
         Vector3 knockbackDir = (transform.position - attacker.position).normalized;
@@ -338,19 +349,46 @@ public class CEnemy : MonoBehaviour, IDH
         float knockbackTime = 0.2f;        // ノックバック時間
         float _fTimer = 0f;
 
-        while (_fTimer < knockbackTime)
-        {
+        while (_fTimer < knockbackTime) //ノックバックの指定時間の間
+        { //敵を後方へノックバック
             transform.position += knockbackDir * knockbackPower * Time.deltaTime;
             _fTimer += Time.deltaTime;
             yield return null;
         }
 
-        // 追跡を一時停止する時間（例：0.5秒）
+        // 追跡を一時停止する時間
         yield return new WaitForSeconds(m_Status.m_fStop);
 
         m_IsKnockback = false;
+        m_Agent.isStopped = false;
         Debug.Log("ノックバック終了！");
     }
+
+    /// <summary>
+    /// -フラッシュ関数
+    /// <para>ダメージを受けたときに赤く光る関数</para>
+    /// </summary>
+
+    IEnumerator FlashRedCoroutine()
+    {
+        int flashCount = 4;
+        float flashInterval = 0.1f;
+
+        Renderer rend = GetComponentInChildren<Renderer>();
+        if (rend == null) yield break;
+
+        Color originalColor = rend.material.color;
+        Color flashColor = Color.red;
+
+        for (int i = 0; i < flashCount; i++)
+        {
+            rend.material.color = flashColor;
+            yield return new WaitForSeconds(flashInterval);
+            rend.material.color = originalColor;
+            yield return new WaitForSeconds(flashInterval);
+        }
+    }
+
     /// <summary>
     /// -死亡時処理関数
     /// <para>HPが0になったときに呼び出される関数</para>
