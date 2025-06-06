@@ -519,62 +519,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -7.000001
       objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSpeed
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fAtkSpeed
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fRollSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_nInitialHp
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fMoveLimit_x
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fMoveLimit_z
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fAttackBoxDepth
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fAttackBoxHeight
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_vMoveLimitOrigin.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSmashAttackBoxDepth
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSmashAttackBoxWidth
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSmashAttackBoxHeight
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSmashAttackBoxXOffset
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-      propertyPath: m_fSmashAttackBoxYOffset
-      value: 0.27
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

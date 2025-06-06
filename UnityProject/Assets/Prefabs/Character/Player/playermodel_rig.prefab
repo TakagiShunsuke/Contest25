@@ -163,28 +163,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb5a558c5065c094b9850d0fafe05f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nInitialHp: 100
+  m_nInitialHp: 200
   m_nInitialDef: 5
   m_nAtk: 100
-  m_fSpeed: 0.2
-  m_fAtkSpeed: 100
+  m_fSpeed: 0.15
+  m_fAtkSpeed: 50
   m_fAttackBoxWidth: 1
-  m_fAttackBoxDepth: 2.5
-  m_fAttackBoxHeight: 1.2
+  m_fAttackBoxDepth: 3
+  m_fAttackBoxHeight: 2
   m_fAttackBoxYOffset: 0.3
   m_fAttackBoxXOffset: 0
+  m_fSmashAttackBoxWidth: 3
+  m_fSmashAttackBoxDepth: 2
+  m_fSmashAttackBoxHeight: 1
+  m_fSmashAttackBoxYOffset: 0.27
+  m_fSmashAttackBoxXOffset: 0
   m_AttackKey: 13
   m_RollingKey: 32
   m_Animator: {fileID: 0}
   m_bOnGround: 1
-  m_vMoveLimitOrigin: {x: 0, y: 0, z: 0}
-  m_fMoveLimit_x: 10
-  m_fMoveLimit_z: 10
+  m_vMoveLimitOrigin: {x: 10, y: 0, z: 0}
+  m_fMoveLimit_x: 40
+  m_fMoveLimit_z: 30
   m_fAvoidDistance: 1
   m_fRayHeight: 1.5
-  m_fRollSpeed: 0.05
+  m_fRollSpeed: 3
   m_fRollCooldown: 3
-  m_fRollingInvicibleTime: 0.5
+  m_fRollingInvincibleTime: 0.5
   m_fFootStepInterval: 0.4
   m_MoveGroundSE: {fileID: 8300000, guid: 6bc1234106a4a144da20955ba575b49a, type: 3}
   m_MoveGroundSEVolume: 0.05
