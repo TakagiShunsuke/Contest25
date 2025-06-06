@@ -27,6 +27,9 @@ D
 22:効果音の追加(WASDで移動時とEnterで攻撃時のみ):kato
 28:SE関係の変数にツールチップ追加:takagi
 30:無敵状態の更新処理を追加:kato
+_M06
+D
+06:たたきつけ攻撃完成！！！:kato
 =====*/
 
 // 名前空間宣言
@@ -81,11 +84,28 @@ public class CPlayer : MonoBehaviour, IDH
 	[SerializeField]
 	[Tooltip("攻撃範囲の横オフセット")]
 	private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
-	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
+
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の横幅")]
+    private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の奥行き")]
+    private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の高さ")]
+    private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の縦オフセット")]
+    private float m_fSmashAttackBoxYOffset = 1.0f;
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の横オフセット")]
+    private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+
+    private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
-
+	private bool m_bAttackInput = false;
     private bool m_bPoisonUpdate = false;//毒更新用
 
 	// 攻撃キーの変数
@@ -179,7 +199,7 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
-		m_fAttackCooldown = 1.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定
+		m_fAttackCooldown = 100.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定(攻撃速度100なら1秒　200なら0.5秒)
 
 		// 音源準備
 		m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
@@ -385,7 +405,7 @@ public class CPlayer : MonoBehaviour, IDH
 	// ｘ
 	// 戻値：なし
 	// ｘ
-	// 概要：プレイヤーの攻撃
+	// 概要：プレイヤーの攻撃(槍)
 	private void Attack()
 	{
 		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
@@ -429,8 +449,81 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 	}
 
-	// ↓後で消すやつ
-	private void DrawAttackDebugBox()
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃(叩きつけ)
+	private void SmashAttack()
+    {
+        Debug.Log(m_fAttackCooldown);
+
+        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+        {
+            m_fLastAttackTime = Time.time;
+
+            Debug.Log("スマッシュ攻撃!!");
+
+            Vector3 origin = transform.position;
+            Vector3 forward = transform.forward;
+
+            Vector3 boxHalfExtents = new Vector3(
+                m_fSmashAttackBoxWidth * 0.5f,
+                m_fSmashAttackBoxHeight * 0.5f,
+                m_fSmashAttackBoxDepth * 0.5f
+            );
+
+            Vector3 boxCenter = origin + forward * (m_fSmashAttackBoxDepth * 0.5f)
+                                + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+                                + transform.right * m_fSmashAttackBoxXOffset;
+            //boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
+
+            // Debug表示
+            //DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+
+            Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+            foreach (var hit in hitColliders)
+            {
+                if (hit.gameObject == this.gameObject) continue;
+
+                var enemy = hit.GetComponent<CEnemy>();
+                if (enemy != null)
+                {
+                    enemy.Damage(m_nAtk, this.transform);
+                }
+            }
+        }
+
+        // 攻撃音再生
+        if (!m_StabAttackSESource.isPlaying)
+        {
+            m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+        }
+    }
+
+    // ↓後で消すやつ
+    private void DrawSmashAttackDebugBox()
+    {
+        Vector3 origin = transform.position;
+        Vector3 forward = transform.forward;
+
+        Vector3 boxHalfExtents = new Vector3(
+            m_fSmashAttackBoxWidth * 0.5f,
+            m_fSmashAttackBoxHeight * 0.5f,
+            m_fSmashAttackBoxDepth * 0.5f
+        );
+
+        Vector3 boxCenter = origin
+            + forward * (m_fSmashAttackBoxDepth * 0.5f)
+            + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+            + transform.right * m_fSmashAttackBoxXOffset;
+
+        DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation,Color.magenta, 0f); // ← duration 0でもOK
+    }
+
+    // ↓後で消すやつ
+    private void DrawAttackDebugBox()
 	{
 		Vector3 origin = transform.position;
 		Vector3 forward = transform.forward;
@@ -497,6 +590,11 @@ public class CPlayer : MonoBehaviour, IDH
 		
 
         if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
+
+		if(Input.GetKeyDown(m_AttackKey))
+		{
+			m_bAttackInput = true; // 攻撃入力フラグを立てる
+        }
 
 		//DrawAttackDebugBox();
 
@@ -568,12 +666,21 @@ public class CPlayer : MonoBehaviour, IDH
 
 		transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
 
-		// プレイヤーの攻撃(Enter)
-		if (Input.GetKeyDown(m_AttackKey))
+       if(m_bAttackInput)
 		{
-			Attack();	// 攻撃処理を呼び出す
-
-		}
+			if(GetMoveInput().magnitude < 0.01f)
+			{
+				SmashAttack(); // スマッシュ攻撃
+				
+                m_bAttackInput = false; // 攻撃入力フラグをリセット
+            }
+            else
+            {
+                Attack(); // Playerが動いているときは通常攻撃
+                m_bAttackInput = false; // 攻撃入力フラグをリセット
+            }
+           
+        }
 	}
 
 	//// 死ぬ関数
@@ -591,10 +698,10 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		//Gizmos.color = new Color(1, 0, 0, 0.5f);
 		//Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
-		DrawAttackDebugBox();
-
-		// ray表示
-		Gizmos.color = Color.green;
+		//DrawAttackDebugBox();
+		DrawSmashAttackDebugBox();
+        // ray表示
+        Gizmos.color = Color.green;
 		Gizmos.DrawLine(transform.position + Vector3.up * m_fRayHeight, transform.position + Vector3.up * m_fRayHeight + transform.forward * 1.0f);
 	}
 
