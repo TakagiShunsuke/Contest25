@@ -34,6 +34,7 @@ D
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using static CDecalSpawner;
 
 // クラス定義
 public class CEnemy : MonoBehaviour, IDH
@@ -87,13 +88,17 @@ public class CEnemy : MonoBehaviour, IDH
 
 	[Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
+    [SerializeField, Tooltip("液体の色")] private Color m_BloodColor;
 
+	[Header("液体データ")]
+    [SerializeField, Tooltip("敵の液体種類")] private E_EffectType m_EffectType = E_EffectType.Poison;
+    [SerializeField, Tooltip("液体の効果段階")] private float m_EffectLevel = 0.8f;
 
-	/// <summary>
-	/// -初期化関数
-	/// <para>初期化処理関数</para>
-	/// </summary>
-	private void Start()
+    /// <summary>
+    /// -初期化関数
+    /// <para>初期化処理関数</para>
+    /// </summary>
+    private void Start()
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
@@ -352,10 +357,17 @@ public class CEnemy : MonoBehaviour, IDH
 		// 死亡エフェクトを敵の位置に生成
 		if (deathEffectPrefab != null)
 		{
-			Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-		}
+            GameObject sphere = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+            var spawner = sphere.GetComponent<CDecalSpawner>();
+            if (spawner != null)
+            {
+                //spawner.SetDecalColor(m_BloodColor);
+                spawner.SetEffectType(m_EffectType);
+                spawner.SetEffectLevel(m_EffectLevel);
+            }
+        }
 
-		Destroy(gameObject);	// 敵を消す
+		//Destroy(gameObject);	// 敵を消す
 
 		Destroy(gameObject);	// 敵を消す
 	}

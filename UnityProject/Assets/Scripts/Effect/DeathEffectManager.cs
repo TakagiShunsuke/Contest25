@@ -34,6 +34,21 @@ public class CDeathEffectManager : MonoBehaviour
 
     private Vector4[] SphereBuffer = new Vector4[256];  // 全エフェクトから集めたスフィア情報を一時的に保存する配列
 
+    // クラス定義
+    // 効果用RTと位置を記録するクラス
+    private class EffectDataEntry
+    {
+        public RenderTexture RenderTexture;
+        public Vector3 WorldPosition;
+
+        public EffectDataEntry(RenderTexture rt, Vector3 pos)
+        {
+            RenderTexture = rt;
+            WorldPosition = pos;
+        }
+    }
+
+    private List<EffectDataEntry> m_EffectDataList = new List<EffectDataEntry>();
 
     // ＞初期化関数
     // 引数：なし
@@ -107,5 +122,44 @@ public class CDeathEffectManager : MonoBehaviour
             m_SharedMaterial.SetInt("_nSphereCount", _Index);
             m_SharedMaterial.SetVectorArray("_fSpheres", SphereBuffer);
         }
+    }
+
+    
+
+    // ＞登録関数
+    // 引数：RenderTexture rt：データ用RenderTexture, Vector3 worldPos：テクスチャのワールドポス
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：データ格納用のレンダーテクスチャのデータを登録
+    public void RegisterEffectTexture(RenderTexture rt, Vector3 worldPos)
+    {
+        if (rt != null)
+        {
+            m_EffectDataList.Add(new EffectDataEntry(rt, worldPos));
+            // Debug.Log($"デカール効果データ登録: {worldPos}");
+        }
+    }
+
+    // ＞ゲッター関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：他のスクリプトでアクセスしたい時使う
+    public IReadOnlyList<RenderTexture> GetAllEffectTextures()
+    {
+        return m_EffectDataList.ConvertAll(e => e.RenderTexture);
+    }
+
+    // ＞登録解除関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：レンダーテクスチャの登録解除
+    public void UnregisterEffectTexture(RenderTexture rt)
+    {
+        m_EffectDataList.RemoveAll(e => e.RenderTexture == rt);
     }
 }

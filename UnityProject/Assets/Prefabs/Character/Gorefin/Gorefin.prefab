@@ -148,8 +148,11 @@ MonoBehaviour:
     m_fWeight: 0.2
   m_nInitialHP: 120
   m_nInitialDef: 20
-  m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}
+  m_Blood: {fileID: 0}
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
+  m_BloodColor: {r: 0.30338898, g: 1, b: 0.0039215684, a: 1}
+  m_EffectType: 2
+  m_EffectLevel: 0.8
 --- !u!54 &-3751507921953174285
 Rigidbody:
   m_ObjectHideFlags: 0
