@@ -129,6 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb686cb51d331a4ba7739107aefa3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flashMaterial: {fileID: 2100000, guid: 65827fcf6b34d97439a573241abfedb6, type: 2}
   m_Status:
     m_nAtk: 10
     m_fAtkSpeed: 50
@@ -148,10 +149,11 @@ MonoBehaviour:
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0
+    m_fAtkRange: 0
+    m_fAtkAngle: 0
   m_nInitialHP: 120
   m_nInitialDef: 20
   m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}
-  knockbackDistance: 1
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
 --- !u!54 &-3751507921953174285
 Rigidbody:

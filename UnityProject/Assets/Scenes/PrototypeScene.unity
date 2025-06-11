@@ -501,6 +501,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3772072710200849714, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
+      propertyPath: m_Status.m_nAtk
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772072710200849714, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
+      propertyPath: m_Status.m_fAtkAngle
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772072710200849714, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
+      propertyPath: m_Status.m_fAtkRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331584709043581, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
+      propertyPath: m_Size.y
+      value: 0.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331584709043581, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
+      propertyPath: m_Center.y
+      value: 0.03
+      objectReference: {fileID: 0}
     - target: {fileID: 7066841018160767622, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
       propertyPath: m_Name
       value: Goremald
@@ -511,7 +531,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7591282103234443324, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.86
+      value: 0.81
       objectReference: {fileID: 0}
     - target: {fileID: 7591282103234443324, guid: b0bb2d0b2c48597428dfb1a959b3dea8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -676,6 +696,34 @@ PrefabInstance:
     - target: {fileID: 1902064143011878191, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_Name
       value: CameraStudio
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.49269882
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 16.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 3160066719063312523, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 3160066719063312523, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6674890523416510887, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_fMoveLimit_x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125570865194164208, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
+      propertyPath: m_fMoveLimit_z
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

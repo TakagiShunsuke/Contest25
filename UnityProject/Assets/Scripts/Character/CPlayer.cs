@@ -30,6 +30,7 @@ D
 _M06
 D
 06:たたきつけ攻撃完成！！！:kato
+11:ノックバック仮追加:sezaki
 =====*/
 
 // 名前空間宣言
@@ -188,6 +189,8 @@ public class CPlayer : MonoBehaviour, IDH
 	private float m_StabAttackSEVolume = 0.05f;
 	private AudioSource m_StabAttackSESource;	// 突きSE用のオーディオソース
 
+
+    CEnemy enemy;
 
 	// 初期化関数
 	// 引数１：なし
@@ -711,7 +714,7 @@ public class CPlayer : MonoBehaviour, IDH
 	// 戻値：なし
 	// ｘ
 	// 概要：ダメージを受ける
-	public void Damage(int _nDamage)
+	public void Damage(int _nDamage, Transform attacker, int weight)
 	{
 		
 		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
@@ -728,19 +731,49 @@ public class CPlayer : MonoBehaviour, IDH
 		//m_nHp -= _nDamage; // ダメージ処理
 		m_HitPoint.HP -= _nDamage; // ダメージ処理
 
-		
-		// 無敵状態開始
-		StartCoroutine(InvincibilityCoroutine());
+        StartCoroutine(KnockbackCoroutine(attacker, weight));
+
+        // 無敵状態開始
+        StartCoroutine(InvincibilityCoroutine());
 		
 	}
 
-	// ＞無敵状態関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ダメージを受けたときに90フレーム無敵状態になる
-	private IEnumerator InvincibilityCoroutine()
+    /// <summary>
+    /// -ノックバック関数	
+    /// <para>ノックバックする関数</para>
+    /// <param name="Transform attacker">相手の向いてる方向</param>
+    /// </summary>
+
+    private IEnumerator KnockbackCoroutine(Transform attacker, int weight)
+    {
+        Debug.Log("ノックバック開始！");
+
+       Vector3 knockbackDir = (transform.position - attacker.position).normalized;
+        knockbackDir.y = 0f; // Y方向の動きをゼロにする
+        knockbackDir = knockbackDir.normalized; // 正規化
+        float knockbackPower = weight * 0.5f;      // ノックバックの力（距離 or スピード）
+        float knockbackTime = 0.2f;        // ノックバック時間
+        float _fTimer = 0f;
+
+        while (_fTimer < knockbackTime) //ノックバックの指定時間の間
+        { //自分を後方へノックバック
+            transform.position += knockbackDir * knockbackPower * Time.deltaTime;
+            _fTimer += Time.deltaTime;
+            yield return null;
+        }
+
+
+        Debug.Log("ノックバック終了！");
+    }
+
+
+    // ＞無敵状態関数
+    // 引数：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：ダメージを受けたときに90フレーム無敵状態になる
+    private IEnumerator InvincibilityCoroutine()
 	{
 		m_bIsInvicible = true; // 無敵状態にする
 		Debug.Log("無敵状態!!!");
