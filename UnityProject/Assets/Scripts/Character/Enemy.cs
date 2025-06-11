@@ -30,7 +30,8 @@ D
 30:HPの仕様変更に伴い、成長処理を最大HPに反映:takagi
 _M06
 D
-11:、敵がダメージを受けたとき赤く光る、攻撃範囲を成長するように:sezaki 
+11:敵がダメージを受けたとき赤く光る、攻撃範囲を成長するように:sezaki
+11:攻撃範囲成長のintキャストを除去:takagi
 =====*/
 
 // 名前空間宣言
@@ -55,10 +56,10 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("成長力")] public int m_nGrowthPower;
 		[SerializeField, Tooltip("攻撃距離")] public float m_fAtkRange;
 		[SerializeField, Tooltip("攻撃角度")] public float m_fAtkAngle;
-        [SerializeField, Tooltip("ノックバック調整値")] public float m_fBack;
-        [SerializeField, Tooltip("停止時間")] public float m_fStop;
-    }
-    [Serializable]
+		[SerializeField, Tooltip("ノックバック調整値")] public float m_fBack;
+		[SerializeField, Tooltip("停止時間")] public float m_fStop;
+	}
+	[Serializable]
 	public struct GrowthRate	// 成長割合
 	{
 		[SerializeField, Tooltip("体力成長割合")] public float m_fHP;
@@ -67,18 +68,18 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("攻撃速度成長割合")] public float m_fAtkSpeed;
 		[SerializeField, Tooltip("防御成長割合")] public float m_fDef;
 		[SerializeField, Tooltip("重量成長割合")] public float m_fWeight;
-        [SerializeField, Tooltip("攻撃距離成長割合")] public float m_fAtkRange;
-        [SerializeField, Tooltip("攻撃角度成長割合")] public float m_fAtkAngle;
-    }
+		[SerializeField, Tooltip("攻撃距離成長割合")] public float m_fAtkRange;
+		[SerializeField, Tooltip("攻撃角度成長割合")] public float m_fAtkAngle;
+	}
 
-    // 変数宣言
-    private CHitPoint m_HitPoint;   // HP
-    [SerializeField] private Material flashMaterial; //ダメージ受けたときのマテリアル
-    private float m_ftime = 0.0f;//たいまー
-    private float m_fcount = 0.0f;//かうんと
-    private bool m_bIsPoison = false; //プレイヤーが毒カ
-    private bool m_bPoisonUpdate = false;//毒更新用
-    [Header("ステータス")]
+	// 変数宣言
+	private CHitPoint m_HitPoint;   // HP
+	[SerializeField] private Material flashMaterial; //ダメージ受けたときのマテリアル
+	private float m_ftime = 0.0f;//たいまー
+	private float m_fcount = 0.0f;//かうんと
+	private bool m_bIsPoison = false; //プレイヤーが毒カ
+	private bool m_bPoisonUpdate = false;//毒更新用
+	[Header("ステータス")]
 	[SerializeField, Tooltip("ステータス")] private Status m_Status;
 	[SerializeField, Tooltip("成長力")] private GrowthRate m_Growth;
 	private Status m_StatusInitial;	// ステータス初期値
@@ -93,13 +94,13 @@ public class CEnemy : MonoBehaviour, IDH
 	private NavMeshAgent m_Agent;	// 追跡対象
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
-    private Rigidbody m_Rigid;                     // Rigidbody参照
-    private bool m_IsKnockback = false; //ノックバックフラグ
+	private Rigidbody m_Rigid;                     // Rigidbody参照
+	private bool m_IsKnockback = false; //ノックバックフラグ
 
-    private Material defaultMaterial; //通常のマテリアル
-    private Renderer rend; //レンダラー
+	private Material defaultMaterial; //通常のマテリアル
+	private Renderer rend; //レンダラー
 
-    [Header("エフェクト")]
+	[Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
 
@@ -111,9 +112,9 @@ public class CEnemy : MonoBehaviour, IDH
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
-        m_Rigid = GetComponent<Rigidbody>();
-        // Playerを自動で探してターゲットに設定
-        GameObject playerObj = GameObject.FindWithTag("Player");
+		m_Rigid = GetComponent<Rigidbody>();
+		// Playerを自動で探してターゲットに設定
+		GameObject playerObj = GameObject.FindWithTag("Player");
 		if (playerObj != null)
 		{
 			m_Target = playerObj.transform;
@@ -125,14 +126,14 @@ public class CEnemy : MonoBehaviour, IDH
 			m_Agent.Warp(hit.position);	// NavMeshの地面にワープさせる
 		}
 
-        rend = GetComponentInChildren<Renderer>();
-        if (defaultMaterial == null && rend != null)
-        {
-            defaultMaterial = rend.sharedMaterial;
-        }
+		rend = GetComponentInChildren<Renderer>();
+		if (defaultMaterial == null && rend != null)
+		{
+			defaultMaterial = rend.sharedMaterial;
+		}
 
-        // HPの実装
-        if (m_HitPoint = GetComponent<CHitPoint>())
+		// HPの実装
+		if (m_HitPoint = GetComponent<CHitPoint>())
 		{
 #if UNITY_EDITOR
 			// 出力
@@ -165,39 +166,39 @@ public class CEnemy : MonoBehaviour, IDH
 	{
 		m_fAtkCooldown -= Time.deltaTime;	// 経過時間で減らす
 
-            //追跡
-            m_Agent.SetDestination(m_Target.position);
+			//追跡
+			m_Agent.SetDestination(m_Target.position);
 
-            // 攻撃
-            Attack();
+			// 攻撃
+			Attack();
 
-        //デバフ
-        if (m_bIsPoison == true)//毒だったら
-        {
-            if (m_bPoisonUpdate == true)
-            {
-                m_fcount = 0.0f;
-            }
-            m_ftime += Time.deltaTime;
-            m_fcount += Time.deltaTime;
-            if (m_ftime >= 1.0f)//１びょうごと
-            {
-                //m_nHp -= 5;
-                //Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
-                m_HitPoint.HP -= 5;
-                Debug.Log("毒!5ダメージ現在のHP" + m_HitPoint.HP);
-                m_ftime = 0.0f;
+		//デバフ
+		if (m_bIsPoison == true)//毒だったら
+		{
+			if (m_bPoisonUpdate == true)
+			{
+				m_fcount = 0.0f;
+			}
+			m_ftime += Time.deltaTime;
+			m_fcount += Time.deltaTime;
+			if (m_ftime >= 1.0f)//１びょうごと
+			{
+				//m_nHp -= 5;
+				//Debug.Log("毒!5ダメージ現在のHP" + m_nHp);
+				m_HitPoint.HP -= 5;
+				Debug.Log("毒!5ダメージ現在のHP" + m_HitPoint.HP);
+				m_ftime = 0.0f;
 
-            }
-            if (m_fcount >= 5.0f)
-            {
-                m_bIsPoison = false;
-            }
-            m_bPoisonUpdate = false;
+			}
+			if (m_fcount >= 5.0f)
+			{
+				m_bIsPoison = false;
+			}
+			m_bPoisonUpdate = false;
 
-        }
-        // 成長
-        Growth();
+		}
+		// 成長
+		Growth();
 	}
 
 
@@ -302,9 +303,9 @@ public class CEnemy : MonoBehaviour, IDH
 			m_Status.m_nWeight = m_Status.m_nWeight + (int)(m_StatusInitial.m_nWeight * m_Growth.m_fWeight);
 			m_Status.m_nGrowth = m_Status.m_nGrowth + m_Status.m_nGrowthPower;
 			m_fScale = m_Status.m_nGrowth / m_StatusInitial.m_nGrowth;
-            m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + (int)(m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle);
-            m_Status.m_fAtkRange = m_Status.m_fAtkRange + (int)(m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange);
-            transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
+			m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle;
+			m_Status.m_fAtkRange = m_Status.m_fAtkRange + m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange;
+			transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
 			// 成長度が上限を超えたら、上限に揃えておく
 			if (m_Status.m_nGrowth > m_Status.m_nGrowthLimit)
 			{
@@ -315,13 +316,13 @@ public class CEnemy : MonoBehaviour, IDH
 		}
 	}
 
-    /// <summary>
-    /// -ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
-    /// <para>ダメージを受ける関数</para>
-    /// <param name="_nDamage">相手の攻撃力</param>
-    /// <param name="Transform attacker">相手の向いてる方向</param>
-    /// </summary>
-    public void Damage(int _nDamage, Transform attacker)
+	/// <summary>
+	/// -ダメージ関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
+	/// <para>ダメージを受ける関数</para>
+	/// <param name="_nDamage">相手の攻撃力</param>
+	/// <param name="Transform attacker">相手の向いてる方向</param>
+	/// </summary>
+	public void Damage(int _nDamage, Transform attacker)
 	{
 		if (_nDamage <= m_HitPoint.Defence)	// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -335,78 +336,78 @@ public class CEnemy : MonoBehaviour, IDH
 		//m_Status.m_nHp -= _nDamage;　// ダメージ処理
 		m_HitPoint.HP -= _nDamage;  // ダメージ処理
 
-        StartCoroutine(KnockbackCoroutine(attacker));
-        StartCoroutine(FlashRedCoroutine());  
-        //if (m_Status.m_nHp <= 0)	// HPが0の時
-        //if (m_HitPoint.HP <= 0)	// HPが0の時
-        //{
-        //	Destroy(gameObject);	// 敵を消す
-        //}
-    }
+		StartCoroutine(KnockbackCoroutine(attacker));
+		StartCoroutine(FlashRedCoroutine());  
+		//if (m_Status.m_nHp <= 0)	// HPが0の時
+		//if (m_HitPoint.HP <= 0)	// HPが0の時
+		//{
+		//	Destroy(gameObject);	// 敵を消す
+		//}
+	}
 
-    /// <summary>
-    /// -ノックバック関数	
-    /// <para>ノックバックする関数</para>
-    /// <param name="Transform attacker">相手の向いてる方向</param>
-    /// </summary>
+	/// <summary>
+	/// -ノックバック関数	
+	/// <para>ノックバックする関数</para>
+	/// <param name="Transform attacker">相手の向いてる方向</param>
+	/// </summary>
 
-    private IEnumerator KnockbackCoroutine(Transform attacker)
-    {
-        Debug.Log("ノックバック開始！");
-        if(m_Agent.enabled && m_Agent.isOnNavMesh)
-        {
-            m_Agent.isStopped = true;
+	private IEnumerator KnockbackCoroutine(Transform attacker)
+	{
+		Debug.Log("ノックバック開始！");
+		if(m_Agent.enabled && m_Agent.isOnNavMesh)
+		{
+			m_Agent.isStopped = true;
 
-        }
-        m_IsKnockback = true;
+		}
+		m_IsKnockback = true;
 
-        Vector3 knockbackDir = (transform.position - attacker.position).normalized;
-        float knockbackPower = 100 / m_Status.m_nWeight * m_Status.m_fBack;      // ノックバックの力（距離 or スピード）
-        float knockbackTime = 0.2f;        // ノックバック時間
-        float _fTimer = 0f;
+		Vector3 knockbackDir = (transform.position - attacker.position).normalized;
+		float knockbackPower = 100 / m_Status.m_nWeight * m_Status.m_fBack;      // ノックバックの力（距離 or スピード）
+		float knockbackTime = 0.2f;        // ノックバック時間
+		float _fTimer = 0f;
 
-        while (_fTimer < knockbackTime) //ノックバックの指定時間の間
-        { //敵を後方へノックバック
-            transform.position += knockbackDir * knockbackPower * Time.deltaTime;
-            _fTimer += Time.deltaTime;
-            yield return null;
-        }
+		while (_fTimer < knockbackTime) //ノックバックの指定時間の間
+		{ //敵を後方へノックバック
+			transform.position += knockbackDir * knockbackPower * Time.deltaTime;
+			_fTimer += Time.deltaTime;
+			yield return null;
+		}
 
-        // 追跡を一時停止する時間
-        yield return new WaitForSeconds(m_Status.m_fStop);
+		// 追跡を一時停止する時間
+		yield return new WaitForSeconds(m_Status.m_fStop);
 
-        m_IsKnockback = false;
-        m_Agent.isStopped = false;
-        Debug.Log("ノックバック終了！");
-    }
+		m_IsKnockback = false;
+		m_Agent.isStopped = false;
+		Debug.Log("ノックバック終了！");
+	}
 
-    /// <summary>
-    /// -フラッシュ関数
-    /// <para>ダメージを受けたときに赤く光る関数</para>
-    /// </summary>
+	/// <summary>
+	/// -フラッシュ関数
+	/// <para>ダメージを受けたときに赤く光る関数</para>
+	/// </summary>
 
-    IEnumerator FlashRedCoroutine()
-    {
-        int flashCount = 4; //光る回数
-        float flashInterval = 0.1f; //点滅の速度
+	IEnumerator FlashRedCoroutine()
+	{
+		int flashCount = 4; //光る回数
+		float flashInterval = 0.1f; //点滅の速度
 
-        rend = GetComponentInChildren<Renderer>();
-        if (rend == null) yield break;
+		rend = GetComponentInChildren<Renderer>();
+		if (rend == null) yield break;
 
-        for (int i = 0; i < flashCount; i++) //赤く点滅する
-        {
-            rend.material = flashMaterial;
-            yield return new WaitForSeconds(flashInterval);
-            rend.material = defaultMaterial;
-            yield return new WaitForSeconds(flashInterval);
-        }
-    }
+		for (int i = 0; i < flashCount; i++) //赤く点滅する
+		{
+			rend.material = flashMaterial;
+			yield return new WaitForSeconds(flashInterval);
+			rend.material = defaultMaterial;
+			yield return new WaitForSeconds(flashInterval);
+		}
+	}
 
-    /// <summary>
-    /// -死亡時処理関数
-    /// <para>HPが0になったときに呼び出される関数</para>
-    /// </summary>
-    private void OnDead()
+	/// <summary>
+	/// -死亡時処理関数
+	/// <para>HPが0になったときに呼び出される関数</para>
+	/// </summary>
+	private void OnDead()
 	{
 		// 体液の排出
 		if (m_Blood != null)	
@@ -442,54 +443,54 @@ public class CEnemy : MonoBehaviour, IDH
 		Destroy(gameObject);	// 敵を消す
 	}
 
-    public void Adddamege(int damage)
-    {
-        //m_nHp -= damage;
-        //Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-        //if (m_nHp < 0)//しんだら
-        //{
-        //	Debug.Log("死んだ");
-        //}
-        m_HitPoint.HP -= damage;
-        Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-        if (m_HitPoint.HP < 0)//しんだら
-        {
-            Debug.Log("死んだ");
-        }
-    }
+	public void Adddamege(int damage)
+	{
+		//m_nHp -= damage;
+		//Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+		//if (m_nHp < 0)//しんだら
+		//{
+		//	Debug.Log("死んだ");
+		//}
+		m_HitPoint.HP -= damage;
+		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+		if (m_HitPoint.HP < 0)//しんだら
+		{
+			Debug.Log("死んだ");
+		}
+	}
 
-    public void Addheal(int heal)
-    {
-        //m_nHp += heal;
-        //Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
-        m_HitPoint.HP += heal;
-        Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
-    }
-    public void Addposion()
-    {
-        m_bIsPoison = true;
-        m_bPoisonUpdate = true;
-    }
-    public void Addacid(int damage)
-    {
-        //if (m_nHp > damage)
-        //{
-
-
-        //	m_nHp -= damage;
-        //	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-        //}
-        if (m_HitPoint.HP > damage)
-        {
+	public void Addheal(int heal)
+	{
+		//m_nHp += heal;
+		//Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
+		m_HitPoint.HP += heal;
+		Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
+	}
+	public void Addposion()
+	{
+		m_bIsPoison = true;
+		m_bPoisonUpdate = true;
+	}
+	public void Addacid(int damage)
+	{
+		//if (m_nHp > damage)
+		//{
 
 
-            m_HitPoint.HP -= damage;
-            Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-        }
-        else
-        {
-            Debug.Log("酸だからしなん");
-        }
-    }
+		//	m_nHp -= damage;
+		//	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
+		//}
+		if (m_HitPoint.HP > damage)
+		{
+
+
+			m_HitPoint.HP -= damage;
+			Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
+		}
+		else
+		{
+			Debug.Log("酸だからしなん");
+		}
+	}
 
 }
