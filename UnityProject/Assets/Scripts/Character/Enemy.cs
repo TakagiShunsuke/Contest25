@@ -28,6 +28,9 @@ D
 21:成長力を切り出し、その他細かいリファクタリング作業:takagi
 28:エフェクトをマージ:takagi
 30:HPの仕様変更に伴い、成長処理を最大HPに反映:takagi
+_M06
+D
+11:、敵がダメージを受けたとき赤く光る、攻撃範囲を成長するように:sezaki 
 =====*/
 
 // 名前空間宣言
@@ -64,11 +67,13 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("攻撃速度成長割合")] public float m_fAtkSpeed;
 		[SerializeField, Tooltip("防御成長割合")] public float m_fDef;
 		[SerializeField, Tooltip("重量成長割合")] public float m_fWeight;
-	}
-	
-	// 変数宣言
-	private CHitPoint m_HitPoint;   // HP
+        [SerializeField, Tooltip("攻撃距離成長割合")] public float m_fAtkRange;
+        [SerializeField, Tooltip("攻撃角度成長割合")] public float m_fAtkAngle;
+    }
 
+    // 変数宣言
+    private CHitPoint m_HitPoint;   // HP
+    [SerializeField] private Material flashMaterial; //ダメージ受けたときのマテリアル
     private float m_ftime = 0.0f;//たいまー
     private float m_fcount = 0.0f;//かうんと
     private bool m_bIsPoison = false; //プレイヤーが毒カ
@@ -89,7 +94,10 @@ public class CEnemy : MonoBehaviour, IDH
 	[SerializeField, Tooltip("体液")] GameObject m_Blood;
 
     private Rigidbody m_Rigid;                     // Rigidbody参照
-    private bool m_IsKnockback = false;
+    private bool m_IsKnockback = false; //ノックバックフラグ
+
+    private Material defaultMaterial; //通常のマテリアル
+    private Renderer rend; //レンダラー
 
     [Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
@@ -117,8 +125,14 @@ public class CEnemy : MonoBehaviour, IDH
 			m_Agent.Warp(hit.position);	// NavMeshの地面にワープさせる
 		}
 
-		// HPの実装
-		if(m_HitPoint = GetComponent<CHitPoint>())
+        rend = GetComponentInChildren<Renderer>();
+        if (defaultMaterial == null && rend != null)
+        {
+            defaultMaterial = rend.sharedMaterial;
+        }
+
+        // HPの実装
+        if (m_HitPoint = GetComponent<CHitPoint>())
 		{
 #if UNITY_EDITOR
 			// 出力
@@ -214,7 +228,7 @@ public class CEnemy : MonoBehaviour, IDH
 						CPlayer player = hit.GetComponent<CPlayer>();
 						if (player != null)
 						{
-							player.Damage(m_Status.m_nAtk);
+							player.Damage(m_Status.m_nAtk,this.transform, m_Status.m_nWeight);
 							m_fAtkCooldown = 10.0f / m_Status.m_fAtkSpeed;
 						}
 					}
@@ -288,7 +302,9 @@ public class CEnemy : MonoBehaviour, IDH
 			m_Status.m_nWeight = m_Status.m_nWeight + (int)(m_StatusInitial.m_nWeight * m_Growth.m_fWeight);
 			m_Status.m_nGrowth = m_Status.m_nGrowth + m_Status.m_nGrowthPower;
 			m_fScale = m_Status.m_nGrowth / m_StatusInitial.m_nGrowth;
-			transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
+            m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + (int)(m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle);
+            m_Status.m_fAtkRange = m_Status.m_fAtkRange + (int)(m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange);
+            transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
 			// 成長度が上限を超えたら、上限に揃えておく
 			if (m_Status.m_nGrowth > m_Status.m_nGrowthLimit)
 			{
@@ -320,7 +336,7 @@ public class CEnemy : MonoBehaviour, IDH
 		m_HitPoint.HP -= _nDamage;  // ダメージ処理
 
         StartCoroutine(KnockbackCoroutine(attacker));
-        //StartCoroutine(FlashRedCoroutine());   ナメクジ殴ったらエラー吐くから止めてます
+        StartCoroutine(FlashRedCoroutine());  
         //if (m_Status.m_nHp <= 0)	// HPが0の時
         //if (m_HitPoint.HP <= 0)	// HPが0の時
         //{
@@ -329,7 +345,7 @@ public class CEnemy : MonoBehaviour, IDH
     }
 
     /// <summary>
-    /// -ノックバック関数	//TODO:プレイヤーの「攻撃」動作にAffectとしてDamageをアタッチ
+    /// -ノックバック関数	
     /// <para>ノックバックする関数</para>
     /// <param name="Transform attacker">相手の向いてる方向</param>
     /// </summary>
@@ -371,20 +387,17 @@ public class CEnemy : MonoBehaviour, IDH
 
     IEnumerator FlashRedCoroutine()
     {
-        int flashCount = 4;
-        float flashInterval = 0.1f;
+        int flashCount = 4; //光る回数
+        float flashInterval = 0.1f; //点滅の速度
 
-        Renderer rend = GetComponentInChildren<Renderer>();
+        rend = GetComponentInChildren<Renderer>();
         if (rend == null) yield break;
 
-        Color originalColor = rend.material.color;
-        Color flashColor = Color.red;
-
-        for (int i = 0; i < flashCount; i++)
+        for (int i = 0; i < flashCount; i++) //赤く点滅する
         {
-            rend.material.color = flashColor;
+            rend.material = flashMaterial;
             yield return new WaitForSeconds(flashInterval);
-            rend.material.color = originalColor;
+            rend.material = defaultMaterial;
             yield return new WaitForSeconds(flashInterval);
         }
     }
