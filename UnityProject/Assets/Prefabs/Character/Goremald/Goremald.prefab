@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb686cb51d331a4ba7739107aefa3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashMaterial: {fileID: 0}
+  flashMaterial: {fileID: 2100000, guid: 65827fcf6b34d97439a573241abfedb6, type: 2}
   m_Status:
     m_nAtk: 100
     m_fAtkSpeed: 50
