@@ -26,9 +26,11 @@ D
 20:ローリングの時に移動するように:kato
 22:効果音の追加(WASDで移動時とEnterで攻撃時のみ):kato
 28:SE関係の変数にツールチップ追加:takagi
+30:無敵状態の更新処理を追加:kato
 _M06
 D
-11:ノックバック仮追加:sezaki 
+06:たたきつけ攻撃完成！！！:kato
+11:ノックバック仮追加:sezaki
 =====*/
 
 // 名前空間宣言
@@ -83,11 +85,28 @@ public class CPlayer : MonoBehaviour, IDH
 	[SerializeField]
 	[Tooltip("攻撃範囲の横オフセット")]
 	private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
-	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
+
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の横幅")]
+    private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の奥行き")]
+    private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の高さ")]
+    private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の縦オフセット")]
+    private float m_fSmashAttackBoxYOffset = 1.0f;
+    [SerializeField]
+    [Tooltip("スマッシュ攻撃範囲の横オフセット")]
+    private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+
+    private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
-
+	private bool m_bAttackInput = false;
     private bool m_bPoisonUpdate = false;//毒更新用
 
 	// 攻撃キーの変数
@@ -144,11 +163,11 @@ public class CPlayer : MonoBehaviour, IDH
 	// ローリング中の無敵時間
 	[SerializeField]
 	[Tooltip("Playerのローリング中の無敵時間")]
-	private float m_fRollingInvicibleTime = 0.5f; // 一旦ね
-	private bool m_bIsRollingInvicible = false; // ローリング中の無敵フラグ
+	private float m_fRollingInvincibleTime = 0.5f; // 一旦ね
+	private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
 
 	private bool m_bIsInvicible = false; // 無敵フラグ
-	private int m_nInvicibleTime = 90; // 無敵時間
+	private int m_nInvincibleTime = 90; // 無敵時間
 
 	[Header("プレイヤーのSE関係")]
 	[SerializeField]
@@ -183,7 +202,7 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
-		m_fAttackCooldown = 1.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定
+		m_fAttackCooldown = 100.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定(攻撃速度100なら1秒　200なら0.5秒)
 
 		// 音源準備
 		m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
@@ -350,13 +369,14 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：プレイヤーのローリングの初期化処理関数
 	private void StartRolling()
 	{
+		
 		m_bIsRolling = true;
 		m_fRollTimer = 0.0f;
 		m_fRollingCoolTimer = 0.0f; // ローリングのクールタイムをリセット
 		m_vRollDirection = transform.forward; // ローリングの方向を設定
 
-		// アニメーションの再生があればここで再生する
-	}
+        // アニメーションの再生があればここで再生する
+    }
 
 	// ローリング関数
 	// 引数１：なし
@@ -388,7 +408,7 @@ public class CPlayer : MonoBehaviour, IDH
 	// ｘ
 	// 戻値：なし
 	// ｘ
-	// 概要：プレイヤーの攻撃
+	// 概要：プレイヤーの攻撃(槍)
 	private void Attack()
 	{
 		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
@@ -432,8 +452,81 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 	}
 
-	// ↓後で消すやつ
-	private void DrawAttackDebugBox()
+    // 攻撃関数
+    // 引数１：なし
+    // ｘ
+    // 戻値：なし
+    // ｘ
+    // 概要：プレイヤーの攻撃(叩きつけ)
+	private void SmashAttack()
+    {
+        Debug.Log(m_fAttackCooldown);
+
+        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+        {
+            m_fLastAttackTime = Time.time;
+
+            Debug.Log("スマッシュ攻撃!!");
+
+            Vector3 origin = transform.position;
+            Vector3 forward = transform.forward;
+
+            Vector3 boxHalfExtents = new Vector3(
+                m_fSmashAttackBoxWidth * 0.5f,
+                m_fSmashAttackBoxHeight * 0.5f,
+                m_fSmashAttackBoxDepth * 0.5f
+            );
+
+            Vector3 boxCenter = origin + forward * (m_fSmashAttackBoxDepth * 0.5f)
+                                + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+                                + transform.right * m_fSmashAttackBoxXOffset;
+            //boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
+
+            // Debug表示
+            //DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+
+            Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+            foreach (var hit in hitColliders)
+            {
+                if (hit.gameObject == this.gameObject) continue;
+
+                var enemy = hit.GetComponent<CEnemy>();
+                if (enemy != null)
+                {
+                    enemy.Damage(m_nAtk, this.transform);
+                }
+            }
+        }
+
+        // 攻撃音再生
+        if (!m_StabAttackSESource.isPlaying)
+        {
+            m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+        }
+    }
+
+    // ↓後で消すやつ
+    private void DrawSmashAttackDebugBox()
+    {
+        Vector3 origin = transform.position;
+        Vector3 forward = transform.forward;
+
+        Vector3 boxHalfExtents = new Vector3(
+            m_fSmashAttackBoxWidth * 0.5f,
+            m_fSmashAttackBoxHeight * 0.5f,
+            m_fSmashAttackBoxDepth * 0.5f
+        );
+
+        Vector3 boxCenter = origin
+            + forward * (m_fSmashAttackBoxDepth * 0.5f)
+            + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+            + transform.right * m_fSmashAttackBoxXOffset;
+
+        DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation,Color.magenta, 0f); // ← duration 0でもOK
+    }
+
+    // ↓後で消すやつ
+    private void DrawAttackDebugBox()
 	{
 		Vector3 origin = transform.position;
 		Vector3 forward = transform.forward;
@@ -497,8 +590,14 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：プレイヤーが死んでいるかと死んだときの処理
 	private void Update()
 	{
-		//if(m_bIsDead) return;	// プレイヤーが死んでいる場合は操作を無効にする
-		if(m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
+		
+
+        if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
+
+		if(Input.GetKeyDown(m_AttackKey))
+		{
+			m_bAttackInput = true; // 攻撃入力フラグを立てる
+        }
 
 		//DrawAttackDebugBox();
 
@@ -570,12 +669,21 @@ public class CPlayer : MonoBehaviour, IDH
 
 		transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
 
-		// プレイヤーの攻撃(Enter)
-		if (Input.GetKeyDown(m_AttackKey))
+       if(m_bAttackInput)
 		{
-			Attack();	// 攻撃処理を呼び出す
-
-		}
+			if(GetMoveInput().magnitude < 0.01f)
+			{
+				SmashAttack(); // スマッシュ攻撃
+				
+                m_bAttackInput = false; // 攻撃入力フラグをリセット
+            }
+            else
+            {
+                Attack(); // Playerが動いているときは通常攻撃
+                m_bAttackInput = false; // 攻撃入力フラグをリセット
+            }
+           
+        }
 	}
 
 	//// 死ぬ関数
@@ -593,10 +701,10 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		//Gizmos.color = new Color(1, 0, 0, 0.5f);
 		//Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
-		DrawAttackDebugBox();
-
-		// ray表示
-		Gizmos.color = Color.green;
+		//DrawAttackDebugBox();
+		DrawSmashAttackDebugBox();
+        // ray表示
+        Gizmos.color = Color.green;
 		Gizmos.DrawLine(transform.position + Vector3.up * m_fRayHeight, transform.position + Vector3.up * m_fRayHeight + transform.forward * 1.0f);
 	}
 
@@ -608,6 +716,7 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：ダメージを受ける
 	public void Damage(int _nDamage, Transform attacker, int weight)
 	{
+		
 		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
 
 		if (_nDamage <= m_HitPoint.Defence)// 防御が被ダメを上回ったら被ダメを1にする
@@ -668,7 +777,7 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		m_bIsInvicible = true; // 無敵状態にする
 		Debug.Log("無敵状態!!!");
-		for (int i = 0; i < m_nInvicibleTime; ++i)
+		for (int i = 0; i < m_nInvincibleTime; ++i)
 		{
 			yield return null; // 1フレーム待つ
 		}
@@ -685,9 +794,9 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：ローリングしている間一定時間無敵になる
 	private IEnumerator RollingInvincibilityCoroutine()
 	{
-		m_bIsRollingInvicible = true; // 無敵状態にする
-		yield return new WaitForSeconds(m_fRollingInvicibleTime); // 一定時間待つ
-		m_bIsRollingInvicible = false; // 無敵状態を解除する
+		m_bIsRollingInvincible = true; // 無敵状態にする
+		yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
+		m_bIsRollingInvincible = false; // 無敵状態を解除する
 	}
 
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
@@ -722,6 +831,7 @@ public class CPlayer : MonoBehaviour, IDH
 			Debug.Log("死んだ");
 		}
 	}
+
 
 	public void Addheal(int heal)
 	{
