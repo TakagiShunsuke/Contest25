@@ -642,13 +642,19 @@ public class CPlayer : MonoBehaviour, IDH
        Vector3 knockbackDir = (transform.position - attacker.position).normalized;
         knockbackDir.y = 0f; // Y方向の動きをゼロにする
         knockbackDir = knockbackDir.normalized; // 正規化
-        float knockbackPower = weight * 0.5f;      // ノックバックの力（距離 or スピード）
+        float knockbackPower = weight * 0.2f;      // ノックバックの力（距離 or スピード）
         float knockbackTime = 0.2f;        // ノックバック時間
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + knockbackDir * knockbackPower;
         float _fTimer = 0f;
-
+        
         while (_fTimer < knockbackTime) //ノックバックの指定時間の間
         { //自分を後方へノックバック
-            transform.position += knockbackDir * knockbackPower * Time.deltaTime;
+            float t = _fTimer / knockbackTime;
+            t = 1f - (1f - t) * (1f - t);
+            Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+
+            m_Rb.MovePosition(newPos);
             _fTimer += Time.deltaTime;
             yield return null;
         }
