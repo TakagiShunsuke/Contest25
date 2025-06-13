@@ -69,6 +69,7 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("重量成長割合")] public float m_fWeight;
         [SerializeField, Tooltip("攻撃距離成長割合")] public float m_fAtkRange;
         [SerializeField, Tooltip("攻撃角度成長割合")] public float m_fAtkAngle;
+        [SerializeField, Tooltip("停止距離")] public float m_fStop;
     }
 
     // 変数宣言
@@ -95,6 +96,8 @@ public class CEnemy : MonoBehaviour, IDH
 
     private Rigidbody m_Rigid;                     // Rigidbody参照
     private bool m_IsKnockback = false; //ノックバックフラグ
+
+    private float m_fStop;
 
     private Material defaultMaterial; //通常のマテリアル
     private Renderer rend; //レンダラー
@@ -152,6 +155,7 @@ public class CEnemy : MonoBehaviour, IDH
 		m_StatusInitial = m_Status;
 		m_fSpeedInitial = m_Agent.speed;
 		m_nInitialHP = m_HitPoint.HP;
+        m_fStop = m_Agent.stoppingDistance;
 
 		// イベント接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
@@ -305,6 +309,7 @@ public class CEnemy : MonoBehaviour, IDH
             m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + (int)(m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle);
             m_Status.m_fAtkRange = m_Status.m_fAtkRange + (int)(m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange);
             transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
+            m_Agent.stoppingDistance = m_Agent.stoppingDistance + (int)(m_fStop * m_Growth.m_fStop);
 			// 成長度が上限を超えたら、上限に揃えておく
 			if (m_Status.m_nGrowth > m_Status.m_nGrowthLimit)
 			{
