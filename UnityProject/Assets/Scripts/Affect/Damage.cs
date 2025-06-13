@@ -6,6 +6,7 @@
 ダメージ機能を実装
 
 ＞注意事項
+・Affectの変更により、インスペクタ上でのパラメータの変更は「試用限定機能であり、本実装では無効化される」こととなりました！
 ・一般的な(？)ダメージ計算より補正をかけられる機構を用意しています。
 	プロパティから触れますが、初期状態なら補正がない状態(α版時点での仕様書通り)になります。
 
@@ -15,20 +16,24 @@ _M05
 D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
+_M06
+13:継承元を MonoBehavior→ScriptableObject に変更:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 
 // クラス定義
+[CreateAssetMenu(menuName = AFFECT_MENU_TAB_NAME + AFFECT_NAME, fileName = AFFECT_NAME)]
 public class CDamage : CAffect
 {
 	// 定数定義
-	protected const int _MIN_DAMAGE = 1;	// 最低保証ダメージ
+	private const string AFFECT_NAME = "Damage";	// 効果名
+	protected const int MIN_DAMAGE = 1;	// 最低保証ダメージ
 
 	// 変数宣言
-	[Header("パラメータ")]
-	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage;
+	[Header("パラメータ ※試用時限定！※")]
+	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage = 0.0f;
 	private float m_fBaseCorrection = 0.0f;	// 基礎値補正
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
 
@@ -151,9 +156,9 @@ public class CDamage : CAffect
 		_Result = (int)(_fDamageValue - _fDefence);	// 最終ダメージを求める
 
 		// 補正
-		if(_Result < _MIN_DAMAGE)	// 最低保証が成立していない
+		if(_Result < MIN_DAMAGE)	// 最低保証が成立していない
 		{
-			_Result = _MIN_DAMAGE;	// ダメージを保証
+			_Result = MIN_DAMAGE;	// ダメージを保証
 		}
 
 		// 提供

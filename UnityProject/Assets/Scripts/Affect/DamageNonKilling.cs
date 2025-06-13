@@ -6,6 +6,7 @@
 非致死性ダメージ機能を実装
 
 ＞注意事項
+・Affectの変更により、インスペクタ上でのパラメータの変更は「試用限定機能であり、本実装では無効化される」こととなりました！
 ・一般的な(？)ダメージ計算より補正をかけられる機構を用意しています。
 	プロパティから触れますが、初期状態なら補正がない状態(α版時点での仕様書通り)になります。
 
@@ -15,14 +16,20 @@ _M05
 D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
+_M06
+13:継承元を MonoBehavior→ScriptableObject に変更:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 
 // クラス定義
+[CreateAssetMenu(menuName = AFFECT_MENU_TAB_NAME + AFFECT_NAME, fileName = AFFECT_NAME)]
 public class CDamageNonKilling : CDamage
 {
+	// 定数定義
+	private const string AFFECT_NAME = "DamageNonKilling";	// 効果名
+
 	/// <summary>
 	/// -非致死性ダメージ効果関数
 	/// <para>不殺のダメージ効果を行う関数</para>

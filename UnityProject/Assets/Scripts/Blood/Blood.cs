@@ -30,12 +30,21 @@ using UnityEngine.Events;
 // クラス定義
 public class CBlood : MonoBehaviour
 {
+
+
+	// 列挙定義
+	private enum E_BLOOD_EVENT
+	{
+		ON_STAY,	// 体液上に発動
+	}
+
+
 	// 変数宣言
 	[Header("性質")]
 	[SerializeField, Tooltip("効果発動間隔")] private float m_fCoolTime;
 	private Dictionary<int, float> m_fCoolDownTimers = new Dictionary<int, float>();	// 時間計測用
 	private CAffect m_Affect;	// 体液の効果	※自身のコンポーネントから取得	//TODO:Playerなどで別効果のCAffectを使い同居する場合、非想定の結果になる点を改善
-
+	private CInnerAffectEventor<E_BLOOD_EVENT> m_InnerAffectEventor;	// 効果用のイベント管理
 
 	// ＞初期化関数
 	// 引数：なし
@@ -45,25 +54,27 @@ public class CBlood : MonoBehaviour
 	// 概要：初期化処理
 	void Start()
 	{
+		//TODO:m_InnerAffectEventor.AffectEvents.Add(E_BLOOD_EVENT.ON_STAY, );
+
 		// 初期化
-		m_Affect = GetComponent<CAffect>();	// 自身の特徴取得
-#if UNITY_EDITOR	// エディタ使用中
-		if (!m_Affect)	// 取得に失敗した時
-		{
-			// エラー出力
-			Debug.LogError("効果コンポーネントが設定されていません");	// ログ出力
-		}
-		else if (GetComponents<CAffect>().Length > 1)	// 使わない効果コンポーネントがあるとき
-		{
-			// エラー出力
-			Debug.LogWarning("無効な効果が設定されています");	// ログ出力
-		}
-		if(m_fCoolTime < 0.0f)
-		{
-			// エラー出力
-			Debug.LogError("クールタイムが機能していません");	// ログ出力
-		}
-#endif
+//		m_Affect = GetComponent<CAffect>();	// 自身の特徴取得
+//#if UNITY_EDITOR	// エディタ使用中
+//		if (!m_Affect)	// 取得に失敗した時
+//		{
+//			// エラー出力
+//			Debug.LogError("効果コンポーネントが設定されていません");	// ログ出力
+//		}
+//		else if (GetComponents<CAffect>().Length > 1)	// 使わない効果コンポーネントがあるとき
+//		{
+//			// エラー出力
+//			Debug.LogWarning("無効な効果が設定されています");	// ログ出力
+//		}
+//		if(m_fCoolTime < 0.0f)
+//		{
+//			// エラー出力
+//			Debug.LogError("クールタイムが機能していません");	// ログ出力
+//		}
+//#endif
 	}
 
 	// ＞物理更新関数

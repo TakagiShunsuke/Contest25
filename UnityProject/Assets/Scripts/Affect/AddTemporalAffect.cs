@@ -5,19 +5,28 @@
 ＞内容
 一時的効果付与を実装
 
+＞注意事項
+・Affectの変更により、インスペクタ上でのパラメータの変更は「試用限定機能であり、本実装では無効化される」こととなりました！
+
 ＞更新履歴
 __Y25
 _M05
 D
 30:プログラム作成:takagi
+_M06
+13:継承元を MonoBehavior→ScriptableObject に変更:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 
 // クラス定義
+[CreateAssetMenu(menuName = AFFECT_MENU_TAB_NAME + AFFECT_NAME, fileName = AFFECT_NAME)]
 public class CAddTemporalAffect : CAffect
 {
+	// 定数定義
+	private const string AFFECT_NAME = "AddTemporalAffect";	// 効果名
+
 	// 変数宣言
 	[Header("パラメータ")]
 	[SerializeField, Tooltip("付与する効果")]private GameObject m_TemporalAffect;
