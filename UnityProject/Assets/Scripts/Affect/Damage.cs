@@ -73,7 +73,7 @@ public class CDamage : CAffect
 	/// <summary>
 	/// 補正倍率プロパティ
 	/// </summary>
-	/// <value><see cref="m_fCorrectionRation"/></value>
+	/// <value><see cref="m_fCorrectionRatio"/></value>
 	public float CorrectionRation
 	{
 		get
