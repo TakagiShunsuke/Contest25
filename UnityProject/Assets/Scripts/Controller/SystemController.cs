@@ -26,13 +26,22 @@ public class CSystemController : MonoBehaviour
 	[Header("入力")]
 	[SerializeField, Tooltip("ゲーム終了キー")] private KeyCode m_FinishKey = KeyCode.Escape;
 
-	// 更新関数
-	// 引数１：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：キー受付判定処理	//TODO:入力イベント関数があったはず...置き換えること
-	void Update()
+
+	/// <summary>
+	/// -初期化関数
+	/// <para>初期化処理</para>
+	/// </summary>
+	private void Start()
+	{
+		// カーソル設定
+		Cursor.visible = false;	// 不可視
+	}
+
+	/// <summary>
+	/// -更新関数
+	/// <para>キー受付判定処理</para>	//TODO:入力イベント関数があったはず...置き換えること
+	/// </summary>
+	private void Update()
 	{
 		// 終了判定
 #if !UNITY_EDITOR
@@ -40,7 +49,6 @@ public class CSystemController : MonoBehaviour
 		{
 			Application.Quit();	// アプリケーション終了
 		}
-#endif
-		
+#endif	// UNITY_EDITOR
 	}
 }
