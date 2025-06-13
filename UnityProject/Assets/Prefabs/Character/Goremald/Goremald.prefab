@@ -109,7 +109,7 @@ MonoBehaviour:
     m_nGrowth: 100
     m_nGrowthLimit: 300
     m_nGrowthSpeed: 10
-    m_nGrowthPower: 15
+    m_nGrowthPower: 20
     m_fAtkRange: 0
     m_fAtkAngle: 0
     m_fBack: 0
@@ -121,11 +121,11 @@ MonoBehaviour:
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0.2
-    m_fAtkRange: 0
+    m_fAtkRange: 0.2
     m_fAtkAngle: 0
   m_nInitialHP: 50
   m_nInitialDef: 50
-  m_Blood: {fileID: 0}
+  m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}
   deathEffectPrefab: {fileID: 0}
 --- !u!65 &7019331584709043581
 BoxCollider:
