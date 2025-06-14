@@ -1,9 +1,9 @@
 /*=====
-<ClearManage.cs>
+<ResultSceneChanger.cs>
 └作成者：takagi
 
 ＞内容
-クリア判定を実装
+リザルトにおけるシーン遷移管理を実装
 
 ＞更新履歴
 __Y25
@@ -22,7 +22,7 @@ using UnityEngine.SceneManagement;
 public class CResultSceneChanger : MonoBehaviour
 {
 	// 変数宣言
-	[SerializeField, Tooltip("遷移先シーン")] private SceneDropDown m_Scene;
+	[SerializeField, Tooltip("遷移先シーン")] private CSceneAssetNameConverter m_Scene;
 	[SerializeField, Tooltip("遷移キー")] private KeyCode m_LoadKey = KeyCode.Return;	
 	[SerializeField, Tooltip("選択音")] public AudioClip m_DecideSE;
 	[SerializeField, Tooltip("選択音量")] private float m_DecideSEVolume = 0.05f;
