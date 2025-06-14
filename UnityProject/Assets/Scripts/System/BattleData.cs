@@ -22,7 +22,7 @@ public sealed class CBattleData : CPureSingleton<CBattleData>
 	/// 討伐数プロパティ
 	/// </summary>
 	/// <value>敵を倒した数</value>
-	public uint KillCount { get; set; }
+	public uint KillCount { get; set; } = 0;
 
 
 	/// <summary>
