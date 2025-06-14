@@ -232,6 +232,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SceneLoaderResult
       objectReference: {fileID: 0}
+    - target: {fileID: 8372503217887846466, guid: 121c14c476e800e4daa19254b624ecc3, type: 3}
+      propertyPath: m_Scene.m_SceneName
+      value: Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 8372503217887846466, guid: 121c14c476e800e4daa19254b624ecc3, type: 3}
+      propertyPath: m_Scene.m_SceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 5a1fe0a77fe334f46aaf9af189681bd4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

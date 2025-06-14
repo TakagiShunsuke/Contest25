@@ -22,7 +22,7 @@ using UnityEngine.SceneManagement;
 public class CResultSceneChanger : MonoBehaviour
 {
 	// 変数宣言
-	[SerializeField, Tooltip("遷移先シーン")] private SceneAsset m_Scene;
+	[SerializeField, Tooltip("遷移先シーン")] private SceneDropDown m_Scene;
 	[SerializeField, Tooltip("遷移キー")] private KeyCode m_LoadKey = KeyCode.Return;	
 	[SerializeField, Tooltip("選択音")] public AudioClip m_DecideSE;
 	[SerializeField, Tooltip("選択音量")] private float m_DecideSEVolume = 0.05f;
@@ -47,7 +47,7 @@ public class CResultSceneChanger : MonoBehaviour
 	void Update()
 	{
 		// 保全
-		if (!m_Scene)	// ヌルチェック
+		if (m_Scene.SceneName == string.Empty)	// ヌルチェック
 		{
 #if UNITY_EDITOR
 			Debug.LogError("遷移先シーンが見つかりません");
@@ -71,7 +71,7 @@ public class CResultSceneChanger : MonoBehaviour
 			}
 
 			// 遷移実行
-			SceneManager.LoadScene(m_Scene.name);	// 設定されている次シーンへ遷移
+			SceneManager.LoadScene(m_Scene.SceneName);	// 設定されている次シーンへ遷移
 		}
-	} 
+	}
 }
