@@ -10,6 +10,7 @@ __Y25
 _M06
 D
 13:プログラム作成完了:takagi
+14:バトルデータのクリア処理を追加:takagi
 =====*/
 
 // 名前空間宣言
@@ -57,6 +58,12 @@ public class CResultSceneChanger : MonoBehaviour
 		// シーン遷移
 		if (Input.GetKey(m_LoadKey))	// シーン遷移入力時
 		{
+			// 専用データクリア
+			if (CBattleData.Instance != null)	// ヌルチェック
+			{
+				CBattleData.Instance.Clear();	// リザルト用のデータなのでシーン遷移時には消しておく
+			}
+
 			// 効果音再生
 			if (!m_DecideSESource.isPlaying)	// 再生が重ならない
 			{
