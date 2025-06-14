@@ -135,9 +135,9 @@ MonoBehaviour:
     m_fAtkSpeed: 50
     m_nWeight: 100
     m_nGrowth: 100
-    m_nGrowthLimit: 0
-    m_nGrowthSpeed: 100
-    m_nGrowthPower: 15
+    m_nGrowthLimit: 300
+    m_nGrowthSpeed: 10
+    m_nGrowthPower: 20
     m_fAtkRange: 2
     m_fAtkAngle: 60
     m_fBack: 30
@@ -149,7 +149,7 @@ MonoBehaviour:
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0
-    m_fAtkRange: 0
+    m_fAtkRange: 0.2
     m_fAtkAngle: 0
   m_nInitialHP: 120
   m_nInitialDef: 20

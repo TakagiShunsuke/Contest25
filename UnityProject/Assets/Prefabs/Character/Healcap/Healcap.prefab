@@ -130,7 +130,7 @@ MonoBehaviour:
     m_nGrowth: 100
     m_nGrowthLimit: 300
     m_nGrowthSpeed: 10
-    m_nGrowthPower: 15
+    m_nGrowthPower: 20
     m_fAtkRange: 2
     m_fAtkAngle: 60
     m_fBack: 30
@@ -142,7 +142,7 @@ MonoBehaviour:
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0
-    m_fAtkRange: 0
+    m_fAtkRange: 0.2
     m_fAtkAngle: 0
   m_nInitialHP: 120
   m_nInitialDef: 5
@@ -197,7 +197,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.02
-  m_Speed: 3.5
+  m_Speed: 2.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
