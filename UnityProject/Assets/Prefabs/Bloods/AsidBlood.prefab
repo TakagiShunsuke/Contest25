@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8244880907334955269}
   - component: {fileID: 3555004824231374863}
   - component: {fileID: 6483610508869381811}
-  - component: {fileID: 2160335431490030920}
+  - component: {fileID: -7547478543991345584}
   m_Layer: 0
   m_Name: AsidBlood
   m_TagString: Untagged
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fCoolTime: 0.5
---- !u!114 &2160335431490030920
+--- !u!114 &-7547478543991345584
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,7 +161,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 75644770688212516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 252d2781d9a2c3c4fb48ed70061687a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 06af5835d8293e247b156e0a442172a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_fDamage: 10
+  m_bNonInvincible: 1
+  m_bKillable: 1

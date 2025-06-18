@@ -15,6 +15,7 @@ _M05
 D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
+18:フラグを追加(処理分岐を減らすことで保守性を保つ):takagi
 =====*/
 
 // 名前空間宣言
@@ -31,6 +32,9 @@ public class CDamage : CAffect
 	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage;
 	private float m_fBaseCorrection = 0.0f;	// 基礎値補正
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
+	[Header("状態")]
+	[SerializeField, Tooltip("無敵貫通")] protected bool m_bNonInvincible = false;
+	[SerializeField, Tooltip("致死性")] protected bool m_bKillable = true;
 
 	// プロパティ定義
 
@@ -124,14 +128,29 @@ public class CDamage : CAffect
 			return;	// 処理中断
 		}
 
-			// 変数宣言
-			var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		// 変数宣言
+		var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		var _Invincible = _Opponent.GetComponent<CInvincible>();	// 無敵状態
+
+		// 無敵
+		if (!_Invincible && !m_bNonInvincible)	// 無敵を適用
+		{
+			// 中断
+			return;	// ダメージ処理が発生しない
+		}
 
 		// ダメージ処理
-		if(_HitPoint)	// ダメージを受けられる
+		if (_HitPoint)	// ダメージを受けられる
 		{
 			// ダメージを与える
-			_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 最終ダメージをHPに影響させる
+			if (m_bKillable || _HitPoint.HP - CulcDamage(CorrectedDamage, _HitPoint.Defence) > 0)	// 致死性がある・もしくはそもそも殺せていない
+			{
+				_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 通常のダメージ処理
+			}
+			else if(_HitPoint.HP > 0)	// 本来ならこのダメージ処理で死ぬが、非致死性ダメージとして扱う
+			{
+				_HitPoint.HP = 1;	// 非致死性効果で1耐えさせる
+			}
 		}
 	}
 	

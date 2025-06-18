@@ -31,6 +31,7 @@ _M06
 D
 06:たたきつけ攻撃完成！！！:kato
 11:ノックバック仮追加:sezaki
+18:無敵状態のフラグ解除、コンポーネントとして付与する形に:takagi
 =====*/
 
 // 名前空間宣言
@@ -124,6 +125,10 @@ public class CPlayer : MonoBehaviour, IDH
 	private bool m_bAttack		= false;	// 攻撃フラグ
 	public bool m_bOnGround	= true;	// 地面にいるかどうかのフラグ
 
+	[SerializeField]
+	[Tooltip("被ダメージ後の無敵時間")]
+	private int m_nDamagedInvincibleTime = 90; // 無敵時間
+
 	[Header("プレイヤー移動制限")]
 	// プレイヤー移動制限用の変数
 
@@ -159,15 +164,15 @@ public class CPlayer : MonoBehaviour, IDH
 	private float m_fRollTimer = 0.0f; // ローリング中の経過時間
 	private Vector3 m_vRollDirection; // ローリングの方向
 	private float m_fRollDuration = 0.3f; // ローリングの持続時間
+	
+	//private bool m_bIsInvicible = false; // 無敵フラグ
+	//private int m_nInvincibleTime = 90; // 無敵時間
 
 	// ローリング中の無敵時間
 	[SerializeField]
 	[Tooltip("Playerのローリング中の無敵時間")]
 	private float m_fRollingInvincibleTime = 0.5f; // 一旦ね
-	private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
-
-	private bool m_bIsInvicible = false; // 無敵フラグ
-	private int m_nInvincibleTime = 90; // 無敵時間
+	//private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
 
 	[Header("プレイヤーのSE関係")]
 	[SerializeField]
@@ -228,6 +233,7 @@ public class CPlayer : MonoBehaviour, IDH
 		m_HitPoint.Defence = m_nInitialDef;	// 初期防御設定
 
 		// イベント接続
+		m_HitPoint.OnDamaged += OnDamaged;	// 被ダメージ時処理を接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
@@ -636,7 +642,20 @@ public class CPlayer : MonoBehaviour, IDH
 			if(Input.GetKeyDown(m_RollingKey) && m_fRollingCoolTimer >= m_fRollCooldown)
 			{
 				StartRolling(); // ローリング開始
-				StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
+				
+				// 変数宣言
+				var _Invincible = GetComponent<CInvincible>();	// 無敵
+
+				// コンポーネント管理
+				if(_Invincible == null)	// 無敵状態ではない
+				{
+					_Invincible = gameObject.AddComponent<CInvincible>();	// 無敵状態になる
+				}
+
+				// 無敵時間設定
+				_Invincible.AliveTime = m_fRollingInvincibleTime;	// ローリング用の無敵時間を反映
+
+				//StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
 			}
 		}
 
@@ -682,7 +701,6 @@ public class CPlayer : MonoBehaviour, IDH
                 Attack(); // Playerが動いているときは通常攻撃
                 m_bAttackInput = false; // 攻撃入力フラグをリセット
             }
-           
         }
 	}
 
@@ -717,7 +735,7 @@ public class CPlayer : MonoBehaviour, IDH
 	public void Damage(int _nDamage, Transform attacker, int weight)
 	{
 		
-		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
+		//if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
 
 		if (_nDamage <= m_HitPoint.Defence)// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -733,8 +751,11 @@ public class CPlayer : MonoBehaviour, IDH
 
         StartCoroutine(KnockbackCoroutine(attacker, weight));
 
+		//臨時的処理
+		OnDamaged();	// 無敵起動の代用
+
         // 無敵状態開始
-        StartCoroutine(InvincibilityCoroutine());
+        //StartCoroutine(InvincibilityCoroutine());
 		
 	}
 
@@ -773,38 +794,37 @@ public class CPlayer : MonoBehaviour, IDH
     }
 
 
-    // ＞無敵状態関数
-    // 引数：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：ダメージを受けたときに90フレーム無敵状態になる
-    private IEnumerator InvincibilityCoroutine()
-	{
-		m_bIsInvicible = true; // 無敵状態にする
-		Debug.Log("無敵状態!!!");
-		for (int i = 0; i < m_nInvincibleTime; ++i)
-		{
-			yield return null; // 1フレーム待つ
-		}
+ //   // ＞無敵状態関数
+ //   // 引数：なし
+ //   // ｘ
+ //   // 戻値：なし
+ //   // ｘ
+ //   // 概要：ダメージを受けたときに90フレーム無敵状態になる
+ //   private IEnumerator InvincibilityCoroutine()
+	//{
+	//	m_bIsInvicible = true; // 無敵状態にする
+	//	Debug.Log("無敵状態!!!");
+	//	for (int i = 0; i < m_nInvincibleTime; ++i)
+	//	{
+	//		yield return null; // 1フレーム待つ
+	//	}
 
-		m_bIsInvicible = false; // 無敵状態を解除する
-		Debug.Log("無敵状態解除!!");
-	}
+	//	m_bIsInvicible = false; // 無敵状態を解除する
+	//	Debug.Log("無敵状態解除!!");
+	//}
 
-	// ＞無敵状態関数(ローリング中)
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ローリングしている間一定時間無敵になる
-	private IEnumerator RollingInvincibilityCoroutine()
-	{
-		m_bIsRollingInvincible = true; // 無敵状態にする
-		yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
-		m_bIsRollingInvincible = false; // 無敵状態を解除する
-	}
-
+	//// ＞無敵状態関数(ローリング中)
+	//// 引数：なし
+	//// ｘ
+	//// 戻値：なし
+	//// ｘ
+	//// 概要：ローリングしている間一定時間無敵になる
+	//private IEnumerator RollingInvincibilityCoroutine()
+	//{
+	//	m_bIsRollingInvincible = true; // 無敵状態にする
+	//	yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
+	//	m_bIsRollingInvincible = false; // 無敵状態を解除する
+	//}
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
@@ -812,7 +832,23 @@ public class CPlayer : MonoBehaviour, IDH
 #endif
 	}
 
-		// 死亡時処理
+	// 被ダメージ処理
+	private void OnDamaged()
+	{
+		// 変数宣言
+		var _Invincible = GetComponent<CInvincible>();	// 無敵
+
+		// コンポーネント管理
+		if(_Invincible == null)	// 無敵状態ではない
+		{
+			_Invincible = gameObject.AddComponent<CInvincible>();	// 無敵状態になる
+		}
+
+		// 無敵時間設定
+		_Invincible.AliveTime = m_nDamagedInvincibleTime;	// 被ダメージ後の無敵時間を反映
+	}
+
+	// 死亡時処理
 	private void OnDead()
 	{
 		SceneManager.LoadScene("GAMEOVER");
