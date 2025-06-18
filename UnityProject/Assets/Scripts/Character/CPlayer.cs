@@ -452,7 +452,9 @@ public class CPlayer : MonoBehaviour, IDH
 					enemy.Damage(m_nAtk,this.transform);
 				}
 			}
-		}
+
+			m_Animator.SetBool("Attack", true); // UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶
+        }
 
         // UŒ‚‰¹Ä¶
         if (!m_StabAttackSESource.isPlaying)
@@ -879,4 +881,10 @@ public class CPlayer : MonoBehaviour, IDH
 			Debug.Log("_‚¾‚©‚ç‚µ‚È‚ñ");
 		}
 	}
+
+    public void OnAttackAnimationEnd()
+	{
+		m_Animator.SetBool("Attack", false);
+	}
+
 }
