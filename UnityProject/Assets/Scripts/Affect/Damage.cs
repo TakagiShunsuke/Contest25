@@ -16,6 +16,8 @@ D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
 18:フラグを追加(処理分岐を減らすことで保守性を保つ):takagi
+19:変数名変更(m_bNonInvincible→m_bIgnoreInvincible)
+	・無敵判定修正:takagi
 =====*/
 
 // 名前空間宣言
@@ -33,7 +35,7 @@ public class CDamage : CAffect
 	private float m_fBaseCorrection = 0.0f;	// 基礎値補正
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
 	[Header("状態")]
-	[SerializeField, Tooltip("無敵貫通")] protected bool m_bNonInvincible = false;
+	[SerializeField, Tooltip("無敵貫通")] protected bool m_bIgnoreInvincible = false;
 	[SerializeField, Tooltip("致死性")] protected bool m_bKillable = true;
 
 	// プロパティ定義
@@ -133,7 +135,7 @@ public class CDamage : CAffect
 		var _Invincible = _Opponent.GetComponent<CInvincible>();	// 無敵状態
 
 		// 無敵
-		if (!_Invincible && !m_bNonInvincible)	// 無敵を適用
+		if (_Invincible && !m_bIgnoreInvincible)	// 無敵を適用
 		{
 			// 中断
 			return;	// ダメージ処理が発生しない
