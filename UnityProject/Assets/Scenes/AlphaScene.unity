@@ -2326,7 +2326,7 @@ MonoBehaviour:
   m_fFootStepInterval: 0.4
   m_MoveGroundSE: {fileID: 8300000, guid: 6bc1234106a4a144da20955ba575b49a, type: 3}
   m_MoveGroundSEVolume: 0.05
-  m_StabAttackSE: {fileID: 8300000, guid: 84838a7bc55f8d14a9dcebd5356a4185, type: 3}
+  m_StabAttackSE: {fileID: 0}
   m_StabAttackSEVolume: 0.5
 --- !u!54 &1817413257
 Rigidbody:
