@@ -31,6 +31,7 @@ _M06
 D
 06:たたきつけ攻撃完成！！！:kato
 11:ノックバック仮追加:sezaki
+18:アニメーションをいじいじ:kato
 =====*/
 
 // 名前空間宣言
@@ -203,9 +204,11 @@ public class CPlayer : MonoBehaviour, IDH
 		// プレイヤーの初期化
 		m_Rb = GetComponent<Rigidbody>();
 		m_fAttackCooldown = 100.0f / m_fAtkSpeed;	// 攻撃速度に応じて攻撃間隔を設定(攻撃速度100なら1秒　200なら0.5秒)
+		m_Animator = GetComponent<Animator>();  // アニメーターコンポーネント取得
 
-		// 音源準備
-		m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
+
+        // 音源準備
+        m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
 		m_MoveGroundSESource.volume = m_MoveGroundSEVolume;	// 音量を設定
 		m_StabAttackSESource = gameObject.AddComponent<AudioSource>();	// 突き用の音源コンポーネント作成
 		m_StabAttackSESource.volume = m_StabAttackSEVolume;	// 音量を設定
@@ -309,15 +312,21 @@ public class CPlayer : MonoBehaviour, IDH
 			// 移動・回転
 			m_Rb.transform.position += moveDir * moveDistance;
 			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
-		}
-		else
+
+            m_Animator.SetBool("Run",true); // 歩行アニメーションを再生
+            //m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
+        }
+        else
 		{
-			// 入力なし時の足音停止
-			if (m_MoveGroundSESource.isPlaying)
+
+            // 入力なし時の足音停止
+            if (m_MoveGroundSESource.isPlaying)
 			{
 				m_MoveGroundSESource.Stop();
 			}
-		}
+			m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
+			//m_Animator.SetBool("Run", true); // 歩行アニメーションを停止
+        }
 
 
 		// プレイヤーの移動 正面向けるけどw+dが変になる移動
@@ -445,8 +454,8 @@ public class CPlayer : MonoBehaviour, IDH
 			}
 		}
 
-		// 攻撃音再生
-		if (!m_StabAttackSESource.isPlaying)
+        // 攻撃音再生
+        if (!m_StabAttackSESource.isPlaying)
 		{
 			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
 		}
@@ -590,8 +599,6 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：プレイヤーが死んでいるかと死んだときの処理
 	private void Update()
 	{
-		
-
         if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
 
 		if(Input.GetKeyDown(m_AttackKey))
