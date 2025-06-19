@@ -43,6 +43,7 @@ D
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UI.Image;
 
 // クラス定義
 public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
@@ -91,6 +92,9 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	[SerializeField]
 	[Tooltip("攻撃範囲の横オフセット")]
 	private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+	[SerializeField]
+	[Tooltip("攻撃のディレイ")]
+	private float m_fAttackDelay = 0.25f;	// 攻撃判定発生ディレイ
 
 	[SerializeField]
 	[Tooltip("スマッシュ攻撃範囲の横幅")]
@@ -107,6 +111,9 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	[SerializeField]
 	[Tooltip("スマッシュ攻撃範囲の横オフセット")]
 	private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃のディレイ")]
+	private float m_fSmashAttackDelay = 0.8f;	// スマッシュ攻撃判定発生ディレイ
 
 	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
@@ -432,7 +439,54 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		{
 			m_fLastAttackTime = Time.time;
 
-			Vector3 origin = transform.position;
+			//Vector3 origin = transform.position;
+			//Vector3 forward = transform.forward;
+
+			//Vector3 boxHalfExtents = new Vector3(
+			//	m_fAttackBoxWidth * 0.5f,
+			//	m_fAttackBoxHeight * 0.5f,
+			//	m_fAttackBoxDepth * 0.5f
+			//);
+
+			//Vector3 boxCenter = origin + forward  * (m_fAttackBoxDepth * 0.5f)
+			//					+ transform.up * (boxHalfExtents.y + m_fAttackBoxYOffset)
+			//					+ transform.right * m_fAttackBoxXOffset;
+			////boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
+
+			// Debug表示
+			//DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+
+			//Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+			//foreach (var hit in hitColliders)
+			//{
+			//	if (hit.gameObject == this.gameObject) continue;
+
+			//	var enemy = hit.GetComponent<CEnemy>();
+			//	if (enemy != null)
+			//	{
+			//		enemy.Damage(m_nAtk,this.transform);
+			//	}
+			//}
+			//↑ラグ出るので下のイミュレータに移動しておきます
+
+			//if()
+				StartCoroutine(AttackDeray());
+
+			m_Animator.SetBool("Attack", true); // 攻撃アニメーションを再生
+			
+
+			// 攻撃音再生
+			if (!m_StabAttackSESource.isPlaying)
+			{
+				m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+			}
+		}
+	}
+	// 臨時の攻撃待機
+	private IEnumerator AttackDeray()
+	{
+		yield return new WaitForSeconds(m_fAttackDelay);
+					Vector3 origin = transform.position;
 			Vector3 forward = transform.forward;
 
 			Vector3 boxHalfExtents = new Vector3(
@@ -442,12 +496,8 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 			);
 
 			Vector3 boxCenter = origin + forward  * (m_fAttackBoxDepth * 0.5f)
-								+ transform.up * (boxHalfExtents.y + m_fAttackBoxYOffset)
-								+ transform.right * m_fAttackBoxXOffset;
-			//boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
-
-			// Debug表示
-			//DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+						+ transform.up * (boxHalfExtents.y + m_fAttackBoxYOffset)
+						+ transform.right * m_fAttackBoxXOffset;
 
 			Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
 			foreach (var hit in hitColliders)
@@ -460,15 +510,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 					enemy.Damage(m_nAtk,this.transform);
 				}
 			}
-
-			m_Animator.SetBool("Attack", true); // 攻撃アニメーションを再生
-		}
-
-		// 攻撃音再生
-		if (!m_StabAttackSESource.isPlaying)
-		{
-			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
-		}
 	}
 
 	// 攻撃関数
@@ -485,7 +526,56 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		{
 			m_fLastAttackTime = Time.time;
 
-			Debug.Log("スマッシュ攻撃!!");
+			//Debug.Log("スマッシュ攻撃!!");
+
+			//Vector3 origin = transform.position;
+			//Vector3 forward = transform.forward;
+
+			//Vector3 boxHalfExtents = new Vector3(
+			//	m_fSmashAttackBoxWidth * 0.5f,
+			//	m_fSmashAttackBoxHeight * 0.5f,
+			//	m_fSmashAttackBoxDepth * 0.5f
+			//);
+
+			//Vector3 boxCenter = origin + forward * (m_fSmashAttackBoxDepth * 0.5f)
+			//					+ transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+			//					+ transform.right * m_fSmashAttackBoxXOffset;
+			////boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
+
+			//// Debug表示
+			////DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+
+			//Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+			//foreach (var hit in hitColliders)
+			//{
+			//	if (hit.gameObject == this.gameObject) continue;
+
+			//	var enemy = hit.GetComponent<CEnemy>();
+			//	if (enemy != null)
+			//	{
+			//		enemy.Damage(m_nAtk, this.transform);
+			//	}
+			//}
+			//↑ラグ出るので下のイミュレータに移動しておきます
+
+			//if()
+				StartCoroutine(SmashAttackDeray());
+
+			m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
+											  // (アニメーションイベントでfalse読んでるからfalseの記述はなし
+			// 攻撃音再生
+			if (!m_StabAttackSESource.isPlaying)
+			{
+				m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+			}
+		}
+	}
+	
+	// 臨時のスマッシュ攻撃待機
+	private IEnumerator SmashAttackDeray()
+	{
+		yield return new WaitForSeconds(m_fSmashAttackDelay);
+
 
 			Vector3 origin = transform.position;
 			Vector3 forward = transform.forward;
@@ -515,15 +605,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 					enemy.Damage(m_nAtk, this.transform);
 				}
 			}
-		}
-
-		m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
-										  // (アニメーションイベントでfalse読んでるからfalseの記述はなし
-		// 攻撃音再生
-		if (!m_StabAttackSESource.isPlaying)
-		{
-			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
-		}
 	}
 
 	// ↓後で消すやつ
@@ -808,7 +889,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		Debug.Log("ノックバック終了！");
 	}
 
-
  //   // ＞無敵状態関数
  //   // 引数：なし
  //   // ｘ
@@ -816,30 +896,30 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
  //   // ｘ
  //   // 概要：ダメージを受けたときに90フレーム無敵状態になる
  //   private IEnumerator InvincibilityCoroutine()
-	//{
-	//	m_bIsInvicible = true; // 無敵状態にする
-	//	Debug.Log("無敵状態!!!");
-	//	for (int i = 0; i < m_nInvincibleTime; ++i)
-	//	{
-	//		yield return null; // 1フレーム待つ
-	//	}
+ //{
+ //	m_bIsInvicible = true; // 無敵状態にする
+ //	Debug.Log("無敵状態!!!");
+ //	for (int i = 0; i < m_nInvincibleTime; ++i)
+ //	{
+ //		yield return null; // 1フレーム待つ
+ //	}
 
-	//	m_bIsInvicible = false; // 無敵状態を解除する
-	//	Debug.Log("無敵状態解除!!");
-	//}
+		//	m_bIsInvicible = false; // 無敵状態を解除する
+		//	Debug.Log("無敵状態解除!!");
+		//}
 
-	//// ＞無敵状態関数(ローリング中)
-	//// 引数：なし
-	//// ｘ
-	//// 戻値：なし
-	//// ｘ
-	//// 概要：ローリングしている間一定時間無敵になる
-	//private IEnumerator RollingInvincibilityCoroutine()
-	//{
-	//	m_bIsRollingInvincible = true; // 無敵状態にする
-	//	yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
-	//	m_bIsRollingInvincible = false; // 無敵状態を解除する
-	//}
+		//// ＞無敵状態関数(ローリング中)
+		//// 引数：なし
+		//// ｘ
+		//// 戻値：なし
+		//// ｘ
+		//// 概要：ローリングしている間一定時間無敵になる
+		//private IEnumerator RollingInvincibilityCoroutine()
+		//{
+		//	m_bIsRollingInvincible = true; // 無敵状態にする
+		//	yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
+		//	m_bIsRollingInvincible = false; // 無敵状態を解除する
+		//}
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
