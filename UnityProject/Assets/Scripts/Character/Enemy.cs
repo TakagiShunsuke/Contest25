@@ -70,6 +70,7 @@ public class CEnemy : MonoBehaviour, IDH
 		[SerializeField, Tooltip("重量成長割合")] public float m_fWeight;
 		[SerializeField, Tooltip("攻撃距離成長割合")] public float m_fAtkRange;
 		[SerializeField, Tooltip("攻撃角度成長割合")] public float m_fAtkAngle;
+		[SerializeField, Tooltip("停止距離")] public float m_fStop;
 	}
 
 	// 変数宣言
@@ -97,24 +98,31 @@ public class CEnemy : MonoBehaviour, IDH
 	private Rigidbody m_Rigid;                     // Rigidbody参照
 	private bool m_IsKnockback = false; //ノックバックフラグ
 
+	private float m_fStop;
+
 	private Material defaultMaterial; //通常のマテリアル
 	private Renderer rend; //レンダラー
 
 	[Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
+    [SerializeField] private AudioClip deathClip;  // 死亡音
+    private AudioSource audioSource;
 
-	/// <summary>
-	/// -初期化関数
-	/// <para>初期化処理関数</para>
-	/// </summary>
-	private void Start()
+
+    /// <summary>
+    /// -初期化関数
+    /// <para>初期化処理関数</para>
+    /// </summary>
+    private void Start()
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
 		m_Rigid = GetComponent<Rigidbody>();
-		// Playerを自動で探してターゲットに設定
-		GameObject playerObj = GameObject.FindWithTag("Player");
+
+        audioSource = GetComponent<AudioSource>();
+        // Playerを自動で探してターゲットに設定
+        GameObject playerObj = GameObject.FindWithTag("Player");
 		if (playerObj != null)
 		{
 			m_Target = playerObj.transform;
@@ -153,9 +161,9 @@ public class CEnemy : MonoBehaviour, IDH
 		m_StatusInitial = m_Status;
 		m_fSpeedInitial = m_Agent.speed;
 		m_nInitialHP = m_HitPoint.HP;
-
-		// イベント接続
-		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
+		m_fStop = m_Agent.stoppingDistance;
+        // イベント接続
+        m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
 	/// <summary>
@@ -303,9 +311,10 @@ public class CEnemy : MonoBehaviour, IDH
 			m_Status.m_nWeight = m_Status.m_nWeight + (int)(m_StatusInitial.m_nWeight * m_Growth.m_fWeight);
 			m_Status.m_nGrowth = m_Status.m_nGrowth + m_Status.m_nGrowthPower;
 			m_fScale = m_Status.m_nGrowth / m_StatusInitial.m_nGrowth;
-			m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle;
-			m_Status.m_fAtkRange = m_Status.m_fAtkRange + m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange;
+			m_Status.m_fAtkAngle = m_Status.m_fAtkAngle + (int)(m_StatusInitial.m_fAtkAngle * m_Growth.m_fAtkAngle);
+			m_Status.m_fAtkRange = m_Status.m_fAtkRange + (int)(m_StatusInitial.m_fAtkRange * m_Growth.m_fAtkRange);
 			transform.localScale += new Vector3(m_fScale, m_fScale, m_fScale);
+			m_Agent.stoppingDistance = m_Agent.stoppingDistance + (int)(m_fStop * m_Growth.m_fStop);
 			// 成長度が上限を超えたら、上限に揃えておく
 			if (m_Status.m_nGrowth > m_Status.m_nGrowthLimit)
 			{
@@ -409,8 +418,13 @@ public class CEnemy : MonoBehaviour, IDH
 	/// </summary>
 	private void OnDead()
 	{
-		// 体液の排出
-		if (m_Blood != null)	
+        if (deathClip != null && audioSource != null)
+        {
+            Debug.Log("year");
+            AudioSource.PlayClipAtPoint(deathClip, transform.position);
+        }
+        // 体液の排出
+        if (m_Blood != null)	
 		{
 			float _temp_y = 0.0f;
 
@@ -453,7 +467,7 @@ public class CEnemy : MonoBehaviour, IDH
 		//}
 		m_HitPoint.HP -= damage;
 		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		if (m_HitPoint.HP < 0)//しんだら
+		if (m_HitPoint.HP <= 0)//しんだら
 		{
 			Debug.Log("死んだ");
 		}

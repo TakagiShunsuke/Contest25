@@ -3,14 +3,13 @@
 └作成者：takagi
 
 ＞内容
-体液？血？の機能実装
+痕跡の機能実装
 
 ＞注意事項
 ・CAffectの派生コンポーネントがないと機能しません。
 ・//TODO:コードを規約に寄せる必要あり。
 ・UIDに対してタイマーをここに用意できている点は自然でgood
 ・Destroyしたなど、明らかに捨てていいUIDに紐づけたタイマーを消せずメモリを蝕み続ける点はbad
-・
 
 ＞更新履歴
 __Y25
@@ -18,24 +17,31 @@ _M05
 D
 11:プログラム作成:takagi
 30:誤字修正:takagi
+_M06
+D
+//19:効果をSOで設定できるように変更:takagi
 =====*/
 
 // 名前空間宣言
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 
 // クラス定義
 public class CBlood : MonoBehaviour
 {
-
-
 	// 列挙定義
 	private enum E_BLOOD_EVENT
 	{
-		ON_STAY,	// 体液上に発動
+		ON_STAY,    // 体液上に発動
+	}
+
+	// 構造体定義
+	[Serializable]
+	struct EventAffects
+	{
+		[Header("発動効果一覧　※他のものと使いまわす場合データが上書きされないか気を付けてください※")]
+		[SerializeField, Tooltip("効果データ")] public List<CAffect> m_Affects;
 	}
 
 
@@ -43,8 +49,7 @@ public class CBlood : MonoBehaviour
 	[Header("性質")]
 	[SerializeField, Tooltip("効果発動間隔")] private float m_fCoolTime;
 	private Dictionary<int, float> m_fCoolDownTimers = new Dictionary<int, float>();	// 時間計測用
-	private CAffect m_Affect;	// 体液の効果	※自身のコンポーネントから取得	//TODO:Playerなどで別効果のCAffectを使い同居する場合、非想定の結果になる点を改善
-	private CInnerAffectEventor<E_BLOOD_EVENT> m_InnerAffectEventor;	// 効果用のイベント管理
+	[SerializeField, CIndexWithEnum(typeof(E_BLOOD_EVENT)), Tooltip("効果")] private EventAffects[] m_InnerAffectEventor;	// 効果用のイベント管理
 
 	// ＞初期化関数
 	// 引数：なし
@@ -110,8 +115,14 @@ public class CBlood : MonoBehaviour
 		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
 		{
 			// 効果発動
-			if(m_Affect)
-				m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
+			//if(m_Affect)
+			//	m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
+			
+			//m_InnerAffectEventor.InvokeEvent(E_BLOOD_EVENT.ON_STAY, gameObject, _Entered.gameObject);
+			foreach (var af in m_InnerAffectEventor[(int)E_BLOOD_EVENT.ON_STAY].m_Affects )
+			{
+				af.Affect(gameObject, _Entered.gameObject);
+			}
 
 			// クールタイム開始
 			m_fCoolDownTimers.Add(_Entered.gameObject.GetInstanceID(), m_fCoolTime);	// タイマーを登録
@@ -126,7 +137,12 @@ public class CBlood : MonoBehaviour
 			if (m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] == 0.0f)	// 
 			{
 				// 効果発動
-				m_Affect.Affect(gameObject, _Staying.gameObject);	// 自分が相手に効果を発動
+				//m_Affect.Affect(gameObject, _Staying.gameObject);   // 自分が相手に効果を発動
+				//m_InnerAffectEventor.InvokeEvent(E_BLOOD_EVENT.ON_STAY, gameObject, _Staying.gameObject);
+				foreach (var af in m_InnerAffectEventor[(int)E_BLOOD_EVENT.ON_STAY].m_Affects )
+				{
+					af.Affect(gameObject, _Staying.gameObject);
+				}
 
 				// クールタイム開始
 				m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] = m_fCoolTime;	// タイマーをリセット

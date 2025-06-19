@@ -23,7 +23,8 @@ public class CheckClear : MonoBehaviour
 
 	private void OnFinishedFinalWave()
 	{
-		if (CCountEnemy.m_DeathCount < m_ClearNorm)	// Ž¸”s
+
+		if (CBattleData.Instance != null && CBattleData.Instance.KillCount < m_ClearNorm)	// Ž¸”s
 		{
 			SceneManager.LoadScene("GAMEOVER");
 		}

@@ -6,9 +6,9 @@
 ダメージ機能を実装
 
 ＞注意事項
-・Affectの変更により、インスペクタ上でのパラメータの変更は「試用限定機能であり、本実装では無効化される」こととなりました！
 ・一般的な(？)ダメージ計算より補正をかけられる機構を用意しています。
 	プロパティから触れますが、初期状態なら補正がない状態(α版時点での仕様書通り)になります。
+・Affectの変更により、使い方ごとにSOを作ることとなりました。
 
 ＞更新履歴
 __Y25
@@ -18,6 +18,12 @@ D
 16:リファクタリング:takagi
 _M06
 13:継承元を MonoBehavior→ScriptableObject に変更:takagi
+18:フラグを追加(処理分岐を減らすことで保守性を保つ):takagi
+19:変数名変更(m_bNonInvincible→m_bIgnoreInvincible)
+	・無敵判定修正
+	・NonkillingDamageの融合に伴いprivate→private
+	・SO化の融合
+	・フラグのプロパティ化:takagi
 =====*/
 
 // 名前空間宣言
@@ -29,13 +35,17 @@ public class CDamage : CAffect
 {
 	// 定数定義
 	private const string AFFECT_NAME = "Damage";	// 効果名
-	protected const int MIN_DAMAGE = 1;	// 最低保証ダメージ
+	private const int MIN_DAMAGE = 1;	// 最低保証ダメージ
 
 	// 変数宣言
-	[Header("パラメータ ※試用時限定！※")]
+	[Header("パラメータ")]
 	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage = 0.0f;
 	private float m_fBaseCorrection = 0.0f;	// 基礎値補正
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
+	[Header("状態")]
+	[SerializeField, Tooltip("無敵貫通")] private bool m_bIgnoreInvincible = false;
+	[SerializeField, Tooltip("ダメージ発生時無敵付与")] private bool m_bGrantInvincible = true;
+	[SerializeField, Tooltip("致死性")] private bool m_bKillable = true;
 
 	// プロパティ定義
 
@@ -78,7 +88,7 @@ public class CDamage : CAffect
 	/// <summary>
 	/// 補正倍率プロパティ
 	/// </summary>
-	/// <value><see cref="m_fCorrectionRation"/></value>
+	/// <value><see cref="m_fCorrectionRatio"/></value>
 	public float CorrectionRation
 	{
 		get
@@ -102,7 +112,7 @@ public class CDamage : CAffect
 	/// <para>参考：<see cref="m_fBaseCorrection">基礎値補正</see></para>
 	/// <para>参考：<see cref="m_fCorrectionRatio">補正倍率</see></para>
 	/// </value>
-	protected float CorrectedDamage
+	private float CorrectedDamage
 	{
 		get
 		{
@@ -111,7 +121,61 @@ public class CDamage : CAffect
 		}
 	}
 
-	
+	/// <summary>
+	/// 無敵貫通フラグプロパティ
+	/// </summary>
+	/// <value><see cref="m_bIgnoreInvincible"/></value>
+	private bool IgnoreInvincible
+	{
+		get
+		{
+			// 提供
+			return m_bIgnoreInvincible;	// 無敵貫通フラグを提供
+		}
+		set
+		{
+			// 更新
+			m_bIgnoreInvincible = value;	// フラグ値更新
+		}
+	}
+
+	/// <summary>
+	/// 無敵付与フラグプロパティ
+	/// </summary>
+	/// <value><see cref="m_bGrantInvincible"/></value>
+	private bool GrantInvincible
+	{
+		get
+		{
+			// 提供
+			return m_bGrantInvincible;	// 無敵付与フラグを提供
+		}
+		set
+		{
+			// 更新
+			m_bGrantInvincible = value;	// フラグ値更新
+		}
+	}
+
+	/// <summary>
+	/// 致死性フラグプロパティ
+	/// </summary>
+	/// <value><see cref="m_bKillable"/></value>
+	private bool Killable
+	{
+		get
+		{
+			// 提供
+			return m_bKillable;	// 致死性フラグを提供
+		}
+		set
+		{
+			// 更新
+			m_bKillable = value;	// フラグ値更新
+		}
+	}
+
+
 	/// <summary>
 	/// -ダメージ効果関数
 	/// <para>ダメージを与える効果を行う関数</para>
@@ -129,14 +193,45 @@ public class CDamage : CAffect
 			return;	// 処理中断
 		}
 
-			// 変数宣言
-			var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		// 変数宣言
+		var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		var _Invincible = _Opponent.GetComponent<CInvincible>();	// 無敵状態
+
+		// 無敵
+		if (_Invincible && !m_bIgnoreInvincible)	// 無敵を適用
+		{
+			// 中断
+			return;	// ダメージ処理が発生しない
+		}
 
 		// ダメージ処理
-		if(_HitPoint)	// ダメージを受けられる
+		if (_HitPoint)	// ダメージを受けられる
 		{
+			// 変数宣言
+			int _TemporalHP = _HitPoint.HP;	// 現在HPの退避
+
 			// ダメージを与える
-			_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 最終ダメージをHPに影響させる
+			if (m_bKillable || _HitPoint.HP - CulcDamage(CorrectedDamage, _HitPoint.Defence) > 0)	// 致死性がある・もしくはそもそも殺せていない
+			{
+				_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 通常のダメージ処理
+			}
+			else if(_HitPoint.HP > 0)	// 本来ならこのダメージ処理で死ぬが、非致死性ダメージとして扱う
+			{
+				_HitPoint.HP = 1;   // 非致死性効果で1耐えさせる
+			}
+
+			// 無敵付与
+			if (m_bGrantInvincible && _TemporalHP > _HitPoint.HP)	// ダメージを与えたら無敵を付与する
+			{
+				// 変数宣言
+				var _Granter = _Opponent.GetComponent<IDamagedInvincible>();	// 無敵付与方法を取得
+
+				// 無敵起動
+				if(_Granter != null)// 付与方法が明示されている
+				{
+					_Granter.GrantInvincible();	// 無敵状態にする
+				}
+			}
 		}
 	}
 	
@@ -147,7 +242,7 @@ public class CDamage : CAffect
 	/// <param name="_fDamageValue">与えるダメージ値</param>
 	/// <param name="_fDefence">ダメージ抵抗値</param>
 	/// <returns>最終ダメージ</returns>
-	protected int CulcDamage(float _fDamageValue, float _fDefence)
+	private int CulcDamage(float _fDamageValue, float _fDefence)
 	{
 		// 変数宣言
 		int _Result = 0;	// 演算結果格納用
