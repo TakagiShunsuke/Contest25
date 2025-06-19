@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Effect
   - Enemy
+  - ocean
   layers:
   - Default
   - TransparentFX
