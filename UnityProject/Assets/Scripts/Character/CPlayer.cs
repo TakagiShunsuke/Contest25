@@ -32,6 +32,8 @@ D
 06:たたきつけ攻撃完成！！！:kato
 11:ノックバック仮追加:sezaki
 18:アニメーションをいじいじ:kato
+19:Slamアニメーション実装:kato
+19:ローリングアニメーションいじいじ:kato
 =====*/
 
 // 名前空間宣言
@@ -384,7 +386,8 @@ public class CPlayer : MonoBehaviour, IDH
 		m_fRollingCoolTimer = 0.0f; // ローリングのクールタイムをリセット
 		m_vRollDirection = transform.forward; // ローリングの方向を設定
 
-        // アニメーションの再生があればここで再生する
+		// アニメーションの再生があればここで再生する
+		m_Animator.SetBool("Rolling", true); 
     }
 
 	// ローリング関数
@@ -893,5 +896,10 @@ public class CPlayer : MonoBehaviour, IDH
 	{
         m_Animator.SetBool("Slam", false);
     }
+
+	public void OnRollingAnimationEnd()
+	{
+		m_Animator.SetBool("Rolling", false);
+	}
 
 }
