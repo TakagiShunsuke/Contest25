@@ -725,7 +725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1902064143011878191, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1347,7 +1347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1902064143011878191, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2244,11 +2244,13 @@ MonoBehaviour:
   m_fAttackBoxHeight: 2
   m_fAttackBoxYOffset: 0.3
   m_fAttackBoxXOffset: 0
+  m_fAttackDelay: 0.25
   m_fSmashAttackBoxWidth: 3
   m_fSmashAttackBoxDepth: 2
   m_fSmashAttackBoxHeight: 1
   m_fSmashAttackBoxYOffset: 0.27
   m_fSmashAttackBoxXOffset: 0
+  m_fSmashAttackDelay: 0.8
   m_AttackKey: 13
   m_RollingKey: 32
   m_Animator: {fileID: 0}
