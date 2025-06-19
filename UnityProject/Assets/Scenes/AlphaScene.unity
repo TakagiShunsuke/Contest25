@@ -1894,7 +1894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HpBar: {fileID: 1594999564}
-  m_cHitPoint: {fileID: 2057047273}
+  m_cHitPoint: {fileID: 1817413258}
 --- !u!114 &1594999564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2626,17 +2626,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2057047273 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4536545395344619988, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-  m_PrefabInstance: {fileID: 1043053386}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2057047265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8742f30f3f583840b7d3148fb6ad458, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4695596142218099509
 PrefabInstance:
   m_ObjectHideFlags: 0
