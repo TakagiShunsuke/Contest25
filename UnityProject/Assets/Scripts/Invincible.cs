@@ -17,6 +17,7 @@ D
 _M06
 D
 17:リファクタリング:takagi
+19:不要なログを除去:takagi
 =====*/
 
 // 名前空間宣言
@@ -60,7 +61,6 @@ public class CInvincible : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
-		Debug.Log("無敵開始");
 		if(m_fAliveTime < 0.0f)	// 機能時間がない
 		{
 			// 出力
@@ -81,7 +81,6 @@ public class CInvincible : MonoBehaviour
 		// 検査
 		if (m_fAliveTime < 0.0f)	// 機能停止
 		{
-			Debug.Log("無敵解除");
 			Destroy(this);	// 無敵解除
 		}
 	}

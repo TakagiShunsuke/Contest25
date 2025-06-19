@@ -32,6 +32,7 @@ D
 06:たたきつけ攻撃完成！！！:kato
 11:ノックバック仮追加:sezaki
 18:無敵状態のフラグ解除、コンポーネントとして付与する形に:takagi
+19:被ダメージ時に無敵を付与すると余分に無敵を付与してしまうため、与ダメージ側で判断できるようにインターフェースだけ実装:takagi
 =====*/
 
 // 名前空間宣言
@@ -40,7 +41,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 // クラス定義
-public class CPlayer : MonoBehaviour, IDH
+public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 {
     // 変数宣言
     private Rigidbody m_Rb; // リジットボディ
@@ -233,7 +234,6 @@ public class CPlayer : MonoBehaviour, IDH
 		m_HitPoint.Defence = m_nInitialDef;	// 初期防御設定
 
 		// イベント接続
-		m_HitPoint.OnDamaged += OnDamaged;	// 被ダメージ時処理を接続
 		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
@@ -752,7 +752,7 @@ public class CPlayer : MonoBehaviour, IDH
         StartCoroutine(KnockbackCoroutine(attacker, weight));
 
 		//臨時的処理
-		OnDamaged();	// 無敵起動の代用
+		GrantInvincible();	// 無敵起動の代用
 
         // 無敵状態開始
         //StartCoroutine(InvincibilityCoroutine());
@@ -828,12 +828,12 @@ public class CPlayer : MonoBehaviour, IDH
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
-	// セレクトした時のDebug処理をここに追加
+		// セレクトした時のDebug処理をここに追加
 #endif
 	}
 
-	// 被ダメージ処理
-	private void OnDamaged()
+	// 被ダメージ時の無敵状態付与処理
+	public void GrantInvincible()
 	{
 		// 変数宣言
 		var _Invincible = GetComponent<CInvincible>();	// 無敵

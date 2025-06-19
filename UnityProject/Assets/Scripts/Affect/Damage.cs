@@ -36,6 +36,7 @@ public class CDamage : CAffect
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
 	[Header("状態")]
 	[SerializeField, Tooltip("無敵貫通")] protected bool m_bIgnoreInvincible = false;
+	[SerializeField, Tooltip("ダメージ発生時無敵付与")] protected bool m_bGrantInvincible = true;
 	[SerializeField, Tooltip("致死性")] protected bool m_bKillable = true;
 
 	// プロパティ定義
@@ -144,6 +145,9 @@ public class CDamage : CAffect
 		// ダメージ処理
 		if (_HitPoint)	// ダメージを受けられる
 		{
+			// 変数宣言
+			int _TemporalHP = _HitPoint.HP;	// 現在HPの退避
+
 			// ダメージを与える
 			if (m_bKillable || _HitPoint.HP - CulcDamage(CorrectedDamage, _HitPoint.Defence) > 0)	// 致死性がある・もしくはそもそも殺せていない
 			{
@@ -151,7 +155,20 @@ public class CDamage : CAffect
 			}
 			else if(_HitPoint.HP > 0)	// 本来ならこのダメージ処理で死ぬが、非致死性ダメージとして扱う
 			{
-				_HitPoint.HP = 1;	// 非致死性効果で1耐えさせる
+				_HitPoint.HP = 1;   // 非致死性効果で1耐えさせる
+			}
+
+			// 無敵付与
+			if (m_bGrantInvincible && _TemporalHP > _HitPoint.HP)	// ダメージを与えたら無敵を付与する
+			{
+				// 変数宣言
+				var _Granter = _Opponent.GetComponent<IDamagedInvincible>();	// 無敵付与方法を取得
+
+				// 無敵起動
+				if(_Granter != null)// 付与方法が明示されている
+				{
+					_Granter.GrantInvincible();	// 無敵状態にする
+				}
 			}
 		}
 	}

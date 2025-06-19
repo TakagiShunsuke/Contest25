@@ -166,4 +166,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_fDamage: 10
   m_bIgnoreInvincible: 1
+  m_bGrantInvincible: 0
   m_bKillable: 0
