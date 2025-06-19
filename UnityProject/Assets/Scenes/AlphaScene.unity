@@ -491,6 +491,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 33c0bed6629833944ba38da158146546, type: 2}
+    - target: {fileID: 5866666021909216657, guid: fe9969946af93df4fa6868156226ca0e, type: 3}
+      propertyPath: m_UpdateMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2249,11 +2253,11 @@ MonoBehaviour:
   m_fAttackBoxYOffset: 0.3
   m_fAttackBoxXOffset: 0
   m_fAttackDelay: 0.25
-  m_fSmashAttackBoxWidth: 3
-  m_fSmashAttackBoxDepth: 2
-  m_fSmashAttackBoxHeight: 1
+  m_fSmashAttackBoxWidth: 1
+  m_fSmashAttackBoxDepth: 4
+  m_fSmashAttackBoxHeight: 2
   m_fSmashAttackBoxYOffset: 0.27
-  m_fSmashAttackBoxXOffset: 0
+  m_fSmashAttackBoxXOffset: 0.2
   m_fSmashAttackDelay: 0.8
   m_AttackKey: 13
   m_RollingKey: 32
