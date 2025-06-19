@@ -28,7 +28,7 @@ public class TitleManage : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return))
         {
             decision.Play();
-            //   SceneManager.LoadScene("AlphaScene");
+               SceneManager.LoadScene("AlphaScene");
             if (stageselect.activeSelf == false)
             {
 
