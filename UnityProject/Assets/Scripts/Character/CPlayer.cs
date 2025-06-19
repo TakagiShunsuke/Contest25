@@ -32,9 +32,11 @@ D
 06:たたきつけ攻撃完成！！！:kato
 11:ノックバック仮追加:sezaki
 18:アニメーションをいじいじ:kato
+18:無敵状態のフラグ解除、コンポーネントとして付与する形に:takagi
 19:Slamアニメーション実装:kato
 19:ローリングアニメーションいじいじ:kato
 19:ダメージアニメーション実装:kato
+19:被ダメージ時に無敵を付与すると余分に無敵を付与してしまうため、与ダメージ側で判断できるようにインターフェースだけ実装:takagi
 =====*/
 
 // 名前空間宣言
@@ -43,15 +45,15 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 // クラス定義
-public class CPlayer : MonoBehaviour, IDH
+public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 {
-    // 変数宣言
-    private Rigidbody m_Rb; // リジットボディ
+	// 変数宣言
+	private Rigidbody m_Rb; // リジットボディ
 
 	private float m_RayDistance = 10.0f;
 
-    private float m_ftime = 0.0f;//たいまー
-    private float m_fcount = 0.0f;//かうんと
+	private float m_ftime = 0.0f;//たいまー
+	private float m_fcount = 0.0f;//かうんと
 
 	[Header("プレイヤーステータス")]
 	[SerializeField]
@@ -90,28 +92,28 @@ public class CPlayer : MonoBehaviour, IDH
 	[Tooltip("攻撃範囲の横オフセット")]
 	private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
 
-    [SerializeField]
-    [Tooltip("スマッシュ攻撃範囲の横幅")]
-    private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
-    [SerializeField]
-    [Tooltip("スマッシュ攻撃範囲の奥行き")]
-    private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
-    [SerializeField]
-    [Tooltip("スマッシュ攻撃範囲の高さ")]
-    private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
-    [SerializeField]
-    [Tooltip("スマッシュ攻撃範囲の縦オフセット")]
-    private float m_fSmashAttackBoxYOffset = 1.0f;
-    [SerializeField]
-    [Tooltip("スマッシュ攻撃範囲の横オフセット")]
-    private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃範囲の横幅")]
+	private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃範囲の奥行き")]
+	private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃範囲の高さ")]
+	private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃範囲の縦オフセット")]
+	private float m_fSmashAttackBoxYOffset = 1.0f;
+	[SerializeField]
+	[Tooltip("スマッシュ攻撃範囲の横オフセット")]
+	private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
 
-    private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
+	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
 	//private bool m_bIsDead = false;	// プレイヤーが死んでいるかどうか
 	private bool m_bIsPoison = false; //プレイヤーが毒カ
 	private bool m_bAttackInput = false;
-    private bool m_bPoisonUpdate = false;//毒更新用
+	private bool m_bPoisonUpdate = false;//毒更新用
 
 	// 攻撃キーの変数
 	[SerializeField]
@@ -127,6 +129,10 @@ public class CPlayer : MonoBehaviour, IDH
 	private bool m_bWalkInput	= false;	// 移動入力フラグ
 	private bool m_bAttack		= false;	// 攻撃フラグ
 	public bool m_bOnGround	= true;	// 地面にいるかどうかのフラグ
+
+	[SerializeField]
+	[Tooltip("被ダメージ後の無敵時間")]
+	private int m_nDamagedInvincibleTime = 90; // 無敵時間
 
 	[Header("プレイヤー移動制限")]
 	// プレイヤー移動制限用の変数
@@ -163,15 +169,15 @@ public class CPlayer : MonoBehaviour, IDH
 	private float m_fRollTimer = 0.0f; // ローリング中の経過時間
 	private Vector3 m_vRollDirection; // ローリングの方向
 	private float m_fRollDuration = 0.3f; // ローリングの持続時間
+	
+	//private bool m_bIsInvicible = false; // 無敵フラグ
+	//private int m_nInvincibleTime = 90; // 無敵時間
 
 	// ローリング中の無敵時間
 	[SerializeField]
 	[Tooltip("Playerのローリング中の無敵時間")]
 	private float m_fRollingInvincibleTime = 0.5f; // 一旦ね
-	private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
-
-	private bool m_bIsInvicible = false; // 無敵フラグ
-	private int m_nInvincibleTime = 90; // 無敵時間
+	//private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
 
 	[Header("プレイヤーのSE関係")]
 	[SerializeField]
@@ -194,7 +200,7 @@ public class CPlayer : MonoBehaviour, IDH
 	private AudioSource m_StabAttackSESource;	// 突きSE用のオーディオソース
 
 
-    CEnemy enemy;
+	CEnemy enemy;
 
 	// 初期化関数
 	// 引数１：なし
@@ -210,8 +216,8 @@ public class CPlayer : MonoBehaviour, IDH
 		m_Animator = GetComponent<Animator>();  // アニメーターコンポーネント取得
 
 
-        // 音源準備
-        m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
+		// 音源準備
+		m_MoveGroundSESource = gameObject.AddComponent<AudioSource>();	// 移動用の音源コンポーネント作成
 		m_MoveGroundSESource.volume = m_MoveGroundSEVolume;	// 音量を設定
 		m_StabAttackSESource = gameObject.AddComponent<AudioSource>();	// 突き用の音源コンポーネント作成
 		m_StabAttackSESource.volume = m_StabAttackSEVolume;	// 音量を設定
@@ -316,18 +322,18 @@ public class CPlayer : MonoBehaviour, IDH
 			m_Rb.transform.position += moveDir * moveDistance;
 			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
 
-            m_Animator.SetBool("Run",true); // 歩行アニメーションを再生
-        }
-        else
+			m_Animator.SetBool("Run",true); // 歩行アニメーションを再生
+		}
+		else
 		{
 
-            // 入力なし時の足音停止
-            if (m_MoveGroundSESource.isPlaying)
+			// 入力なし時の足音停止
+			if (m_MoveGroundSESource.isPlaying)
 			{
 				m_MoveGroundSESource.Stop();
 			}
 			m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
-        }
+		}
 
 
 		// プレイヤーの移動 正面向けるけどw+dが変になる移動
@@ -387,7 +393,7 @@ public class CPlayer : MonoBehaviour, IDH
 
 		// アニメーションの再生があればここで再生する
 		m_Animator.SetBool("Rolling", true); 
-    }
+	}
 
 	// ローリング関数
 	// 引数１：なし
@@ -456,92 +462,92 @@ public class CPlayer : MonoBehaviour, IDH
 			}
 
 			m_Animator.SetBool("Attack", true); // 攻撃アニメーションを再生
-        }
+		}
 
-        // 攻撃音再生
-        if (!m_StabAttackSESource.isPlaying)
+		// 攻撃音再生
+		if (!m_StabAttackSESource.isPlaying)
 		{
 			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
 		}
 	}
 
-    // 攻撃関数
-    // 引数１：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：プレイヤーの攻撃(叩きつけ)
+	// 攻撃関数
+	// 引数１：なし
+	// ｘ
+	// 戻値：なし
+	// ｘ
+	// 概要：プレイヤーの攻撃(叩きつけ)
 	private void SmashAttack()
-    {
-        Debug.Log(m_fAttackCooldown);
+	{
+		Debug.Log(m_fAttackCooldown);
 
-        if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
-        {
-            m_fLastAttackTime = Time.time;
+		if (Time.time - m_fLastAttackTime >= m_fAttackCooldown)
+		{
+			m_fLastAttackTime = Time.time;
 
-            Debug.Log("スマッシュ攻撃!!");
+			Debug.Log("スマッシュ攻撃!!");
 
-            Vector3 origin = transform.position;
-            Vector3 forward = transform.forward;
+			Vector3 origin = transform.position;
+			Vector3 forward = transform.forward;
 
-            Vector3 boxHalfExtents = new Vector3(
-                m_fSmashAttackBoxWidth * 0.5f,
-                m_fSmashAttackBoxHeight * 0.5f,
-                m_fSmashAttackBoxDepth * 0.5f
-            );
+			Vector3 boxHalfExtents = new Vector3(
+				m_fSmashAttackBoxWidth * 0.5f,
+				m_fSmashAttackBoxHeight * 0.5f,
+				m_fSmashAttackBoxDepth * 0.5f
+			);
 
-            Vector3 boxCenter = origin + forward * (m_fSmashAttackBoxDepth * 0.5f)
-                                + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
-                                + transform.right * m_fSmashAttackBoxXOffset;
-            //boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
+			Vector3 boxCenter = origin + forward * (m_fSmashAttackBoxDepth * 0.5f)
+								+ transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+								+ transform.right * m_fSmashAttackBoxXOffset;
+			//boxCenter.y += boxHalfExtents.y + m_fAttackBoxYOffset;
 
-            // Debug表示
-            //DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
+			// Debug表示
+			//DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation, Color.red, 500f);
 
-            Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
-            foreach (var hit in hitColliders)
-            {
-                if (hit.gameObject == this.gameObject) continue;
+			Collider[] hitColliders = Physics.OverlapBox(boxCenter, boxHalfExtents, transform.rotation);
+			foreach (var hit in hitColliders)
+			{
+				if (hit.gameObject == this.gameObject) continue;
 
-                var enemy = hit.GetComponent<CEnemy>();
-                if (enemy != null)
-                {
-                    enemy.Damage(m_nAtk, this.transform);
-                }
-            }
-        }
+				var enemy = hit.GetComponent<CEnemy>();
+				if (enemy != null)
+				{
+					enemy.Damage(m_nAtk, this.transform);
+				}
+			}
+		}
 
 		m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
 										  // (アニメーションイベントでfalse読んでるからfalseの記述はなし
-        // 攻撃音再生
-        if (!m_StabAttackSESource.isPlaying)
-        {
-            m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
-        }
-    }
+		// 攻撃音再生
+		if (!m_StabAttackSESource.isPlaying)
+		{
+			m_StabAttackSESource.PlayOneShot(m_StabAttackSE);
+		}
+	}
 
-    // ↓後で消すやつ
-    private void DrawSmashAttackDebugBox()
-    {
-        Vector3 origin = transform.position;
-        Vector3 forward = transform.forward;
+	// ↓後で消すやつ
+	private void DrawSmashAttackDebugBox()
+	{
+		Vector3 origin = transform.position;
+		Vector3 forward = transform.forward;
 
-        Vector3 boxHalfExtents = new Vector3(
-            m_fSmashAttackBoxWidth * 0.5f,
-            m_fSmashAttackBoxHeight * 0.5f,
-            m_fSmashAttackBoxDepth * 0.5f
-        );
+		Vector3 boxHalfExtents = new Vector3(
+			m_fSmashAttackBoxWidth * 0.5f,
+			m_fSmashAttackBoxHeight * 0.5f,
+			m_fSmashAttackBoxDepth * 0.5f
+		);
 
-        Vector3 boxCenter = origin
-            + forward * (m_fSmashAttackBoxDepth * 0.5f)
-            + transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
-            + transform.right * m_fSmashAttackBoxXOffset;
+		Vector3 boxCenter = origin
+			+ forward * (m_fSmashAttackBoxDepth * 0.5f)
+			+ transform.up * (boxHalfExtents.y + m_fSmashAttackBoxYOffset)
+			+ transform.right * m_fSmashAttackBoxXOffset;
 
-        DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation,Color.magenta, 0f); // ← duration 0でもOK
-    }
+		DebugDrawBox(boxCenter, boxHalfExtents, transform.rotation,Color.magenta, 0f); // ← duration 0でもOK
+	}
 
-    // ↓後で消すやつ
-    private void DrawAttackDebugBox()
+	// ↓後で消すやつ
+	private void DrawAttackDebugBox()
 	{
 		Vector3 origin = transform.position;
 		Vector3 forward = transform.forward;
@@ -605,12 +611,12 @@ public class CPlayer : MonoBehaviour, IDH
 	// 概要：プレイヤーが死んでいるかと死んだときの処理
 	private void Update()
 	{
-        if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
+		if (m_HitPoint.IsDead) return;   // プレイヤーが死んでいる場合は操作を無効にする
 
 		if(Input.GetKeyDown(m_AttackKey))
 		{
 			m_bAttackInput = true; // 攻撃入力フラグを立てる
-        }
+		}
 
 		//DrawAttackDebugBox();
 
@@ -649,7 +655,20 @@ public class CPlayer : MonoBehaviour, IDH
 			if(Input.GetKeyDown(m_RollingKey) && m_fRollingCoolTimer >= m_fRollCooldown)
 			{
 				StartRolling(); // ローリング開始
-				StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
+				
+				// 変数宣言
+				var _Invincible = GetComponent<CInvincible>();	// 無敵
+
+				// コンポーネント管理
+				if(_Invincible == null)	// 無敵状態ではない
+				{
+					_Invincible = gameObject.AddComponent<CInvincible>();	// 無敵状態になる
+				}
+
+				// 無敵時間設定
+				_Invincible.AliveTime = m_fRollingInvincibleTime;	// ローリング用の無敵時間を反映
+
+				//StartCoroutine(RollingInvincibilityCoroutine()); // ローリング中の無敵時間開始
 			}
 		}
 
@@ -682,21 +701,20 @@ public class CPlayer : MonoBehaviour, IDH
 
 		transform.position = _NowPosition;  // プレイヤーの位置を制限範囲内に収める
 
-       if(m_bAttackInput)
+	   if(m_bAttackInput)
 		{
 			if(GetMoveInput().magnitude < 0.01f)
 			{
 				SmashAttack(); // スマッシュ攻撃
 				
-                m_bAttackInput = false; // 攻撃入力フラグをリセット
-            }
-            else
-            {
-                Attack(); // Playerが動いているときは通常攻撃
-                m_bAttackInput = false; // 攻撃入力フラグをリセット
-            }
-           
-        }
+				m_bAttackInput = false; // 攻撃入力フラグをリセット
+			}
+			else
+			{
+				Attack(); // Playerが動いているときは通常攻撃
+				m_bAttackInput = false; // 攻撃入力フラグをリセット
+			}
+		}
 	}
 
 	//// 死ぬ関数
@@ -716,8 +734,8 @@ public class CPlayer : MonoBehaviour, IDH
 		//Gizmos.DrawCube(transform.position + new Vector3(0,1,0), new Vector3(1, 2, 1));
 		//DrawAttackDebugBox();
 		DrawSmashAttackDebugBox();
-        // ray表示
-        Gizmos.color = Color.green;
+		// ray表示
+		Gizmos.color = Color.green;
 		Gizmos.DrawLine(transform.position + Vector3.up * m_fRayHeight, transform.position + Vector3.up * m_fRayHeight + transform.forward * 1.0f);
 	}
 
@@ -730,7 +748,7 @@ public class CPlayer : MonoBehaviour, IDH
 	public void Damage(int _nDamage, Transform attacker, int weight)
 	{
 		
-		if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
+		//if (m_bIsInvicible) return; // 無敵状態ならダメージを受けない
 
 		if (_nDamage <= m_HitPoint.Defence)// 防御が被ダメを上回ったら被ダメを1にする
 		{
@@ -744,88 +762,108 @@ public class CPlayer : MonoBehaviour, IDH
 		//m_nHp -= _nDamage; // ダメージ処理
 		m_HitPoint.HP -= _nDamage; // ダメージ処理
 
-        StartCoroutine(KnockbackCoroutine(attacker, weight));
+		StartCoroutine(KnockbackCoroutine(attacker, weight));
 
-        m_Animator.SetBool("Damage", true); // ダメージアニメーションを再生
-        // 無敵状態開始
-        StartCoroutine(InvincibilityCoroutine());
-    }
+		m_Animator.SetBool("Damage", true); // ダメージアニメーションを再生
 
-    /// <summary>
-    /// -ノックバック関数	
-    /// <para>ノックバックする関数</para>
-    /// <param name="Transform attacker">相手の向いてる方向</param>
-    /// </summary>
+		//臨時的処理
+		GrantInvincible();	// 無敵起動の代用
 
-    private IEnumerator KnockbackCoroutine(Transform attacker, int weight)
-    {
-        Debug.Log("ノックバック開始！");
+		// 無敵状態開始
+		//StartCoroutine(InvincibilityCoroutine());
+		
+	}
 
-       Vector3 knockbackDir = (transform.position - attacker.position).normalized;
-        knockbackDir.y = 0f; // Y方向の動きをゼロにする
-        knockbackDir = knockbackDir.normalized; // 正規化
-        float knockbackPower = weight * 0.2f;      // ノックバックの力（距離 or スピード）
-        float knockbackTime = 0.2f;        // ノックバック時間
-        Vector3 startPos = transform.position;
-        Vector3 endPos = startPos + knockbackDir * knockbackPower;
-        float _fTimer = 0f;
-        
-        while (_fTimer < knockbackTime) //ノックバックの指定時間の間
-        { //自分を後方へノックバック
-            float t = _fTimer / knockbackTime;
-            t = 1f - (1f - t) * (1f - t);
-            Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+	/// <summary>
+	/// -ノックバック関数	
+	/// <para>ノックバックする関数</para>
+	/// <param name="Transform attacker">相手の向いてる方向</param>
+	/// </summary>
 
-            m_Rb.MovePosition(newPos);
-            _fTimer += Time.deltaTime;
-            yield return null;
-        }
-
-
-        Debug.Log("ノックバック終了！");
-    }
-
-
-    // ＞無敵状態関数
-    // 引数：なし
-    // ｘ
-    // 戻値：なし
-    // ｘ
-    // 概要：ダメージを受けたときに90フレーム無敵状態になる
-    private IEnumerator InvincibilityCoroutine()
+	private IEnumerator KnockbackCoroutine(Transform attacker, int weight)
 	{
-		m_bIsInvicible = true; // 無敵状態にする
-		Debug.Log("無敵状態!!!");
-		for (int i = 0; i < m_nInvincibleTime; ++i)
-		{
-			yield return null; // 1フレーム待つ
+		Debug.Log("ノックバック開始！");
+
+	   Vector3 knockbackDir = (transform.position - attacker.position).normalized;
+		knockbackDir.y = 0f; // Y方向の動きをゼロにする
+		knockbackDir = knockbackDir.normalized; // 正規化
+		float knockbackPower = weight * 0.2f;      // ノックバックの力（距離 or スピード）
+		float knockbackTime = 0.2f;        // ノックバック時間
+		Vector3 startPos = transform.position;
+		Vector3 endPos = startPos + knockbackDir * knockbackPower;
+		float _fTimer = 0f;
+		
+		while (_fTimer < knockbackTime) //ノックバックの指定時間の間
+		{ //自分を後方へノックバック
+			float t = _fTimer / knockbackTime;
+			t = 1f - (1f - t) * (1f - t);
+			Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+
+			m_Rb.MovePosition(newPos);
+			_fTimer += Time.deltaTime;
+			yield return null;
 		}
 
-		m_bIsInvicible = false; // 無敵状態を解除する
-		Debug.Log("無敵状態解除!!");
+
+		Debug.Log("ノックバック終了！");
 	}
 
-	// ＞無敵状態関数(ローリング中)
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：ローリングしている間一定時間無敵になる
-	private IEnumerator RollingInvincibilityCoroutine()
-	{
-		m_bIsRollingInvincible = true; // 無敵状態にする
-		yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
-		m_bIsRollingInvincible = false; // 無敵状態を解除する
-	}
 
+ //   // ＞無敵状態関数
+ //   // 引数：なし
+ //   // ｘ
+ //   // 戻値：なし
+ //   // ｘ
+ //   // 概要：ダメージを受けたときに90フレーム無敵状態になる
+ //   private IEnumerator InvincibilityCoroutine()
+	//{
+	//	m_bIsInvicible = true; // 無敵状態にする
+	//	Debug.Log("無敵状態!!!");
+	//	for (int i = 0; i < m_nInvincibleTime; ++i)
+	//	{
+	//		yield return null; // 1フレーム待つ
+	//	}
+
+	//	m_bIsInvicible = false; // 無敵状態を解除する
+	//	Debug.Log("無敵状態解除!!");
+	//}
+
+	//// ＞無敵状態関数(ローリング中)
+	//// 引数：なし
+	//// ｘ
+	//// 戻値：なし
+	//// ｘ
+	//// 概要：ローリングしている間一定時間無敵になる
+	//private IEnumerator RollingInvincibilityCoroutine()
+	//{
+	//	m_bIsRollingInvincible = true; // 無敵状態にする
+	//	yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
+	//	m_bIsRollingInvincible = false; // 無敵状態を解除する
+	//}
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
-	// セレクトした時のDebug処理をここに追加
+		// セレクトした時のDebug処理をここに追加
 #endif
 	}
 
-		// 死亡時処理
+	// 被ダメージ時の無敵状態付与処理
+	public void GrantInvincible()
+	{
+		// 変数宣言
+		var _Invincible = GetComponent<CInvincible>();	// 無敵
+
+		// コンポーネント管理
+		if(_Invincible == null)	// 無敵状態ではない
+		{
+			_Invincible = gameObject.AddComponent<CInvincible>();	// 無敵状態になる
+		}
+
+		// 無敵時間設定
+		_Invincible.AliveTime = m_nDamagedInvincibleTime;	// 被ダメージ後の無敵時間を反映
+	}
+
+	// 死亡時処理
 	private void OnDead()
 	{
 		SceneManager.LoadScene("GAMEOVER");
@@ -886,15 +924,15 @@ public class CPlayer : MonoBehaviour, IDH
 		}
 	}
 
-    public void OnAttackAnimationEnd()
+	public void OnAttackAnimationEnd()
 	{
 		m_Animator.SetBool("Attack", false);
 	}
 
 	public void OnSlamAttackAnimationEnd()
 	{
-        m_Animator.SetBool("Slam", false);
-    }
+		m_Animator.SetBool("Slam", false);
+	}
 
 	public void OnRollingAnimationEnd()
 	{
