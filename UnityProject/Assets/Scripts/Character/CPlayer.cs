@@ -329,17 +329,21 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 			m_Rb.transform.position += moveDir * moveDistance;
 			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
 
+
 			m_Animator.SetBool("Run",true); // 歩行アニメーションを再生
 		}
 		else
 		{
 
 			// 入力なし時の足音停止
-			if (m_MoveGroundSESource.isPlaying)
+			if (m_MoveGroundSESource.isPlaying)	// 臨時処理
 			{
-				m_MoveGroundSESource.Stop();
+				m_MoveGroundSESource.Stop();	// 攻撃アニメーションを優先して上書きしない
 			}
-			m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
+			if (!m_Animator.GetBool("Slam"))
+			{
+				m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
+			}
 		}
 
 
@@ -468,11 +472,12 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 			//	}
 			//}
 			//↑ラグ出るので下のイミュレータに移動しておきます
+			
+
+			m_Animator.SetBool("Attack", true); // 攻撃アニメーションを再生
 
 			//if()
 				StartCoroutine(AttackDeray());
-
-			m_Animator.SetBool("Attack", true); // 攻撃アニメーションを再生
 			
 
 			// 攻撃音再生
@@ -557,11 +562,12 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 			//	}
 			//}
 			//↑ラグ出るので下のイミュレータに移動しておきます
+			
+			m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
 
 			//if()
 				StartCoroutine(SmashAttackDeray());
 
-			m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
 											  // (アニメーションイベントでfalse読んでるからfalseの記述はなし
 			// 攻撃音再生
 			if (!m_StabAttackSESource.isPlaying)
@@ -846,6 +852,12 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		StartCoroutine(KnockbackCoroutine(attacker, weight));
 
 		m_Animator.SetBool("Damage", true); // ダメージアニメーションを再生
+
+		// アニメーション優先
+		m_Animator.SetBool("Attack", false);
+		m_Animator.SetBool("Slam", false);
+		StopCoroutine(AttackDeray());
+		StopCoroutine(SmashAttackDeray());
 
 		//臨時的処理
 		GrantInvincible();	// 無敵起動の代用

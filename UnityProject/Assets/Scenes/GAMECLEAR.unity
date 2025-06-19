@@ -1263,6 +1263,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_KillMark
+      value: 
+      objectReference: {fileID: 21300000, guid: 328bbdcb138becd49b011c5c3244ac4a, type: 3}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[0].m_Texture
+      value: 
+      objectReference: {fileID: 21300000, guid: 5516267d9e736c642859eb21f9bf6445, type: 3}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[1].m_Texture
+      value: 
+      objectReference: {fileID: 21300000, guid: e454ff5950aa1d54ebfb4f4bb58b039b, type: 3}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[2].m_Texture
+      value: 
+      objectReference: {fileID: 21300000, guid: 10a25f6df308c894284818f6153969a8, type: 3}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[3].m_Texture
+      value: 
+      objectReference: {fileID: 21300000, guid: 3b74941603e46d245acf9ce5ab4ce12e, type: 3}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[0].m_MinKilled
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[1].m_MinKilled
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[2].m_MinKilled
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004742525193470695, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
+      propertyPath: m_Ranks.Array.data[3].m_MinKilled
+      value: 45
+      objectReference: {fileID: 0}
     - target: {fileID: 2574008041297728135, guid: 4a0ce87a5f886fc489cd50c83f2ab3a4, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -400
