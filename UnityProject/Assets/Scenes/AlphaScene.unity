@@ -1550,6 +1550,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4348479778881471063, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: 52e22e115de68784e96e8e041a91275c, type: 2}
     - target: {fileID: 4486885751706076269, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
       propertyPath: m_Enabled
       value: 0
