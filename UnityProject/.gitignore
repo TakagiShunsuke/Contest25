@@ -72,4 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # TMP-Mat
-LiberationSans SDF - Fallback.asset
+#LiberationSans SDF - Fallback.asset
+*/LiberationSans SDF - Fallback.asset

@@ -106,18 +106,23 @@ public class CEnemy : MonoBehaviour, IDH
 	[Header("エフェクト")]
 	[SerializeField, Tooltip("エフェクトプレハブ")] private GameObject deathEffectPrefab;
 
+    [SerializeField] private AudioClip deathClip;  // 死亡音
+    private AudioSource audioSource;
 
-	/// <summary>
-	/// -初期化関数
-	/// <para>初期化処理関数</para>
-	/// </summary>
-	private void Start()
+
+    /// <summary>
+    /// -初期化関数
+    /// <para>初期化処理関数</para>
+    /// </summary>
+    private void Start()
 	{
 		// NavMeshAgentを取得
 		m_Agent = GetComponent<NavMeshAgent>();
 		m_Rigid = GetComponent<Rigidbody>();
-		// Playerを自動で探してターゲットに設定
-		GameObject playerObj = GameObject.FindWithTag("Player");
+
+        audioSource = GetComponent<AudioSource>();
+        // Playerを自動で探してターゲットに設定
+        GameObject playerObj = GameObject.FindWithTag("Player");
 		if (playerObj != null)
 		{
 			m_Target = playerObj.transform;
@@ -157,9 +162,8 @@ public class CEnemy : MonoBehaviour, IDH
 		m_fSpeedInitial = m_Agent.speed;
 		m_nInitialHP = m_HitPoint.HP;
 		m_fStop = m_Agent.stoppingDistance;
-
-		// イベント接続
-		m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
+        // イベント接続
+        m_HitPoint.OnDead += OnDead;	// 死亡時処理を接続
 	}
 
 	/// <summary>
@@ -414,8 +418,13 @@ public class CEnemy : MonoBehaviour, IDH
 	/// </summary>
 	private void OnDead()
 	{
-		// 体液の排出
-		if (m_Blood != null)	
+        if (deathClip != null && audioSource != null)
+        {
+            Debug.Log("year");
+            AudioSource.PlayClipAtPoint(deathClip, transform.position);
+        }
+        // 体液の排出
+        if (m_Blood != null)	
 		{
 			float _temp_y = 0.0f;
 
@@ -458,7 +467,7 @@ public class CEnemy : MonoBehaviour, IDH
 		//}
 		m_HitPoint.HP -= damage;
 		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		if (m_HitPoint.HP < 0)//しんだら
+		if (m_HitPoint.HP <= 0)//しんだら
 		{
 			Debug.Log("死んだ");
 		}

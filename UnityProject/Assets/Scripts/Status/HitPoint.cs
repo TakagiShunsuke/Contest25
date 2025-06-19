@@ -13,10 +13,13 @@ D
 16:リファクタリング:takagi
 28:防御を統合(体力の機能にしか関連しない処理なため)・
 	最大体力の概念を追加:takagi
+_M06
+D
+18:イベントの定義を追加、関数型をActionに変更:takagi
 =====*/
 
 // 名前空間宣言
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 // クラス定義
@@ -26,8 +29,9 @@ public class CHitPoint : MonoBehaviour
 	private const int MIN_GUARANTEE_MAX_VALUE = 1;	// 最大HPの最低保証値
 
 	// イベント定義
-	public delegate void DeathEvent();	// イベント用の関数定義
-	public event DeathEvent OnDead;	// 死亡時のイベント
+	public event Action OnDamaged;	// 被ダメージ時のイベント
+	public event Action OnHealed;	// 回復時のイベント
+	public event Action OnDead;	// 死亡時のイベント
 
 	// 変数宣言
 	[SerializeField, Tooltip("最大体力")] private int m_nMaxHP = MIN_GUARANTEE_MAX_VALUE;
@@ -93,6 +97,9 @@ public class CHitPoint : MonoBehaviour
 		}
 		set
 		{
+			// 退避
+			var _nTemp = m_nHP;	// 更新前の最大値を退避
+
 			// 更新
 			m_nHP = value;  // HPの値を更新
 
@@ -102,13 +109,27 @@ public class CHitPoint : MonoBehaviour
 				m_nHP = m_nMaxHP;	// 最大値に補正
 			}
 
-			// 死亡判定
+			// イベント判定
 			if (m_nHP < 1)	// HPが無くなった
 			{
 				IsDead = true;	// 死亡した扱いにする
 				if (OnDead != null)	// ヌルチェック
 				{
 					OnDead.Invoke();	// 死亡時イベントを発行	//TODO:これだと死後蘇生など(とくに処理の途中で一時的に殺したなど)したときに不慮の呼び出しが発生するため要改善
+				}
+			}
+			else if(m_nHP < _nTemp)	// ダメージを受けた
+			{
+				if(OnDamaged != null)	// ヌルチェック
+				{
+					OnDamaged.Invoke();	// 被ダメージ時イベントを発行
+				}
+			}
+			else if(m_nHP > _nTemp)	// 回復した
+			{
+				if(OnHealed != null)	// ヌルチェック
+				{
+					OnHealed.Invoke();	// 回復時イベントを発行
 				}
 			}
 		}
