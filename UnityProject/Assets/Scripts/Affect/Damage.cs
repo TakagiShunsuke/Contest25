@@ -15,6 +15,9 @@ _M05
 D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
+18:フラグを追加(処理分岐を減らすことで保守性を保つ):takagi
+19:変数名変更(m_bNonInvincible→m_bIgnoreInvincible)
+	・無敵判定修正:takagi
 =====*/
 
 // 名前空間宣言
@@ -31,6 +34,10 @@ public class CDamage : CAffect
 	[SerializeField, Tooltip("ダメージ値")] private float m_fDamage;
 	private float m_fBaseCorrection = 0.0f;	// 基礎値補正
 	private float m_fCorrectionRatio = 1.0f;	// 補正倍率
+	[Header("状態")]
+	[SerializeField, Tooltip("無敵貫通")] protected bool m_bIgnoreInvincible = false;
+	[SerializeField, Tooltip("ダメージ発生時無敵付与")] protected bool m_bGrantInvincible = true;
+	[SerializeField, Tooltip("致死性")] protected bool m_bKillable = true;
 
 	// プロパティ定義
 
@@ -124,14 +131,45 @@ public class CDamage : CAffect
 			return;	// 処理中断
 		}
 
-			// 変数宣言
-			var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		// 変数宣言
+		var _HitPoint = _Opponent.GetComponent<CHitPoint>();	// ダメージを受けるHP
+		var _Invincible = _Opponent.GetComponent<CInvincible>();	// 無敵状態
+
+		// 無敵
+		if (_Invincible && !m_bIgnoreInvincible)	// 無敵を適用
+		{
+			// 中断
+			return;	// ダメージ処理が発生しない
+		}
 
 		// ダメージ処理
-		if(_HitPoint)	// ダメージを受けられる
+		if (_HitPoint)	// ダメージを受けられる
 		{
+			// 変数宣言
+			int _TemporalHP = _HitPoint.HP;	// 現在HPの退避
+
 			// ダメージを与える
-			_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 最終ダメージをHPに影響させる
+			if (m_bKillable || _HitPoint.HP - CulcDamage(CorrectedDamage, _HitPoint.Defence) > 0)	// 致死性がある・もしくはそもそも殺せていない
+			{
+				_HitPoint.HP -= CulcDamage(CorrectedDamage, _HitPoint.Defence);	// 通常のダメージ処理
+			}
+			else if(_HitPoint.HP > 0)	// 本来ならこのダメージ処理で死ぬが、非致死性ダメージとして扱う
+			{
+				_HitPoint.HP = 1;   // 非致死性効果で1耐えさせる
+			}
+
+			// 無敵付与
+			if (m_bGrantInvincible && _TemporalHP > _HitPoint.HP)	// ダメージを与えたら無敵を付与する
+			{
+				// 変数宣言
+				var _Granter = _Opponent.GetComponent<IDamagedInvincible>();	// 無敵付与方法を取得
+
+				// 無敵起動
+				if(_Granter != null)// 付与方法が明示されている
+				{
+					_Granter.GrantInvincible();	// 無敵状態にする
+				}
+			}
 		}
 	}
 	
