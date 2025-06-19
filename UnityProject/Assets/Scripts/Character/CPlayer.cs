@@ -34,6 +34,7 @@ D
 18:アニメーションをいじいじ:kato
 19:Slamアニメーション実装:kato
 19:ローリングアニメーションいじいじ:kato
+19:ダメージアニメーション実装:kato
 =====*/
 
 // 名前空間宣言
@@ -316,7 +317,6 @@ public class CPlayer : MonoBehaviour, IDH
 			m_Rb.transform.rotation = Quaternion.LookRotation(moveDir);
 
             m_Animator.SetBool("Run",true); // 歩行アニメーションを再生
-            //m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
         }
         else
 		{
@@ -327,7 +327,6 @@ public class CPlayer : MonoBehaviour, IDH
 				m_MoveGroundSESource.Stop();
 			}
 			m_Animator.SetBool("Run", false); // 歩行アニメーションを停止
-			//m_Animator.SetBool("Run", true); // 歩行アニメーションを停止
         }
 
 
@@ -747,10 +746,10 @@ public class CPlayer : MonoBehaviour, IDH
 
         StartCoroutine(KnockbackCoroutine(attacker, weight));
 
+        m_Animator.SetBool("Damage", true); // ダメージアニメーションを再生
         // 無敵状態開始
         StartCoroutine(InvincibilityCoroutine());
-		
-	}
+    }
 
     /// <summary>
     /// -ノックバック関数	
@@ -900,6 +899,11 @@ public class CPlayer : MonoBehaviour, IDH
 	public void OnRollingAnimationEnd()
 	{
 		m_Animator.SetBool("Rolling", false);
+	}
+
+	public void OnDamageAnimationEnd()
+	{
+		m_Animator.SetBool("Damage", false);
 	}
 
 }
