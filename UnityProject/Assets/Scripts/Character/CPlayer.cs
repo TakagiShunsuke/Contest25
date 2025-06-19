@@ -509,6 +509,8 @@ public class CPlayer : MonoBehaviour, IDH
             }
         }
 
+		m_Animator.SetBool("Slam", true); // スマッシュアタックアニメーションを再生
+										  // (アニメーションイベントでfalse読んでるからfalseの記述はなし
         // 攻撃音再生
         if (!m_StabAttackSESource.isPlaying)
         {
@@ -886,5 +888,10 @@ public class CPlayer : MonoBehaviour, IDH
 	{
 		m_Animator.SetBool("Attack", false);
 	}
+
+	public void OnSlamAttackAnimationEnd()
+	{
+        m_Animator.SetBool("Slam", false);
+    }
 
 }
