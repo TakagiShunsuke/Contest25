@@ -41,7 +41,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // クラス定義
-public class CEnemy : MonoBehaviour, IDH
+public class CEnemy : MonoBehaviour
 {
 	// 構造体定義
 	[Serializable]
@@ -456,55 +456,4 @@ public class CEnemy : MonoBehaviour, IDH
 
 		Destroy(gameObject);	// 敵を消す
 	}
-
-	public void Adddamege(int damage)
-	{
-		//m_nHp -= damage;
-		//Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//if (m_nHp < 0)//しんだら
-		//{
-		//	Debug.Log("死んだ");
-		//}
-		m_HitPoint.HP -= damage;
-		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		if (m_HitPoint.HP <= 0)//しんだら
-		{
-			Debug.Log("死んだ");
-		}
-	}
-
-	public void Addheal(int heal)
-	{
-		//m_nHp += heal;
-		//Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
-		m_HitPoint.HP += heal;
-		Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
-	}
-	public void Addposion()
-	{
-		m_bIsPoison = true;
-		m_bPoisonUpdate = true;
-	}
-	public void Addacid(int damage)
-	{
-		//if (m_nHp > damage)
-		//{
-
-
-		//	m_nHp -= damage;
-		//	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//}
-		if (m_HitPoint.HP > damage)
-		{
-
-
-			m_HitPoint.HP -= damage;
-			Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		}
-		else
-		{
-			Debug.Log("酸だからしなん");
-		}
-	}
-
 }

@@ -37,16 +37,17 @@ D
 19:ローリングアニメーションいじいじ:kato
 19:ダメージアニメーション実装:kato
 19:被ダメージ時に無敵を付与すると余分に無敵を付与してしまうため、与ダメージ側で判断できるようにインターフェースだけ実装:takagi
+20:明らかに不要な、過去に他の場所へ切り出された/互換された部分を除去
+	・行数が明らかに多いのでプロパティ属性周りをコーディング規約に合わせる:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
-using static UnityEngine.UI.Image;
 
 // クラス定義
-public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
+public class CPlayer : MonoBehaviour, IDamagedInvincible
 {
 	// 変数宣言
 	private Rigidbody m_Rb; // リジットボディ
@@ -57,63 +58,29 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	private float m_fcount = 0.0f;//かうんと
 
 	[Header("プレイヤーステータス")]
-	[SerializeField]
-	[Tooltip("初期HP")]
-	private int m_nInitialHp = 100;
-	[SerializeField]
-	[Tooltip("初期防御力")]
-	private int m_nInitialDef = 5;
+	[SerializeField, Tooltip("初期HP")] private int m_nInitialHp = 100;
+	[SerializeField, Tooltip("初期防御力")] private int m_nInitialDef = 5;
 	private CHitPoint m_HitPoint;	// HP機構
 
-	[SerializeField]
-	[Tooltip("攻撃力")]
-	private int m_nAtk = 100;
-	[SerializeField]
-	[Tooltip("移動速度")]
-	private float m_fSpeed = 2.0f;
-	[SerializeField]
-	[Tooltip("攻撃速度")]
-	private float m_fAtkSpeed = 100.0f;
+	[SerializeField, Tooltip("攻撃力")] private int m_nAtk = 100;
+	[SerializeField, Tooltip("移動速度")] private float m_fSpeed = 2.0f;
+	[SerializeField, Tooltip("攻撃速度")] private float m_fAtkSpeed = 100.0f;
 
 	[Header("攻撃ステータス")]
 
-	[SerializeField]
-	[Tooltip("攻撃範囲の横幅")]
-	private float m_fAttackBoxWidth = 2f;     // 攻撃範囲の横幅
-	[SerializeField]
-	[Tooltip("攻撃範囲の奥行き")]
-	private float m_fAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
-	[SerializeField]
-	[Tooltip("攻撃範囲の高さ")]
-	private float m_fAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
-	[SerializeField]
-	[Tooltip("攻撃範囲の縦オフセット")]
-	private float m_fAttackBoxYOffset = 1.0f;
-	[SerializeField]
-	[Tooltip("攻撃範囲の横オフセット")]
-	private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
-	[SerializeField]
-	[Tooltip("攻撃のディレイ")]
-	private float m_fAttackDelay = 0.25f;	// 攻撃判定発生ディレイ
+	[SerializeField, Tooltip("攻撃範囲の横幅")] private float m_fAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+	[SerializeField, Tooltip("攻撃範囲の奥行き")] private float m_fAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+	[SerializeField, Tooltip("攻撃範囲の高さ")] private float m_fAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
+	[SerializeField, Tooltip("攻撃範囲の縦オフセット")] private float m_fAttackBoxYOffset = 1.0f;
+	[SerializeField, Tooltip("攻撃範囲の横オフセット")] private float m_fAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+	[SerializeField, Tooltip("攻撃のディレイ")] private float m_fAttackDelay = 0.25f;	// 攻撃判定発生ディレイ
 
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃範囲の横幅")]
-	private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃範囲の奥行き")]
-	private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃範囲の高さ")]
-	private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃範囲の縦オフセット")]
-	private float m_fSmashAttackBoxYOffset = 1.0f;
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃範囲の横オフセット")]
-	private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
-	[SerializeField]
-	[Tooltip("スマッシュ攻撃のディレイ")]
-	private float m_fSmashAttackDelay = 0.8f;	// スマッシュ攻撃判定発生ディレイ
+	[SerializeField, Tooltip("スマッシュ攻撃範囲の横幅")] private float m_fSmashAttackBoxWidth = 2f;     // 攻撃範囲の横幅
+	[SerializeField, Tooltip("スマッシュ攻撃範囲の奥行き")] private float m_fSmashAttackBoxDepth = 3f;     // 攻撃範囲の奥行き
+	[SerializeField, Tooltip("スマッシュ攻撃範囲の高さ")] private float m_fSmashAttackBoxHeight = 1.5f;    // 攻撃範囲の高さ
+	[SerializeField, Tooltip("スマッシュ攻撃範囲の縦オフセット")] private float m_fSmashAttackBoxYOffset = 1.0f;
+	[SerializeField, Tooltip("スマッシュ攻撃範囲の横オフセット")] private float m_fSmashAttackBoxXOffset = 1.0f; // 横（X軸）オフセット
+	[SerializeField, Tooltip("スマッシュ攻撃のディレイ")] private float m_fSmashAttackDelay = 0.8f;	// スマッシュ攻撃判定発生ディレイ
 
 	private float m_fLastAttackTime = -Mathf.Infinity;	// 最後に攻撃した時間
 	private float m_fAttackCooldown;	// 攻撃のクールダウン時間
@@ -123,13 +90,9 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	private bool m_bPoisonUpdate = false;//毒更新用
 
 	// 攻撃キーの変数
-	[SerializeField]
-	[Tooltip("攻撃キー")]
-	private KeyCode m_AttackKey = KeyCode.Return;
+	[SerializeField, Tooltip("攻撃キー")] private KeyCode m_AttackKey = KeyCode.Return;
 
-	[SerializeField]
-	[Tooltip("ローリングキー")]
-	private KeyCode m_RollingKey = KeyCode.Space; // ローリングキー
+	[SerializeField, Tooltip("ローリングキー")] private KeyCode m_RollingKey = KeyCode.Space; // ローリングキー
 
 	// アニメーター関連の変数
 	public Animator m_Animator;	// アニメーター変数維持用
@@ -137,39 +100,23 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	private bool m_bAttack		= false;	// 攻撃フラグ
 	public bool m_bOnGround	= true;	// 地面にいるかどうかのフラグ
 
-	[SerializeField]
-	[Tooltip("被ダメージ後の無敵時間")]
-	private int m_nDamagedInvincibleTime = 90; // 無敵時間
+	[SerializeField, Tooltip("被ダメージ後の無敵時間")] private int m_nDamagedInvincibleTime = 90; // 無敵時間
 
 	[Header("プレイヤー移動制限")]
 	// プレイヤー移動制限用の変数
 
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲の原点")]
-	private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲X")]
-	private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
-	[SerializeField]
-	[Tooltip("プレイヤーの移動制限範囲Z")]
-	private float m_fMoveLimit_z = 10.0f;   // プレイヤーの移動制限範囲
+	[SerializeField, Tooltip("プレイヤーの移動制限範囲の原点")] private Vector3 m_vMoveLimitOrigin = Vector3.zero; // プレイヤーの移動制限範囲の原点
+	[SerializeField, Tooltip("プレイヤーの移動制限範囲X")] private float m_fMoveLimit_x = 10.0f;	// プレイヤーの移動制限範囲
+	[SerializeField, Tooltip("プレイヤーの移動制限範囲Z")] private float m_fMoveLimit_z = 10.0f;   // プレイヤーの移動制限範囲
 
-	[SerializeField]
-	[Tooltip("Rayによる障害物回避距離")]
-	private float m_fAvoidDistance = 1.0f;  // 障害物との最低距離
+	[SerializeField, Tooltip("Rayによる障害物回避距離")] private float m_fAvoidDistance = 1.0f;  // 障害物との最低距離
 
-	[SerializeField]
-	[Tooltip("PlayerRayの高さ")]
-	private float m_fRayHeight = 1.5f; // Rayの高さ
+	[SerializeField, Tooltip("PlayerRayの高さ")] private float m_fRayHeight = 1.5f; // Rayの高さ
 
 	[Header("プレイヤーのローリング関係")]
 
-	[SerializeField]
-	[Tooltip("Playerがローリングするときの除算処理固定値")]
-	private float m_fRollSpeed = 0.05f; // 移動速度*0.05用
-	[SerializeField]
-	[Tooltip("Playerのリーリングのクールタイム")]
-	private float m_fRollCooldown = 3.0f; // ローリングのクールタイム(秒)
+	[SerializeField, Tooltip("Playerがローリングするときの除算処理固定値")] private float m_fRollSpeed = 0.05f; // 移動速度*0.05用
+	[SerializeField, Tooltip("Playerのリーリングのクールタイム")] private float m_fRollCooldown = 3.0f; // ローリングのクールタイム(秒)
 
 	private bool m_bIsRolling = false; // ローリングフラグ
 	private float m_fRollingCoolTimer = 0.0f; // ローリングが最後に行われてからの経過時間
@@ -181,33 +128,19 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	//private int m_nInvincibleTime = 90; // 無敵時間
 
 	// ローリング中の無敵時間
-	[SerializeField]
-	[Tooltip("Playerのローリング中の無敵時間")]
-	private float m_fRollingInvincibleTime = 0.5f; // 一旦ね
+	[SerializeField, Tooltip("Playerのローリング中の無敵時間")] private float m_fRollingInvincibleTime = 0.5f; // 一旦ね
 	//private bool m_bIsRollingInvincible = false; // ローリング中の無敵フラグ
 
 	[Header("プレイヤーのSE関係")]
-	[SerializeField]
-	[Tooltip("プレイヤーの足音の間隔")]
-	private float m_fFootStepInterval = 0.4f;	// 足音の間隔
+	[SerializeField, Tooltip("プレイヤーの足音の間隔")] private float m_fFootStepInterval = 0.4f;	// 足音の間隔
 	private float m_fFootStepTimer = 0.0f;
-	[SerializeField]
-	[Tooltip("移動音")]
-	private  AudioClip m_MoveGroundSE;
-	[SerializeField]
-	[Tooltip("移動音量")]
-	private float m_MoveGroundSEVolume = 0.05f;
+	[SerializeField, Tooltip("移動音")] private  AudioClip m_MoveGroundSE;
+	[SerializeField, Tooltip("移動音量")] private float m_MoveGroundSEVolume = 0.05f;
 	private AudioSource m_MoveGroundSESource;	// 移動SE用のオーディオソース
-	[SerializeField]
-	[Tooltip("攻撃(突き)音")]
-	public AudioClip m_StabAttackSE;
-	[SerializeField]
-	[Tooltip("攻撃(突き)音量")]
-	private float m_StabAttackSEVolume = 0.05f;
+	[SerializeField, Tooltip("攻撃(突き)音")] public AudioClip m_StabAttackSE;
+	[SerializeField, Tooltip("攻撃(突き)音量")] private float m_StabAttackSEVolume = 0.05f;
 	private AudioSource m_StabAttackSESource;	// 突きSE用のオーディオソース
 
-
-	CEnemy enemy;
 
 	// 初期化関数
 	// 引数１：なし
@@ -760,7 +693,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		}
 
 		Vector3 origin = transform.position + Vector3.up * m_fRayHeight;
-
 	}
 
 	// 物理更新関数
@@ -803,17 +735,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 			}
 		}
 	}
-
-	//// 死ぬ関数
-	//// 引数１：なし
-	//// ｘ
-	//// 戻値：なし
-	//// ｘ
-	//// 概要：プレイヤーが死んだときに呼び出す処理
-	//private void Die()
-	//{
-	//	m_bIsDead = true;
-	//}
 
 	void OnDrawGizmos()
 	{
@@ -872,7 +793,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 	/// <para>ノックバックする関数</para>
 	/// <param name="Transform attacker">相手の向いてる方向</param>
 	/// </summary>
-
 	private IEnumerator KnockbackCoroutine(Transform attacker, int weight)
 	{
 		Debug.Log("ノックバック開始！");
@@ -901,37 +821,6 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 		Debug.Log("ノックバック終了！");
 	}
 
- //   // ＞無敵状態関数
- //   // 引数：なし
- //   // ｘ
- //   // 戻値：なし
- //   // ｘ
- //   // 概要：ダメージを受けたときに90フレーム無敵状態になる
- //   private IEnumerator InvincibilityCoroutine()
- //{
- //	m_bIsInvicible = true; // 無敵状態にする
- //	Debug.Log("無敵状態!!!");
- //	for (int i = 0; i < m_nInvincibleTime; ++i)
- //	{
- //		yield return null; // 1フレーム待つ
- //	}
-
-		//	m_bIsInvicible = false; // 無敵状態を解除する
-		//	Debug.Log("無敵状態解除!!");
-		//}
-
-		//// ＞無敵状態関数(ローリング中)
-		//// 引数：なし
-		//// ｘ
-		//// 戻値：なし
-		//// ｘ
-		//// 概要：ローリングしている間一定時間無敵になる
-		//private IEnumerator RollingInvincibilityCoroutine()
-		//{
-		//	m_bIsRollingInvincible = true; // 無敵状態にする
-		//	yield return new WaitForSeconds(m_fRollingInvincibleTime); // 一定時間待つ
-		//	m_bIsRollingInvincible = false; // 無敵状態を解除する
-		//}
 	private void OnDrawGizmosSelected() // オブジェクト選択時に表示
 	{
 #if UNITY_EDITOR
@@ -964,57 +853,7 @@ public class CPlayer : MonoBehaviour, IDH, IDamagedInvincible
 
 
 	//---↓消す---
-	//ダメージ処理
-	public void Adddamege(int damage)
-	{
-		//m_nHp -= damage;
-		//Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//if (m_nHp < 0)//しんだら
-		//{
-		//	Debug.Log("死んだ");
-		//}
-		m_HitPoint.HP -= damage;
-		Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		if (m_HitPoint.HP < 0)//しんだら
-		{
-			Debug.Log("死んだ");
-		}
-	}
 
-
-	public void Addheal(int heal)
-	{
-		//m_nHp += heal;
-		//Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_nHp);
-		m_HitPoint.HP += heal;
-		Debug.Log("プレイヤーは" + heal + "を回復した　現在のHP:" + m_HitPoint.HP);
-	}
-	public void Addposion()
-	{
-		m_bIsPoison = true;
-		m_bPoisonUpdate = true;
-	}
-	public void Addacid(int damage)
-	{
-		//if (m_nHp > damage)
-		//{
-
-
-		//	m_nHp -= damage;
-		//	Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_nHp);
-		//}
-		if (m_HitPoint.HP > damage)
-		{
-
-
-			m_HitPoint.HP -= damage;
-			Debug.Log("プレイヤーは" + damage + "をくらった　現在のHP:" + m_HitPoint.HP);
-		}
-		else
-		{
-			Debug.Log("酸だからしなん");
-		}
-	}
 
 	public void OnAttackAnimationEnd()
 	{
