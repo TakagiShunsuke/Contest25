@@ -129,7 +129,7 @@ MonoBehaviour:
     m_fStop: 0
   m_nInitialHP: 200
   m_nInitialDef: 20
-  m_Blood: {fileID: 75644770688212516, guid: 106f3a3d899127847863e916c0b235da, type: 3}
+  m_Blood: {fileID: 75644770688212516, guid: 9902d4bac8795d74cbd39712c9fc3186, type: 3}
   deathEffectPrefab: {fileID: 0}
   deathClip: {fileID: 8300000, guid: ae44248fbcc28dc4d8aa2b946ea13660, type: 3}
 --- !u!114 &2685683755032189828

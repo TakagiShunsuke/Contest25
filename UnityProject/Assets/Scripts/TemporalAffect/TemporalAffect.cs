@@ -29,6 +29,10 @@ public class CTemporalAffect : MonoBehaviour
 		BUFF,	// バフ効果
 		DEBUFF,	// デバフ効果
 	}
+	private enum E_TIMING_EVENT	// 効果イベント
+	{
+		ON_CICLE,	// 周期が回った時に発動
+	}
 
 	// 変数宣言
 	[Header("ステータス")]
@@ -37,7 +41,7 @@ public class CTemporalAffect : MonoBehaviour
 	[Header("効果")]
 	[SerializeField, Tooltip("効果発動周期")] private float m_fAffectCycle = 0.0f;
 	private float m_fAffectTimer = 0.0f;	// 効果発動時間用のタイマー
-	private CAffect m_Affect;	// 体液の効果	※自身のコンポーネントから取得
+	[SerializeField, CIndexWithEnum(typeof(E_TIMING_EVENT)), Tooltip("効果イベント")] private EventAffects[] m_InnerAffectEventor;	// 効果用のイベント管理
 	[Header("メタデータ")]
 	[SerializeField, Tooltip("効果分類")] private E_AFFECT_TYPE m_eAffectType = E_AFFECT_TYPE.BUFF;
 
@@ -48,23 +52,11 @@ public class CTemporalAffect : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
-		// 初期化
-		m_Affect = GetComponent<CAffect>();	// 自身の特徴取得
 #if UNITY_EDITOR // エディタ使用中
 		if (!transform.parent.gameObject)	// 親オブジェクトがない
 		{
 			// 出力
 			Debug.LogError("効果の発動対象が見つかりません");
-		}
-		if (!m_Affect)	// 取得に失敗した時
-		{
-			// 出力
-			Debug.LogError("効果コンポーネントが設定されていません");
-		}
-		else if (GetComponents<CAffect>().Length > 1)	// 使わない効果コンポーネントがあるとき
-		{
-			// 出力
-			Debug.LogWarning("無効な効果が設定されています");
 		}
 		if(m_fAliveTime < 0.0f)	// 機能時間がない
 		{
@@ -79,7 +71,7 @@ public class CTemporalAffect : MonoBehaviour
 #endif
 
 		// 効果発動
-		m_Affect.Affect(gameObject, transform.parent.gameObject);	// 初回効果発動
+		m_InnerAffectEventor[(int)E_TIMING_EVENT.ON_CICLE].BootAffects(gameObject, transform.parent.gameObject);	// 初回効果発動
 	}
 	
 	// ＞更新関数
@@ -103,7 +95,7 @@ public class CTemporalAffect : MonoBehaviour
 		// 効果発動
 		if (m_fAffectTimer > m_fAffectCycle)	// 効果発動タイミング
 		{
-			m_Affect.Affect(gameObject, transform.parent.gameObject);	// 自己(所有者)対象の効果発動
+			m_InnerAffectEventor[(int)E_TIMING_EVENT.ON_CICLE].BootAffects(gameObject, transform.parent.gameObject);	// 初回効果発動
 			m_fAffectTimer -= m_fAffectCycle;	// 周期分カウントリセット
 		}
 

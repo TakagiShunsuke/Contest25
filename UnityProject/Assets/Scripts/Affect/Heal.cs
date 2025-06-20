@@ -5,21 +5,28 @@
 ＞内容
 回復機能を実装
 
+＞注意事項
+・Affectの変更により、インスペクタ上でのパラメータの変更は「試用限定機能であり、本実装では無効化される」こととなりました！
+
 ＞更新履歴
 __Y25
 _M05
 D
 12:プログラム仮作成:takagi
 16:リファクタリング:takagi
+_M06
+13:継承元を MonoBehavior→ScriptableObject に変更:takagi
 =====*/
 
 // 名前空間宣言
 using UnityEngine;
 
 // クラス定義
+[CreateAssetMenu(menuName = AFFECT_MENU_TAB_NAME + AFFECT_NAME, fileName = AFFECT_NAME)]
 public class CHeal : CAffect
 {
 	// 定数定義
+	private const string AFFECT_NAME = "Heal";	// 効果名
 	protected const int _MIN_DAMAGE = 1;	// 最低保証回復
 
 	// 変数宣言
