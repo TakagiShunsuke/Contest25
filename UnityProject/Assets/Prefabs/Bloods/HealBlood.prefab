@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 8244880907334955269}
   - component: {fileID: 3555004824231374863}
   - component: {fileID: 6483610508869381811}
-  - component: {fileID: -2017024811805145714}
   m_Layer: 0
   m_Name: HealBlood
   m_TagString: Untagged
@@ -152,16 +151,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fCoolTime: 0.5
---- !u!114 &-2017024811805145714
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 75644770688212516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e15f42f5dddea294aac6f57c0d14a332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_fHeal: 2
+  m_InnerAffectEventor:
+  - m_Affects:
+    - {fileID: 11400000, guid: 3cfae10d03167f340be118b6324b88c6, type: 2}

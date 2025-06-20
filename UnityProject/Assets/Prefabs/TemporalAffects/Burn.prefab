@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8811805666586753372}
   - component: {fileID: 5882709936117699997}
-  - component: {fileID: 8496076712262951103}
   m_Layer: 0
   m_Name: Burn
   m_TagString: Untagged
@@ -47,17 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
   m_fAffectCycle: 0.5
+  m_InnerAffectEventor:
+  - m_Affects:
+    - {fileID: 11400000, guid: 9ab6a157becc72544a9a42853231a611, type: 2}
   m_eAffectType: 1
---- !u!114 &8496076712262951103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2447587950726919746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 252d2781d9a2c3c4fb48ed70061687a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_fDamage: 5

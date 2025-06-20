@@ -31,7 +31,7 @@ using UnityEngine;
 public class CBlood : MonoBehaviour
 {
 	// 列挙定義
-	private enum E_BLOOD_EVENT
+	private enum E_BLOOD_EVENT	// 効果イベント
 	{
 		ON_STAY,	// 体液上に発動
 	}
@@ -100,10 +100,7 @@ public class CBlood : MonoBehaviour
 				// 効果発動
 				//m_Affect.Affect(gameObject, _Staying.gameObject);   // 自分が相手に効果を発動
 				//m_InnerAffectEventor.InvokeEvent(E_BLOOD_EVENT.ON_STAY, gameObject, _Staying.gameObject);
-				foreach (var af in m_InnerAffectEventor[(int)E_BLOOD_EVENT.ON_STAY].m_Affects )
-				{
-					af.Affect(gameObject, _Staying.gameObject);
-				}
+				m_InnerAffectEventor[(int)E_BLOOD_EVENT.ON_STAY].BootAffects(gameObject, _Staying.gameObject);
 
 				// クールタイム開始
 				m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] = m_fCoolTime;	// タイマーをリセット

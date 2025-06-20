@@ -153,4 +153,4 @@ MonoBehaviour:
   m_fCoolTime: 0.5
   m_InnerAffectEventor:
   - m_Affects:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: 561c288a2c94f9d40b3c0a31be261be8, type: 2}
