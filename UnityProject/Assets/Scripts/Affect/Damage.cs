@@ -125,7 +125,7 @@ public class CDamage : CAffect
 	/// 無敵貫通フラグプロパティ
 	/// </summary>
 	/// <value><see cref="m_bIgnoreInvincible"/></value>
-	private bool IgnoreInvincible
+	public bool IgnoreInvincible
 	{
 		get
 		{
@@ -143,7 +143,7 @@ public class CDamage : CAffect
 	/// 無敵付与フラグプロパティ
 	/// </summary>
 	/// <value><see cref="m_bGrantInvincible"/></value>
-	private bool GrantInvincible
+	public bool GrantInvincible
 	{
 		get
 		{
@@ -161,7 +161,7 @@ public class CDamage : CAffect
 	/// 致死性フラグプロパティ
 	/// </summary>
 	/// <value><see cref="m_bKillable"/></value>
-	private bool Killable
+	public bool Killable
 	{
 		get
 		{

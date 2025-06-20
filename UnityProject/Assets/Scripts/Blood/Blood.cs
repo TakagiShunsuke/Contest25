@@ -19,11 +19,11 @@ D
 30:誤字修正:takagi
 _M06
 D
-//19:効果をSOで設定できるように変更:takagi
+20:効果をSOで設定できるように変更
+	・不要な関数を削除:takagi
 =====*/
 
 // 名前空間宣言
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,54 +33,15 @@ public class CBlood : MonoBehaviour
 	// 列挙定義
 	private enum E_BLOOD_EVENT
 	{
-		ON_STAY,    // 体液上に発動
+		ON_STAY,	// 体液上に発動
 	}
-
-	// 構造体定義
-	[Serializable]
-	struct EventAffects
-	{
-		[Header("発動効果一覧　※他のものと使いまわす場合データが上書きされないか気を付けてください※")]
-		[SerializeField, Tooltip("効果データ")] public List<CAffect> m_Affects;
-	}
-
 
 	// 変数宣言
 	[Header("性質")]
 	[SerializeField, Tooltip("効果発動間隔")] private float m_fCoolTime;
 	private Dictionary<int, float> m_fCoolDownTimers = new Dictionary<int, float>();	// 時間計測用
-	[SerializeField, CIndexWithEnum(typeof(E_BLOOD_EVENT)), Tooltip("効果")] private EventAffects[] m_InnerAffectEventor;	// 効果用のイベント管理
+	[SerializeField, CIndexWithEnum(typeof(E_BLOOD_EVENT)), Tooltip("効果イベント")] private EventAffects[] m_InnerAffectEventor;	// 効果用のイベント管理
 
-	// ＞初期化関数
-	// 引数：なし
-	// ｘ
-	// 戻値：なし
-	// ｘ
-	// 概要：初期化処理
-	void Start()
-	{
-		//TODO:m_InnerAffectEventor.AffectEvents.Add(E_BLOOD_EVENT.ON_STAY, );
-
-		// 初期化
-//		m_Affect = GetComponent<CAffect>();	// 自身の特徴取得
-//#if UNITY_EDITOR	// エディタ使用中
-//		if (!m_Affect)	// 取得に失敗した時
-//		{
-//			// エラー出力
-//			Debug.LogError("効果コンポーネントが設定されていません");	// ログ出力
-//		}
-//		else if (GetComponents<CAffect>().Length > 1)	// 使わない効果コンポーネントがあるとき
-//		{
-//			// エラー出力
-//			Debug.LogWarning("無効な効果が設定されています");	// ログ出力
-//		}
-//		if(m_fCoolTime < 0.0f)
-//		{
-//			// エラー出力
-//			Debug.LogError("クールタイムが機能していません");	// ログ出力
-//		}
-//#endif
-	}
 
 	// ＞物理更新関数
 	// 引数：なし
@@ -156,47 +117,4 @@ public class CBlood : MonoBehaviour
 		}
 #endif
 	}
-//	private void OnCollisionEnter(Collision _Entered)
-//	{
-//		// 
-//		if (!m_fCoolDownTimers.ContainsKey(_Entered.gameObject.GetInstanceID()))	// 初登録
-//		{
-//			// 効果発動
-//			m_Affect.Affect(gameObject, _Entered.gameObject);	// 自分が相手に効果を発動
-
-//			// クールタイム開始
-//			m_fCoolDownTimers.Add(_Entered.gameObject.GetInstanceID(), m_fCoolTime);	// タイマーを登録
-//		}
-//	}
-
-//	private void OnCollisionStay(Collision _Staying)
-//	{
-//		// 
-//		if (m_fCoolDownTimers.ContainsKey(_Staying.gameObject.GetInstanceID()))	// 初登録
-//		{
-//			if (m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] == 0.0f)	// 
-//			{
-//				// 効果発動
-//				m_Affect.Affect(gameObject, _Staying.gameObject);	// 自分が相手に効果を発動
-
-//				// クールタイム開始
-//				m_fCoolDownTimers[_Staying.gameObject.GetInstanceID()] = m_fCoolTime;	// タイマーをリセット
-//			}
-//		}
-//#if UNITY_EDITOR	// エディタ使用中
-//		else
-//		{
-//			// エラー出力
-//			Debug.LogError("エラー");	// ログ出力
-//		}
-//#endif
-//	}
-
-	//private void OnCollisionExit(Collision _Exited)
-	//{
-	//	//※淵で入出を繰り返したら意図しているよりも多く効果を受ける
-	//	if (m_fCoolDownTimers.ContainsKey(_Exited.gameObject.GetInstanceID()))
-	//	{
-	//	}
-	//}
 }

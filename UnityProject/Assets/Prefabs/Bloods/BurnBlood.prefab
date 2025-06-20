@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 8244880907334955269}
   - component: {fileID: 3555004824231374863}
   - component: {fileID: 6483610508869381811}
-  - component: {fileID: -6064147189951911}
   m_Layer: 0
   m_Name: BurnBlood
   m_TagString: Untagged
@@ -152,16 +151,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fCoolTime: 0.5
---- !u!114 &-6064147189951911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 75644770688212516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c1983029351e02459819b02ec38e948, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TemporalAffect: {fileID: 2447587950726919746, guid: f2091c9aec7c8ff40aba05625906cc65, type: 3}
+  m_InnerAffectEventor:
+  - m_Affects:
+    - {fileID: 0}
