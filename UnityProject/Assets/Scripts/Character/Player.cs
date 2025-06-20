@@ -49,6 +49,10 @@ using UnityEngine.SceneManagement;
 // クラス定義
 public class CPlayer : MonoBehaviour, IDamagedInvincible
 {
+	// 列挙定義
+
+
+
 	// 変数宣言
 	private Rigidbody m_Rb; // リジットボディ
 
@@ -112,6 +116,7 @@ public class CPlayer : MonoBehaviour, IDamagedInvincible
 	[SerializeField, Tooltip("Rayによる障害物回避距離")] private float m_fAvoidDistance = 1.0f;  // 障害物との最低距離
 
 	[SerializeField, Tooltip("PlayerRayの高さ")] private float m_fRayHeight = 1.5f; // Rayの高さ
+	[SerializeField, Tooltip("足元の許容空間深度")] private float m_fAllowGamSpace = 0.2f;
 
 	[Header("プレイヤーのローリング関係")]
 
@@ -140,6 +145,8 @@ public class CPlayer : MonoBehaviour, IDamagedInvincible
 	[SerializeField, Tooltip("攻撃(突き)音")] public AudioClip m_StabAttackSE;
 	[SerializeField, Tooltip("攻撃(突き)音量")] private float m_StabAttackSEVolume = 0.05f;
 	private AudioSource m_StabAttackSESource;	// 突きSE用のオーディオソース
+
+	private int m_CharFlag = 0b0;
 
 
 	// 初期化関数
@@ -668,7 +675,7 @@ public class CPlayer : MonoBehaviour, IDamagedInvincible
 			m_bPoisonUpdate = false;
 		}
 
-		if(!m_bIsRolling)
+		if(!m_bIsRolling && !m_Animator.GetBool("Attack") && !m_Animator.GetBool("Slam"))
 		{
 			m_fRollingCoolTimer += Time.deltaTime; // ローリングのクールタイムを加算
 
