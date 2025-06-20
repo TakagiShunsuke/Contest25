@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashMaterial: {fileID: 2100000, guid: 65827fcf6b34d97439a573241abfedb6, type: 2}
   m_Status:
-    m_nAtk: 100
+    m_nAtk: 40
     m_fAtkSpeed: 50
     m_nWeight: 50
     m_nGrowth: 100
@@ -129,7 +129,7 @@ MonoBehaviour:
     m_fStop: 0
   m_nInitialHP: 200
   m_nInitialDef: 20
-  m_Blood: {fileID: 75644770688212516, guid: 106f3a3d899127847863e916c0b235da, type: 3}
+  m_Blood: {fileID: 75644770688212516, guid: 9902d4bac8795d74cbd39712c9fc3186, type: 3}
   deathEffectPrefab: {fileID: 0}
   deathClip: {fileID: 8300000, guid: ae44248fbcc28dc4d8aa2b946ea13660, type: 3}
 --- !u!114 &2685683755032189828
@@ -202,7 +202,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.01
-  m_Speed: 2
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Growth:
     m_fHP: 0.2
     m_fAtk: 0.2
-    m_fMoveSpeed: 0.2
+    m_fMoveSpeed: 0
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
     m_fStop: 0
   m_nInitialHP: 120
   m_nInitialDef: 5
-  m_Blood: {fileID: 75644770688212516, guid: 82a1c789e749f2644a6571719e72a761, type: 3}
+  m_Blood: {fileID: 75644770688212516, guid: 60b26b1e9ec41744095f7a98bf7a2dcc, type: 3}
   deathEffectPrefab: {fileID: 1913665129241919219, guid: 5a970e5e802ef1148981d7cfaa528e76, type: 3}
   deathClip: {fileID: 8300000, guid: ae44248fbcc28dc4d8aa2b946ea13660, type: 3}
 --- !u!114 &234886533086391785
@@ -202,7 +202,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.02
-  m_Speed: 2.5
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
