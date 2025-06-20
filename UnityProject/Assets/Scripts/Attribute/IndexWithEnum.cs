@@ -85,15 +85,18 @@ public class CIndexWithEnum : PropertyAttribute
 
 	// 変数宣言
 	private string[] m_sEnumNames;	// 列挙の名前一覧
+#endif	// !UNITY_EDITOR
 
 
 	/// <summary>
 	/// コンストラクタ
+	/// <para>インスタンス生成時の処理。ビルド時に通れるように定義しっぱなしに。</para>
 	/// </summary>
 	/// <param name="_EnumType">対象列挙の型</param>
 	public CIndexWithEnum(Type _EnumType)
 	{
+#if UNITY_EDITOR	//エディタ使用中
 		m_sEnumNames = Enum.GetNames(_EnumType);	// 列挙名一覧取得
-	}
 #endif	// !UNITY_EDITOR
+	}
 }
