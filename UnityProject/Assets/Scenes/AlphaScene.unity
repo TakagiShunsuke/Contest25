@@ -2272,7 +2272,7 @@ MonoBehaviour:
   m_fAllowGamSpace: 0.2
   m_fRollSpeed: 3
   m_fRollCooldown: 3
-  m_fRollingInvincibleTime: 3
+  m_fRollingInvincibleTime: 0.3
   m_fFootStepInterval: 0.4
   m_MoveGroundSE: {fileID: 8300000, guid: 6bc1234106a4a144da20955ba575b49a, type: 3}
   m_MoveGroundSEVolume: 0.05
