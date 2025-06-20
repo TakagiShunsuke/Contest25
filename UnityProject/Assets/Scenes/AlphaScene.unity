@@ -491,6 +491,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 33c0bed6629833944ba38da158146546, type: 2}
+    - target: {fileID: 5866666021909216657, guid: fe9969946af93df4fa6868156226ca0e, type: 3}
+      propertyPath: m_UpdateMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -725,7 +729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1902064143011878191, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1347,7 +1351,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1902064143011878191, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2911241567616120835, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1550,6 +1554,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4348479778881471063, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: 52e22e115de68784e96e8e041a91275c, type: 2}
     - target: {fileID: 4486885751706076269, guid: f86b949385eb2b1449e962a45b0b4e7b, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1890,7 +1898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HpBar: {fileID: 1594999564}
-  m_cHitPoint: {fileID: 2057047273}
+  m_cHitPoint: {fileID: 1817413258}
 --- !u!114 &1594999564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2244,11 +2252,13 @@ MonoBehaviour:
   m_fAttackBoxHeight: 2
   m_fAttackBoxYOffset: 0.3
   m_fAttackBoxXOffset: 0
-  m_fSmashAttackBoxWidth: 3
-  m_fSmashAttackBoxDepth: 2
-  m_fSmashAttackBoxHeight: 1
+  m_fAttackDelay: 0.25
+  m_fSmashAttackBoxWidth: 1
+  m_fSmashAttackBoxDepth: 4
+  m_fSmashAttackBoxHeight: 2
   m_fSmashAttackBoxYOffset: 0.27
-  m_fSmashAttackBoxXOffset: 0
+  m_fSmashAttackBoxXOffset: 0.2
+  m_fSmashAttackDelay: 0.8
   m_AttackKey: 13
   m_RollingKey: 32
   m_Animator: {fileID: 0}
@@ -2472,7 +2482,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 722717980612262288, guid: 253cb07ad25b7bc4ebd0b095ea5a4a68, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 48.1
+      value: 43.07
       objectReference: {fileID: 0}
     - target: {fileID: 722717980612262288, guid: 253cb07ad25b7bc4ebd0b095ea5a4a68, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2620,17 +2630,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2057047273 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4536545395344619988, guid: 09792866a64cf6542b32113bc74ca035, type: 3}
-  m_PrefabInstance: {fileID: 1043053386}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2057047265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8742f30f3f583840b7d3148fb6ad458, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4695596142218099509
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -130,7 +130,7 @@ MonoBehaviour:
   m_nInitialHP: 50
   m_nInitialDef: 50
   m_Blood: {fileID: 75644770688212516, guid: 78e0c9ba0e004604d8bfb232f799300a, type: 3}
-  deathEffectPrefab: {fileID: 0}
+  deathEffectPrefab: {fileID: 75644770688212516, guid: ee41306248595f8469160da4a68209d8, type: 3}
   deathClip: {fileID: 8300000, guid: ae44248fbcc28dc4d8aa2b946ea13660, type: 3}
 --- !u!65 &7019331584709043581
 BoxCollider:
