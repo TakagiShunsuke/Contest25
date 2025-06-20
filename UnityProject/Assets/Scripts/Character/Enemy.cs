@@ -451,6 +451,11 @@ public class CEnemy : MonoBehaviour
 		{
 			Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
 		}
+		
+		if(CBattleData.Instance != null)	// ヌルチェック
+		{
+			CBattleData.Instance.KillCount++;	// 討伐カウント
+		}
 
 		Destroy(gameObject);	// 敵を消す
 

@@ -17,6 +17,7 @@ D
 _M06
 D
 14:バトルデータへデス数を登録:takagi
+20:デス数を敵スクリプトへ移行！:takagi
 =====*/
 
 // 名前空間宣言
@@ -44,9 +45,5 @@ public class CCountEnemy : MonoBehaviour
 	protected virtual void OnDestroy()
 	{
 		m_nValInstances--; // 敵の数を1減らす
-		if(CBattleData.Instance != null)	// ヌルチェック
-		{
-			CBattleData.Instance.KillCount++;	// 討伐カウント
-		}
 	}
 }
