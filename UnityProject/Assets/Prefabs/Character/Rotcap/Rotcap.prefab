@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Growth:
     m_fHP: 0.2
     m_fAtk: 0.2
-    m_fMoveSpeed: 0.2
+    m_fMoveSpeed: 0
     m_fAtkSpeed: 0
     m_fDef: 0
     m_fWeight: 0
@@ -206,7 +206,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.21785872
-  m_Speed: 2.5
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
